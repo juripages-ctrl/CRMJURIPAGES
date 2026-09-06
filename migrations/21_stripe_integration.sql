@@ -12,9 +12,6 @@ ALTER TABLE public.planos
 -- O CHECK atual permite: 'ativa', 'atrasada', 'cancelada'
 -- O Stripe usa: active, past_due, unpaid, canceled, incomplete, incomplete_expired, trialing
 -- Vamos dropar a constraint de CHECK para permitir que o webhook do Stripe insira o status real
-ALTER TABLE public.assinaturas
-  DROP CONSTRAINT se_existe_check_status; -- Nome genérico, vamos dropar a constraint pelo nome correto
-
 -- Descobrindo e dropando a constraint (PostgreSQL não tem DROP CONSTRAINT IF EXISTS de forma simples sem PL/pgSQL, então faremos uma abordagem segura)
 DO $$
 DECLARE
