@@ -41,7 +41,7 @@ SELECT
   p.nome as plano_nome
 FROM public.sites s
 JOIN public.clientes c ON s.cliente_id = c.id
-LEFT JOIN public.assinaturas a ON a.site_id = s.id
+LEFT JOIN public.assinaturas a ON a.cliente_id = c.id
 LEFT JOIN public.planos p ON a.plano_id = p.id;
 
 -- 5. Atualizar RLS para permitir que o app consulte os planos livremente (se já não tiver)
