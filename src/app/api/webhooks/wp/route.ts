@@ -1,12 +1,16 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-// Inicializa o cliente do Supabase com a Service Role Key para poder fazer inserts em background
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-const supabase = createClient(supabaseUrl, supabaseServiceKey)
-
 export async function POST(req: Request) {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+  
+  if (!supabaseUrl || !supabaseServiceKey) {
+    return NextResponse.json({ error: 'Configuração do banco de dados ausente' }, { status: 500 })
+  }
+
+  const supabase = createClient(supabaseUrl, supabaseServiceKey)
+
   try {
     const authHeader = req.headers.get('authorization')
     // Uma validação básica de segurança (você pode gerar um token único ou usar o do próprio Supabase)
