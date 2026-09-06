@@ -20,7 +20,8 @@ export async function POST(req: Request) {
   }
 
   const body = await req.text()
-  const sig = headers().get('stripe-signature') as string
+  const headersList = await headers()
+  const sig = headersList.get('stripe-signature') as string
 
   let event
 
