@@ -1,0 +1,30 @@
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
+
+@theme inline {
+  --color-primary: #6214d1;
+  --color-success: #DFFF00;
+  --color-page: #F3F4F6;
+  --color-card: #ffffff;
+  --color-card-secondary: #F2F2F2;
+  --color-card-stats: #EAEAEA;
+  --font-sans: var(--font-inter), sans-serif;
+}
+
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@layer base {
+  body {
+    @apply bg-page text-gray-800 antialiased min-h-screen flex flex-col overflow-y-auto;
+  }
+  ::selection {
+    @apply bg-primary text-black;
+  }
+}

@@ -1,0 +1,86 @@
+Created At: 2026-09-01T20:09:35Z
+Completed At: 2026-09-01T20:09:36Z
+File Path: `file:///c:/Espa%C3%A7o%20de%20Trabalho/JuriPages/Projetos/CRM%20-%20SITE/src/app/dashboard/meus-sites/%5Bid%5D/SiteReportTabs.tsx`
+Total Lines: 444
+Total Bytes: 20922
+Showing lines 1 to 444
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: 'use client'
+2: 
+3: import { useState, useEffect } from 'react'
+4: import { Activity, ShieldCheck, Zap, MessageSquare } from 'lucide-react'
+5: import { LineChart, Line, ResponsiveContainer, XAxis, Tooltip } from 'recharts'
+6: import { fetchCfAnalytics, fetchGscAnalytics, fetchGscIndexedPages } from '../../sites/integrations-actions'
+7: 
+8: // Helper to convert URLs in text to clickable links
+9: const formatNoteContent = (text: string) => {
+10:   const urlRegex = /(https?:\/\/[^\s]+)/g
+11:   const parts = text.split(urlRegex)
+12:   
+13:   return parts.map((part, i) => {
+14:     if (part.match(urlRegex)) {
+15:       return (
+16:         <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium break-all">
+17:           {part}
+18:         </a>
+19:       )
+20:     }
+21:     return <span key={i} className="whitespace-pre-wrap">{part}</span>
+22:   })
+23: }
+24: 
+25: interface SiteReportTabsProps {
+26:   isOnline: boolean
+27:   notas: any[]
+28:   site: any
+29: }
+30: 
+31: export function SiteReportTabs({ isOnline, notas, site }: SiteReportTabsProps) {
+32:   const [activeTab, setActiveTab] = useState<'analytics' | 'historico'>('analytics')
+33:   
+34:   // Analytics State
+35:   const [cfData, setCfData] = useState<any>(null)
+36:   const [gscData, setGscData] = useState<any[]>([])
+37:   const [indexedPages, setIndexedPages] = useState<any[]>([])
+38:   
+39:   // Drill-down State
+40:   const [selectedPageUrl, setSelectedPageUrl] = useState<string | null>(null)
+41
+<truncated 19533 bytes>
+               <div className="text-center text-gray-400 py-10">
+410:                 <p>Nenhuma atualização recente encontrada.</p>
+411:               </div>
+412:             ) : (
+413:               notas.map((nota) => (
+414:                 <div key={nota.id} className="flex gap-4">
+415:                   <div className="flex-shrink-0 mt-1">
+416:                     {nota.usuarios?.foto_url ? (
+417:                       <img src={nota.usuarios.foto_url} alt="" className="w-12 h-12 rounded-full object-cover border border-gray-200 shadow-sm" />
+418:                     ) : (
+419:                       <div className="w-12 h-12 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center font-bold border border-gray-200 shadow-sm text-lg">
+420:                         {nota.usuarios?.nome?.charAt(0).toUpperCase() || 'A'}
+421:                       </div>
+422:                     )}
+423:                   </div>
+424:                   <div className="flex-1 bg-gray-50 border border-gray-200 rounded-2xl rounded-tl-sm p-5">
+425:                     <div className="flex items-center justify-between mb-3">
+426:                       <span className="font-bold text-gray-900">{nota.usuarios?.nome || 'Equipe'}</span>
+427:                       <span className="text-xs font-medium text-gray-400 bg-white px-2 py-1 rounded-md border border-gray-100">
+428:                         {new Date(nota.criado_em).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+429:                       </span>
+430:                     </div>
+431:                     <div className="text-gray-700 leading-relaxed text-sm">
+432:                       {formatNoteContent(nota.conteudo)}
+433:                     </div>
+434:                   </div>
+435:                 </div>
+436:               ))
+437:             )}
+438:           </div>
+439:         </div>
+440:       )}
+441:     </div>
+442:   )
+443: }
+444: 
+The above content shows the entire, complete file contents of the requested file.
