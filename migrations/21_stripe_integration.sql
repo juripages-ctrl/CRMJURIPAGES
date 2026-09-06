@@ -19,7 +19,7 @@ DECLARE
 BEGIN
     SELECT conname INTO constraint_name
     FROM pg_constraint
-    WHERE conrelid = 'public.assinaturas'::regclass AND contype = 'c' AND consrc ILIKE '%status%';
+    WHERE conrelid = 'public.assinaturas'::regclass AND contype = 'c' AND pg_get_constraintdef(oid) ILIKE '%status%';
     
     IF constraint_name IS NOT NULL THEN
         EXECUTE 'ALTER TABLE public.assinaturas DROP CONSTRAINT ' || constraint_name;
