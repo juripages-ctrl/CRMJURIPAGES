@@ -2,22 +2,19 @@ import { headers } from 'next/headers'
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
 
-// Cria o cliente Supabase com a Service Role Key para poder atualizar dados via backend (ignora RLS)
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
-
-const stripe = process.env.STRIPE_SECRET_KEY 
-  ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-06-20' as any }) 
-  : null;
-
-const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
-
 export async function POST(req: Request) {
-  if (!stripe || !endpointSecret) {
-    return new Response('Stripe não configurado no backend', { status: 200 })
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+  const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+  if (!supabaseUrl || !supabaseServiceKey || !stripeSecretKey || !endpointSecret) {
+    return new Response('Configuração ausente no backend', { status: 200 })
   }
+
+  // Cria o cliente Supabase com a Service Role Key para poder atualizar dados via backend (ignora RLS)
+  const supabase = createClient(supabaseUrl, supabaseServiceKey)
+  const stripe = new Stripe(stripeSecretKey, { apiVersion: '2024-06-20' as any })
 
   const body = await req.text()
   const headersList = await headers()
