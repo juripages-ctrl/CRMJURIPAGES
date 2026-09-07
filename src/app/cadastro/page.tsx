@@ -1,9 +1,8 @@
-import { Sparkles } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
-import { login } from "./actions"
+import { signup } from "../login/actions"
 
-export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+export default async function CadastroPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const resolvedSearchParams = await searchParams;
   const error = resolvedSearchParams?.error;
 
@@ -22,8 +21,8 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
 
       <div className="w-full max-w-[400px] bg-white/70 backdrop-blur-xl rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/80">
         <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold text-slate-900">Acesse sua conta</h1>
-            <p className="text-sm text-slate-500 mt-2">Gerencie seu escritório no app.</p>
+            <h1 className="text-2xl font-bold text-slate-900">Crie sua conta</h1>
+            <p className="text-sm text-slate-500 mt-2">Comece a usar o CRM hoje mesmo.</p>
         </div>
 
         {error && (
@@ -32,7 +31,17 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           </div>
         )}
 
-        <form action={login} className="space-y-5">
+        <form action={signup} className="space-y-5">
+            <div className="space-y-2">
+                <label className="text-[13px] font-semibold text-slate-700 ml-1">Nome completo</label>
+                <input 
+                  type="text" 
+                  name="nome"
+                  required
+                  placeholder="Seu nome" 
+                  className="flex h-12 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-2 text-[15px] focus:outline-none focus:ring-2 focus:ring-violet-500 transition-all placeholder:text-slate-400"
+                />
+            </div>
             <div className="space-y-2">
                 <label className="text-[13px] font-semibold text-slate-700 ml-1">E-mail</label>
                 <input 
@@ -44,10 +53,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
                 />
             </div>
             <div className="space-y-2">
-                <div className="flex items-center justify-between ml-1">
-                    <label className="text-[13px] font-semibold text-slate-700">Senha</label>
-                    <a href="/recuperar-senha" className="text-[13px] font-medium text-violet-600 hover:text-violet-700 transition-colors">Esqueci</a>
-                </div>
+                <label className="text-[13px] font-semibold text-slate-700 ml-1">Senha</label>
                 <input 
                   type="password" 
                   name="password"
@@ -62,14 +68,14 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
                   type="submit"
                   className="w-full h-12 rounded-2xl font-semibold bg-slate-900 hover:bg-slate-800 text-white shadow-md active:scale-[0.98] transition-all text-[15px]"
                 >
-                  Entrar
-                </button>
-                <Link 
-                  href="/cadastro"
-                  className="w-full h-12 rounded-2xl font-semibold bg-white/50 hover:bg-white/80 border border-slate-200 text-slate-700 active:scale-[0.98] transition-all text-[15px] flex items-center justify-center"
-                >
                   Criar Conta
-                </Link>
+                </button>
+                
+                <div className="text-center pt-2">
+                  <Link href="/login" className="text-[13px] font-medium text-slate-500 hover:text-slate-800 transition-colors">
+                    Já tem uma conta? <span className="text-violet-600 hover:text-violet-700">Entrar</span>
+                  </Link>
+                </div>
             </div>
         </form>
       </div>

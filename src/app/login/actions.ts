@@ -36,8 +36,17 @@ export async function signup(formData: FormData) {
     email: formData.get('email') as string,
     password: formData.get('password') as string,
   }
+  
+  const nome = formData.get('nome') as string
 
-  const { error } = await supabase.auth.signUp(data)
+  const { error } = await supabase.auth.signUp({
+    ...data,
+    options: {
+      data: {
+        full_name: nome,
+      },
+    },
+  })
 
   if (error) {
     console.error('Signup Error:', error.message)
@@ -49,7 +58,7 @@ export async function signup(formData: FormData) {
     } else {
       errorMessage = error.message // Fallback for other errors
     }
-    redirect(`/login?error=${encodeURIComponent(errorMessage)}`)
+    redirect(`/cadastro?error=${encodeURIComponent(errorMessage)}`)
   }
 
   revalidatePath('/', 'layout')
