@@ -555,15 +555,15 @@ export function SiteReportTabs({ isOnline, notas, site }: SiteReportTabsProps) {
   return (
     <div className="w-full">
       {/* Tabs */}
-      <div className="flex items-center gap-6 border-b border-gray-200 mb-8 overflow-x-auto whitespace-nowrap">
+      <div className="flex items-center gap-2 md:gap-6 md:border-b md:border-gray-200 mb-6 md:mb-8 overflow-x-auto whitespace-nowrap hide-scrollbar pb-2 md:pb-0 px-1 md:px-0 -mx-1 md:mx-0 snap-x">
         <button
           onClick={() => setActiveTab('geral')}
-          className={`pb-4 text-sm font-medium transition-colors relative ${
-            activeTab === 'geral' ? 'text-black' : 'text-gray-500 hover:text-gray-900'
+          className={`snap-start px-4 py-2 rounded-full md:rounded-none md:p-0 md:pb-4 text-sm font-medium transition-colors relative flex-shrink-0 ${
+            activeTab === 'geral' ? 'bg-black text-white md:bg-transparent md:text-black' : 'bg-gray-100 text-gray-600 md:bg-transparent md:text-gray-500 hover:text-gray-900'
           }`}
         >
           Visão Geral
-          {activeTab === 'geral' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-black" />}
+          {activeTab === 'geral' && <div className="hidden md:block absolute bottom-0 left-0 w-full h-0.5 bg-black" />}
         </button>
         <button
           onClick={() => {
@@ -573,22 +573,22 @@ export function SiteReportTabs({ isOnline, notas, site }: SiteReportTabsProps) {
             }
             setActiveTab('seo')
           }}
-          className={`pb-4 text-sm font-medium transition-colors relative flex items-center gap-1.5 ${
-            activeTab === 'seo' ? 'text-black' : 'text-gray-500 hover:text-gray-900'
+          className={`snap-start px-4 py-2 rounded-full md:rounded-none md:p-0 md:pb-4 text-sm font-medium transition-colors relative flex-shrink-0 flex items-center gap-1.5 ${
+            activeTab === 'seo' ? 'bg-black text-white md:bg-transparent md:text-black' : 'bg-gray-100 text-gray-600 md:bg-transparent md:text-gray-500 hover:text-gray-900'
           }`}
         >
-          {!getBlogPlanPermissions(site).hasSeoAccess && <Lock className="w-3.5 h-3.5 text-amber-500" />}
+          {!getBlogPlanPermissions(site).hasSeoAccess && <Lock className={`w-3.5 h-3.5 ${activeTab === 'seo' ? 'text-amber-300' : 'text-amber-500'}`} />}
           SEO (GSC)
-          {activeTab === 'seo' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-black" />}
+          {activeTab === 'seo' && <div className="hidden md:block absolute bottom-0 left-0 w-full h-0.5 bg-black" />}
         </button>
         <button
           onClick={() => setActiveTab('wp')}
-          className={`pb-4 text-sm font-medium transition-colors relative ${
-            activeTab === 'wp' ? 'text-black' : 'text-gray-500 hover:text-gray-900'
+          className={`snap-start px-4 py-2 rounded-full md:rounded-none md:p-0 md:pb-4 text-sm font-medium transition-colors relative flex-shrink-0 ${
+            activeTab === 'wp' ? 'bg-black text-white md:bg-transparent md:text-black' : 'bg-gray-100 text-gray-600 md:bg-transparent md:text-gray-500 hover:text-gray-900'
           }`}
         >
           WordPress
-          {activeTab === 'wp' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-black" />}
+          {activeTab === 'wp' && <div className="hidden md:block absolute bottom-0 left-0 w-full h-0.5 bg-black" />}
         </button>
         <button
           onClick={() => {
@@ -598,22 +598,22 @@ export function SiteReportTabs({ isOnline, notas, site }: SiteReportTabsProps) {
             }
             setActiveTab('blog')
           }}
-          className={`pb-4 text-sm font-medium transition-colors relative flex items-center gap-1.5 ${
-            activeTab === 'blog' ? 'text-black font-bold' : 'text-gray-500 hover:text-gray-900'
+          className={`snap-start px-4 py-2 rounded-full md:rounded-none md:p-0 md:pb-4 text-sm font-medium transition-colors relative flex-shrink-0 flex items-center gap-1.5 ${
+            activeTab === 'blog' ? 'bg-black text-white md:bg-transparent md:text-black font-bold' : 'bg-gray-100 text-gray-600 md:bg-transparent md:text-gray-500 hover:text-gray-900'
           }`}
         >
-          {!getBlogPlanPermissions(site).hasBlogAccess && <Lock className="w-3.5 h-3.5 text-amber-500" />}
+          {!getBlogPlanPermissions(site).hasBlogAccess && <Lock className={`w-3.5 h-3.5 ${activeTab === 'blog' ? 'text-amber-300' : 'text-amber-500'}`} />}
           Blog (Postagens)
-          {activeTab === 'blog' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-black" />}
+          {activeTab === 'blog' && <div className="hidden md:block absolute bottom-0 left-0 w-full h-0.5 bg-black" />}
         </button>
         <button
           onClick={() => setActiveTab('speed' as any)}
-          className={`pb-4 text-sm font-medium transition-colors relative ${
-            activeTab === 'speed' as any ? 'text-black' : 'text-gray-500 hover:text-gray-900'
+          className={`snap-start px-4 py-2 rounded-full md:rounded-none md:p-0 md:pb-4 text-sm font-medium transition-colors relative flex-shrink-0 ${
+            activeTab === 'speed' as any ? 'bg-black text-white md:bg-transparent md:text-black' : 'bg-gray-100 text-gray-600 md:bg-transparent md:text-gray-500 hover:text-gray-900'
           }`}
         >
           Speed Insights
-          {activeTab === 'speed' as any && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-black" />}
+          {activeTab === 'speed' as any && <div className="hidden md:block absolute bottom-0 left-0 w-full h-0.5 bg-black" />}
         </button>
 
       
@@ -1607,7 +1607,7 @@ export function SiteReportTabs({ isOnline, notas, site }: SiteReportTabsProps) {
                 ) : wpPosts && wpPosts.length > 0 ? (
                   <>
                     {selectedWpPosts.length > 0 && (
-                      <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 mb-6 flex items-center justify-between shadow-sm animate-in fade-in slide-in-from-top-4">
+                      <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm animate-in fade-in slide-in-from-top-4">
                         <div className="flex items-center gap-3">
                           <Badge className="bg-black text-white px-3 py-1 text-sm font-bold">{selectedWpPosts.length}</Badge>
                           <span className="text-sm font-semibold text-gray-700">postagem(ns) selecionada(s)</span>

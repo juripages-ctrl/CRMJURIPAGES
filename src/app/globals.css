@@ -20,6 +20,59 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Mobile: Bottom Sheet slide up */
+@keyframes jp-sheet-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+/* Mobile: Fade in */
+@keyframes jp-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Mobile: Spinner */
+@keyframes jp-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Mobile: Pulse skeleton */
+@keyframes jp-pulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+.jp-sheet-up {
+  animation: jp-sheet-up 0.26s cubic-bezier(0.2, 0.9, 0.25, 1);
+}
+
+.jp-fade-in {
+  animation: jp-fade-in 0.18s ease-out;
+}
+
+.jp-spin {
+  animation: jp-spin 0.7s linear infinite;
+}
+
+.jp-pulse {
+  animation: jp-pulse 1.3s ease-in-out infinite;
+}
+
+/* Hide scrollbar utility */
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Safe area padding for bottom bar */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
 @layer base {
   body {
     @apply bg-page text-gray-800 antialiased min-h-screen flex flex-col overflow-y-auto;

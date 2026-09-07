@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Cloud, Search, Globe, ChevronRight, Activity, Server, Unplug, ArrowUpRight, CheckCircle2, FileText, ChevronDown } from 'lucide-react'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts'
 import { fetchGscAnalytics, fetchGscIndexedPages, fetchWpStatus, fetchWpPosts } from './sites/integrations-actions'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -157,7 +157,7 @@ export function DashboardHomeClient({ sites, firstName, isClientView = false }: 
     <div className="w-full flex flex-col gap-6">
       
       {/* Top Row: Enterprise Analytics Style */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6">
         
         {/* Welcome Card (8 cols) */}
         <div className="lg:col-span-8 bg-gradient-to-b from-white to-gray-100 rounded-[2.5rem] p-8 shadow-sm border border-white/50 relative overflow-hidden group">
@@ -202,10 +202,10 @@ export function DashboardHomeClient({ sites, firstName, isClientView = false }: 
       </div>
 
       {/* Main Split Layout: Left List, Right Details */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[600px]">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6 min-h-0 lg:min-h-[600px]">
         
         {/* Left Col: Site List */}
-        <div className="lg:col-span-4 bg-[#F2F2F2] rounded-[2.5rem] p-6 border border-white/60 flex flex-col h-[700px]">
+        <div className="lg:col-span-4 bg-[#F2F2F2] rounded-3xl lg:rounded-[2.5rem] p-4 md:p-6 border border-white/60 flex flex-col h-auto max-h-[500px] lg:max-h-none lg:h-[700px]">
           <div className="mb-6 space-y-3">
             <h3 className="text-lg text-gray-600 font-medium px-2">Selecione um Projeto</h3>
             
@@ -367,7 +367,7 @@ export function DashboardHomeClient({ sites, firstName, isClientView = false }: 
         </div>
 
         {/* Right Col: Details & Analytics */}
-        <div className="lg:col-span-8 bg-[#EAEAEA] rounded-[2.5rem] p-6 lg:p-8 shadow-sm border border-white/50 relative flex flex-col h-[700px]">
+        <div className="lg:col-span-8 bg-[#EAEAEA] rounded-3xl lg:rounded-[2.5rem] p-4 md:p-6 lg:p-8 shadow-sm border border-white/50 relative flex flex-col h-auto lg:h-[700px]">
           
           {!selectedSite ? (
             <div className="flex-1 flex flex-col items-center justify-center text-gray-400">
@@ -495,16 +495,21 @@ export function DashboardHomeClient({ sites, firstName, isClientView = false }: 
                       <>
                         <div className="relative w-full h-48 mb-8">
                           <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={gscData} margin={{ top: 5, right: 0, bottom: 0, left: -20 }}>
+                            <BarChart data={gscData} margin={{ top: 5, right: 0, bottom: 0, left: -20 }}>
                               <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#CBD5E1" />
                               <XAxis dataKey="date" tick={{fontSize: 10, fill: '#9ca3af'}} tickLine={false} axisLine={false} dy={10} />
                               <YAxis tick={{fontSize: 10, fill: '#9ca3af'}} tickLine={false} axisLine={false} />
                               <Tooltip 
                                 contentStyle={{ borderRadius: '16px', border: 'none', backgroundColor: '#000', color: '#fff', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} 
                                 itemStyle={{ color: '#fff' }}
+                                cursor={{ fill: 'transparent' }}
                               />
-                              <Line type="monotone" dataKey="clicks" name="Cliques" stroke="#000" strokeWidth={3} dot={false} activeDot={{ r: 6, fill: '#DFFF00', stroke: '#000', strokeWidth: 2 }} />
-                            </LineChart>
+                              <Bar dataKey="clicks" name="Cliques" radius={[8, 8, 2, 2]} maxBarSize={32}>
+                                {gscData.map((entry: any, index: number) => (
+                                  <Cell key={`cell-${index}`} fill={index === gscData.length - 1 ? '#111827' : '#E3E4E6'} />
+                                ))}
+                              </Bar>
+                            </BarChart>
                           </ResponsiveContainer>
                         </div>
 

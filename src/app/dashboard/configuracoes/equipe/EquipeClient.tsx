@@ -41,7 +41,36 @@ export function EquipeClient({ equipe, cargos }: { equipe: any[], cargos: any[] 
           </Button>
         </div>
         
-        <Table>
+        <div className="md:hidden flex flex-col divide-y divide-gray-100">
+          {equipe.map((membro) => (
+            <div key={membro.id} className="p-4 flex flex-col gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-medium shrink-0">
+                  {membro.nome.charAt(0).toUpperCase()}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold text-gray-900 text-[14.5px] truncate">{membro.nome}</p>
+                  <p className="text-[12.5px] text-gray-500 truncate mt-0.5">{membro.email}</p>
+                </div>
+              </div>
+              <div className="mt-1">
+                <select 
+                  className="w-full h-9 rounded-lg border border-gray-300 bg-white px-3 py-1 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  value={membro.cargo_id || ''}
+                  onChange={(e) => handleRoleChange(membro.id, e.target.value)}
+                >
+                  <option value="" disabled>Sem cargo definido</option>
+                  {cargos.map(cargo => (
+                    <option key={cargo.id} value={cargo.id}>{cargo.nome}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="hidden md:block overflow-x-auto">
+          <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Membro</TableHead>
@@ -79,8 +108,9 @@ export function EquipeClient({ equipe, cargos }: { equipe: any[], cargos: any[] 
                 </TableCell>
               </TableRow>
             ))}
-          </TableBody>
-        </Table>
+            </TableBody>
+          </Table>
+        </div>
       </div>
 
       <Modal isOpen={isInviteModalOpen} onClose={() => setIsInviteModalOpen(false)} title="Convidar para a Equipe">

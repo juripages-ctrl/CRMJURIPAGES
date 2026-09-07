@@ -35,8 +35,8 @@ export default async function DashboardLayout({
       {isAdmin ? <Sidebar userInitial={initial} avatarUrl={avatarUrl} /> : <SidebarClient userInitial={initial} avatarUrl={avatarUrl} />}
 
       {/* Main content area */}
-      <main className="flex-1 md:ml-20 p-4 md:p-6 lg:p-8 overflow-y-auto h-screen relative">
-        <div className="fixed top-6 right-6 md:right-8 z-50">
+      <main className="flex-1 md:ml-20 p-4 md:p-6 lg:p-8 pb-28 md:pb-6 overflow-y-auto h-screen relative">
+        <div className="fixed top-4 right-4 md:top-6 md:right-8 z-50">
           <NotificationBell />
         </div>
 

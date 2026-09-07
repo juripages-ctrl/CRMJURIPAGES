@@ -3,14 +3,17 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { LayoutGrid, Globe, LogOut, CreditCard, MessageSquare } from 'lucide-react'
+import { LayoutGrid, Globe, LogOut, CreditCard, MessageSquare, User, Bell, Menu } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { BottomSheet } from '@/components/ui/BottomSheet'
 
 export function SidebarClient({ userInitial, avatarUrl }: { userInitial?: string, avatarUrl?: string }) {
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
+  const [sheetOpen, setSheetOpen] = useState(false)
 
   const navItems = [
     { name: 'Visão Geral', href: '/dashboard', icon: LayoutGrid },
@@ -19,15 +22,40 @@ export function SidebarClient({ userInitial, avatarUrl }: { userInitial?: string
     { name: 'Financeiro', href: '/dashboard/financeiro', icon: CreditCard },
   ]
 
+  // Bottom bar shows only 4 items: 2 left, 2 right of center button
+  const bottomNavLeft = [
+    { name: 'Início', href: '/dashboard', icon: LayoutGrid },
+    { name: 'Sites', href: '/dashboard/meus-sites', icon: Globe },
+  ]
+  const bottomNavRight = [
+    { name: 'Financeiro', href: '/dashboard/financeiro', icon: CreditCard },
+    { name: 'Perfil', href: '/dashboard/perfil', icon: User },
+  ]
+
+  // Sheet menu items (all sections)
+  const sheetItems = [
+    { name: 'Meus Sites', href: '/dashboard/meus-sites', icon: Globe },
+    { name: 'Financeiro', href: '/dashboard/financeiro', icon: CreditCard },
+    { name: 'Histórico do time', href: '/dashboard/anotacoes', icon: MessageSquare },
+    { name: 'Notificações', href: '/dashboard/perfil', icon: Bell },
+    { name: 'Meu perfil', href: '/dashboard/perfil', icon: User },
+    { name: 'Visão Geral', href: '/dashboard', icon: LayoutGrid },
+  ]
+
   const handleLogout = async () => {
     await supabase.auth.signOut()
     router.push('/login')
     router.refresh()
   }
 
+  const isActive = (href: string) => {
+    if (href === '/dashboard') return pathname === '/dashboard'
+    return pathname.startsWith(href)
+  }
+
   return (
     <>
-      {/* Desktop Sidebar */}
+      {/* Desktop Sidebar — unchanged */}
       <aside className="w-20 hidden md:flex flex-col items-center py-8 bg-white/50 backdrop-blur-md border-r border-white/40 h-screen fixed left-0 top-0 z-50">
         
         {/* Logo Icon */}
@@ -38,13 +66,13 @@ export function SidebarClient({ userInitial, avatarUrl }: { userInitial?: string
         {/* Navigation */}
         <nav className="flex-1 flex flex-col gap-4 w-full items-center">
           {navItems.map((item) => {
-            const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))
+            const active = isActive(item.href)
             return (
               <div key={item.name} className="relative group w-full flex justify-center">
                 <Link href={item.href}>
                   <button 
                     className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
-                      isActive 
+                      active 
                         ? 'bg-black text-white shadow-lg shadow-black/20' 
                         : 'text-gray-400 hover:bg-white hover:text-black'
                     }`}
@@ -89,26 +117,95 @@ export function SidebarClient({ userInitial, avatarUrl }: { userInitial?: string
         </div>
       </aside>
 
-      {/* Mobile Navigation (Bottom Bar) */}
-      <nav className="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 z-50 px-6 py-3 flex justify-around shadow-[0_-4px_20px_rgba(0,0,0,0.05)] pb-safe">
-        {navItems.map((item) => {
-          const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))
+      {/* ========== MOBILE BOTTOM BAR ========== */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 h-[84px] bg-white/92 backdrop-blur-xl border-t border-gray-100 z-50 shadow-[0_-6px_24px_-14px_rgba(17,24,39,0.28)] flex items-start pt-2.5 px-2 pb-safe">
+        
+        {/* Left nav items */}
+        {bottomNavLeft.map((item) => {
+          const active = isActive(item.href)
           return (
-            <Link 
-              key={item.name} 
+            <Link
+              key={item.name}
               href={item.href}
-              className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-colors
-                ${isActive ? 'text-black' : 'text-gray-400'}
-              `}
+              className="flex-1 h-[58px] flex flex-col items-center gap-[3px] p-0"
             >
-              <div className={`p-2 rounded-xl ${isActive ? 'bg-[#DFFF00]' : 'bg-transparent'}`}>
-                <item.icon className="w-5 h-5" />
+              <div className={`w-11 h-[30px] rounded-xl flex items-center justify-center ${active ? 'bg-[#DFFF00]' : 'bg-transparent'}`}>
+                <item.icon className={`w-5 h-5 ${active ? 'text-[#111827]' : 'text-gray-400'}`} />
               </div>
-              <span className="text-[10px] font-medium">{item.name}</span>
+              <span className={`text-[10px] font-semibold tracking-tight ${active ? 'text-[#111827]' : 'text-gray-400'}`}>
+                {item.name}
+              </span>
+            </Link>
+          )
+        })}
+
+        {/* Center Menu Button */}
+        <div className="flex-1 flex justify-center">
+          <button 
+            onClick={() => setSheetOpen(true)}
+            className="w-14 h-14 -mt-[18px] border-4 border-white rounded-full bg-[#111827] flex items-center justify-center shadow-[0_14px_28px_-12px_rgba(17,24,39,0.8)] active:scale-95 transition-transform"
+          >
+            <Menu className="w-6 h-6 text-[#DFFF00]" />
+          </button>
+        </div>
+
+        {/* Right nav items */}
+        {bottomNavRight.map((item) => {
+          const active = isActive(item.href)
+          return (
+            <Link
+              key={item.name}
+              href={item.href}
+              className="flex-1 h-[58px] flex flex-col items-center gap-[3px] p-0"
+            >
+              <div className={`w-11 h-[30px] rounded-xl flex items-center justify-center ${active ? 'bg-[#DFFF00]' : 'bg-transparent'}`}>
+                <item.icon className={`w-5 h-5 ${active ? 'text-[#111827]' : 'text-gray-400'}`} />
+              </div>
+              <span className={`text-[10px] font-semibold tracking-tight ${active ? 'text-[#111827]' : 'text-gray-400'}`}>
+                {item.name}
+              </span>
             </Link>
           )
         })}
       </nav>
+
+      {/* ========== MENU BOTTOM SHEET ========== */}
+      <BottomSheet open={sheetOpen} onClose={() => setSheetOpen(false)}>
+        <p className="text-lg font-medium tracking-tight text-[#111827] mb-1">Ir para</p>
+        <p className="text-[13px] text-gray-400 mb-5">Todas as áreas do seu painel</p>
+        
+        <div className="grid grid-cols-2 gap-2.5">
+          {sheetItems.map((item) => {
+            const active = isActive(item.href)
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                onClick={() => setSheetOpen(false)}
+                className={`flex items-center gap-3 h-16 px-3.5 rounded-[22px] border transition-transform active:scale-[0.98] ${
+                  active 
+                    ? 'bg-[#111827] border-[#111827] text-white' 
+                    : 'bg-[#F9FAFB] border-[#EFEFEF] text-[#111827]'
+                }`}
+              >
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                  active ? 'bg-[#DFFF00]/20' : 'bg-white'
+                }`}>
+                  <item.icon className={`w-[18px] h-[18px] ${active ? 'text-[#DFFF00]' : 'text-gray-500'}`} />
+                </div>
+                <span className="text-[13px] font-semibold leading-tight">{item.name}</span>
+              </Link>
+            )
+          })}
+        </div>
+
+        <button 
+          onClick={() => setSheetOpen(false)}
+          className="mt-4 w-full h-12 rounded-full bg-[#F3F4F6] text-gray-500 font-semibold text-[14.5px]"
+        >
+          Fechar
+        </button>
+      </BottomSheet>
     </>
   )
 }

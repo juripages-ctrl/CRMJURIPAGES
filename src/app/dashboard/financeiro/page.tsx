@@ -84,40 +84,70 @@ export default async function FinanceiroClientePage() {
               <h2 className="text-lg font-semibold text-gray-900">Histórico de Faturas</h2>
             </div>
             
-            <Table>
-              <TableHeader className="bg-gray-50/50">
-                <TableRow>
-                  <TableHead>Data de Emissão</TableHead>
-                  <TableHead>Referência</TableHead>
-                  <TableHead>Valor</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Ação</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {pagamentos.length === 0 ? (
+            <div className="md:hidden flex flex-col divide-y divide-gray-100">
+              {pagamentos.length === 0 ? (
+                <div className="text-center py-10 text-gray-500">
+                  Você não possui faturas geradas.
+                </div>
+              ) : (
+                pagamentos.map((pg: any) => (
+                  <div key={pg.id} className="p-4 flex flex-col gap-3">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="text-[14.5px] font-semibold text-gray-900">{pg.assinaturas?.planos?.nome || 'Plano'}</p>
+                        <p className="text-[12.5px] text-gray-500 mt-0.5">{new Date(pg.criado_em).toLocaleDateString('pt-BR')}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[14.5px] font-bold text-gray-900">R$ {Number(pg.valor).toFixed(2)}</p>
+                        <div className="mt-1">{getStatusBadge(pg.status)}</div>
+                      </div>
+                    </div>
+                    {pg.status === 'pendente' && (
+                      <div className="mt-1">
+                        <ClientCheckoutMock pagamento={pg} />
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="hidden md:block">
+              <Table>
+                <TableHeader className="bg-gray-50/50">
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-10 text-gray-500">
-                      Você não possui faturas geradas.
-                    </TableCell>
+                    <TableHead>Data de Emissão</TableHead>
+                    <TableHead>Referência</TableHead>
+                    <TableHead>Valor</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Ação</TableHead>
                   </TableRow>
-                ) : (
-                  pagamentos.map((pg: any) => (
-                    <TableRow key={pg.id}>
-                      <TableCell>{new Date(pg.criado_em).toLocaleDateString('pt-BR')}</TableCell>
-                      <TableCell>{pg.assinaturas?.planos?.nome}</TableCell>
-                      <TableCell className="font-medium text-gray-900">R$ {Number(pg.valor).toFixed(2)}</TableCell>
-                      <TableCell>{getStatusBadge(pg.status)}</TableCell>
-                      <TableCell className="text-right">
-                        {pg.status === 'pendente' && (
-                          <ClientCheckoutMock pagamento={pg} />
-                        )}
+                </TableHeader>
+                <TableBody>
+                  {pagamentos.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center py-10 text-gray-500">
+                        Você não possui faturas geradas.
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+                  ) : (
+                    pagamentos.map((pg: any) => (
+                      <TableRow key={pg.id}>
+                        <TableCell>{new Date(pg.criado_em).toLocaleDateString('pt-BR')}</TableCell>
+                        <TableCell>{pg.assinaturas?.planos?.nome}</TableCell>
+                        <TableCell className="font-medium text-gray-900">R$ {Number(pg.valor).toFixed(2)}</TableCell>
+                        <TableCell>{getStatusBadge(pg.status)}</TableCell>
+                        <TableCell className="text-right">
+                          {pg.status === 'pendente' && (
+                            <ClientCheckoutMock pagamento={pg} />
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           </div>
         </>
       )}

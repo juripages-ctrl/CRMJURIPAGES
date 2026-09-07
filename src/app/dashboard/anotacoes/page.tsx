@@ -56,8 +56,8 @@ export default async function AnotacoesPage() {
         <p className="text-gray-500 text-lg">Acompanhe os comunicados, relatórios e atualizações da nossa equipe.</p>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-[2rem] p-6 md:p-10 shadow-sm">
-        <div className="flex items-center gap-3 mb-8 pb-6 border-b border-gray-100">
+      <div className="bg-white border border-gray-200 rounded-[2rem] p-4 sm:p-6 md:p-10 shadow-sm">
+        <div className="flex items-center gap-3 mb-6 sm:mb-8 pb-4 sm:pb-6 border-b border-gray-100">
           <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center border border-blue-100">
             <MessageSquare className="w-6 h-6 text-blue-600" />
           </div>
@@ -76,7 +76,7 @@ export default async function AnotacoesPage() {
             </div>
           ) : (
             notas.map((nota) => (
-              <div key={nota.id} className="flex flex-col sm:flex-row gap-5 bg-white border border-gray-100 p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:border-blue-100 transition-all group">
+              <div key={nota.id} className="flex flex-col sm:flex-row gap-4 sm:gap-5 bg-white border border-gray-100 p-4 sm:p-6 rounded-[1.5rem] sm:rounded-2xl shadow-sm hover:shadow-md hover:border-blue-100 transition-all group">
                 <div className="flex-shrink-0 flex items-center sm:items-start gap-4 sm:gap-0 sm:flex-col">
                   {nota.usuarios?.foto_url ? (
                     <img src={nota.usuarios.foto_url} alt="" className="w-12 h-12 rounded-full object-cover border border-gray-200 shadow-sm" />
@@ -102,7 +102,7 @@ export default async function AnotacoesPage() {
                     </div>
                   </div>
                   
-                  <div className="text-gray-700 leading-relaxed text-sm md:text-base bg-gray-50/50 p-5 rounded-xl border border-gray-100/50">
+                  <div className="text-gray-700 leading-relaxed text-sm md:text-base bg-gray-50/50 p-4 sm:p-5 rounded-xl border border-gray-100/50">
                     {formatNoteContent(nota.conteudo)}
                   </div>
                 </div>

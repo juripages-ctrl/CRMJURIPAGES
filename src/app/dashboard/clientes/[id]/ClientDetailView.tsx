@@ -83,24 +83,27 @@ export function ClientDetailView({ cliente, initialSites, planos, assinaturas, p
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-6 border-b border-gray-200 mb-8">
+      <div className="flex items-center gap-2 md:gap-6 md:border-b md:border-gray-200 mb-6 md:mb-8 overflow-x-auto whitespace-nowrap hide-scrollbar pb-2 md:pb-0 px-1 md:px-0 -mx-1 md:mx-0 snap-x">
         <button 
-          className={`pb-3 text-sm font-medium transition-colors border-b-2 ${activeTab === 'sites' ? 'border-black text-black' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+          className={`snap-start px-4 py-2 rounded-full md:rounded-none md:p-0 md:pb-3 text-sm font-medium transition-colors relative flex-shrink-0 ${activeTab === 'sites' ? 'bg-black text-white md:bg-transparent md:text-black' : 'bg-gray-100 text-gray-600 md:bg-transparent md:text-gray-500 hover:text-gray-900'}`}
           onClick={() => setActiveTab('sites')}
         >
           Projetos & Sites
+          {activeTab === 'sites' && <div className="hidden md:block absolute bottom-0 left-0 w-full h-0.5 bg-black" />}
         </button>
         <button 
-          className={`pb-3 text-sm font-medium transition-colors border-b-2 ${activeTab === 'financeiro' ? 'border-black text-black' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+          className={`snap-start px-4 py-2 rounded-full md:rounded-none md:p-0 md:pb-3 text-sm font-medium transition-colors relative flex-shrink-0 ${activeTab === 'financeiro' ? 'bg-black text-white md:bg-transparent md:text-black' : 'bg-gray-100 text-gray-600 md:bg-transparent md:text-gray-500 hover:text-gray-900'}`}
           onClick={() => setActiveTab('financeiro')}
         >
           Financeiro & Assinaturas
+          {activeTab === 'financeiro' && <div className="hidden md:block absolute bottom-0 left-0 w-full h-0.5 bg-black" />}
         </button>
         <button 
-          className={`pb-3 text-sm font-medium transition-colors border-b-2 ${activeTab === 'editar' ? 'border-black text-black' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+          className={`snap-start px-4 py-2 rounded-full md:rounded-none md:p-0 md:pb-3 text-sm font-medium transition-colors relative flex-shrink-0 ${activeTab === 'editar' ? 'bg-black text-white md:bg-transparent md:text-black' : 'bg-gray-100 text-gray-600 md:bg-transparent md:text-gray-500 hover:text-gray-900'}`}
           onClick={() => setActiveTab('editar')}
         >
           Informações & Histórico
+          {activeTab === 'editar' && <div className="hidden md:block absolute bottom-0 left-0 w-full h-0.5 bg-black" />}
         </button>
       </div>
 
@@ -110,7 +113,46 @@ export function ClientDetailView({ cliente, initialSites, planos, assinaturas, p
         <ClientSettingsView cliente={cliente} />
       ) : (
         <div className="bg-white border border-gray-200 rounded-[1.5rem] overflow-hidden shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <table className="w-full text-left border-collapse">
+          {/* Mobile Cards */}
+          <div className="md:hidden flex flex-col divide-y divide-gray-100">
+            {initialSites.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 text-gray-500">
+                <Globe className="w-10 h-10 text-gray-300 mb-3" />
+                <p>Nenhum site vinculado a este cliente.</p>
+              </div>
+            ) : (
+              initialSites.map((site) => (
+                <div key={site.id} className="p-4 flex flex-col gap-3">
+                  <div className="flex justify-between items-start gap-2">
+                    <div>
+                      <Link href={`/dashboard/sites/${site.id}`} className="text-sm font-semibold text-gray-900 hover:text-blue-600 transition-colors">
+                        {site.nome}
+                      </Link>
+                      <a href={`https://${site.dominio}`} target="_blank" rel="noopener noreferrer" className="block text-xs text-gray-500 mt-0.5 hover:text-black truncate max-w-[200px]">
+                        {site.dominio}
+                      </a>
+                    </div>
+                    <div onClick={() => handleToggleStatus(site)}>
+                      {getStatusBadge(site.status)}
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between mt-1">
+                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-md">{site.plano || 'Sem plano'}</span>
+                    
+                    <div className="flex gap-3 items-center">
+                      <Link href={`/dashboard/sites/${site.id}`}>
+                        <button className="text-xs text-blue-600 font-medium flex items-center gap-1"><Link2 className="w-3.5 h-3.5"/>Gerenciar</button>
+                      </Link>
+                      <button onClick={() => handleOpenEdit(site)} className="text-xs text-gray-500 font-medium">Editar</button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          <table className="hidden md:table w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-gray-200">
                 <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Projeto</th>

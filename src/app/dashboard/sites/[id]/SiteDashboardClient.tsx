@@ -597,43 +597,49 @@ export function SiteDashboardClient({ site, gsc, wp: propsWp, hosting, provedore
 </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-gray-200 mb-6 space-x-6 overflow-x-auto whitespace-nowrap">
+      <div className="flex items-center gap-2 md:gap-6 md:border-b md:border-gray-200 mb-6 md:mb-8 overflow-x-auto whitespace-nowrap hide-scrollbar pb-2 md:pb-0 px-1 md:px-0 -mx-1 md:mx-0 snap-x">
         <button 
-          className={`pb-2 px-1 text-sm font-medium border-b-2 transition-colors ${activeTab === 'geral' ? 'border-black text-black' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+          className={`snap-start px-4 py-2 rounded-full md:rounded-none md:p-0 md:pb-4 text-sm font-medium transition-colors relative flex-shrink-0 ${activeTab === 'geral' ? 'bg-black text-white md:bg-transparent md:text-black' : 'bg-gray-100 text-gray-600 md:bg-transparent md:text-gray-500 hover:text-gray-900'}`}
           onClick={() => setActiveTab('geral')}
         >
           Visão Geral
+          {activeTab === 'geral' && <div className="hidden md:block absolute bottom-0 left-0 w-full h-0.5 bg-black" />}
         </button>
         <button 
-          className={`pb-2 px-1 text-sm font-medium border-b-2 transition-colors ${activeTab === 'seo' ? 'border-black text-black' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+          className={`snap-start px-4 py-2 rounded-full md:rounded-none md:p-0 md:pb-4 text-sm font-medium transition-colors relative flex-shrink-0 ${activeTab === 'seo' ? 'bg-black text-white md:bg-transparent md:text-black' : 'bg-gray-100 text-gray-600 md:bg-transparent md:text-gray-500 hover:text-gray-900'}`}
           onClick={() => setActiveTab('seo')}
         >
           SEO (GSC)
+          {activeTab === 'seo' && <div className="hidden md:block absolute bottom-0 left-0 w-full h-0.5 bg-black" />}
         </button>
         <button 
-          className={`pb-2 px-1 text-sm font-medium border-b-2 transition-colors ${activeTab === 'wp' ? 'border-black text-black' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+          className={`snap-start px-4 py-2 rounded-full md:rounded-none md:p-0 md:pb-4 text-sm font-medium transition-colors relative flex-shrink-0 ${activeTab === 'wp' ? 'bg-black text-white md:bg-transparent md:text-black' : 'bg-gray-100 text-gray-600 md:bg-transparent md:text-gray-500 hover:text-gray-900'}`}
           onClick={() => setActiveTab('wp')}
         >
           WordPress (Sistema & Segurança)
+          {activeTab === 'wp' && <div className="hidden md:block absolute bottom-0 left-0 w-full h-0.5 bg-black" />}
         </button>
         <button 
-          className={`pb-2 px-1 text-sm font-medium border-b-2 transition-colors ${activeTab === 'blog' ? 'border-black text-black' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+          className={`snap-start px-4 py-2 rounded-full md:rounded-none md:p-0 md:pb-4 text-sm font-medium transition-colors relative flex-shrink-0 ${activeTab === 'blog' ? 'bg-black text-white md:bg-transparent md:text-black' : 'bg-gray-100 text-gray-600 md:bg-transparent md:text-gray-500 hover:text-gray-900'}`}
           onClick={() => setActiveTab('blog')}
         >
           Blog (Postagens)
+          {activeTab === 'blog' && <div className="hidden md:block absolute bottom-0 left-0 w-full h-0.5 bg-black" />}
         </button>
         <button 
-          className={`pb-2 px-1 text-sm font-medium border-b-2 transition-colors ${activeTab === 'speed' as any ? 'border-black text-black' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+          className={`snap-start px-4 py-2 rounded-full md:rounded-none md:p-0 md:pb-4 text-sm font-medium transition-colors relative flex-shrink-0 ${activeTab === 'speed' as any ? 'bg-black text-white md:bg-transparent md:text-black' : 'bg-gray-100 text-gray-600 md:bg-transparent md:text-gray-500 hover:text-gray-900'}`}
           onClick={() => setActiveTab('speed' as any)}
         >
           Speed Insights
+          {activeTab === 'speed' as any && <div className="hidden md:block absolute bottom-0 left-0 w-full h-0.5 bg-black" />}
         </button>
         
         <button 
-          className={`pb-2 px-1 text-sm font-medium border-b-2 transition-colors ${activeTab === 'integracoes' ? 'border-black text-black' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+          className={`snap-start px-4 py-2 rounded-full md:rounded-none md:p-0 md:pb-4 text-sm font-medium transition-colors relative flex-shrink-0 ${activeTab === 'integracoes' ? 'bg-black text-white md:bg-transparent md:text-black' : 'bg-gray-100 text-gray-600 md:bg-transparent md:text-gray-500 hover:text-gray-900'}`}
           onClick={() => setActiveTab('integracoes')}
         >
           Integrações Técnicas
+          {activeTab === 'integracoes' && <div className="hidden md:block absolute bottom-0 left-0 w-full h-0.5 bg-black" />}
         </button>
       </div>
 
@@ -1649,7 +1655,7 @@ export function SiteDashboardClient({ site, gsc, wp: propsWp, hosting, provedore
                 ) : wpPosts && wpPosts.length > 0 ? (
                   <>
                     {selectedWpPosts.length > 0 && (
-                      <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 mb-6 flex items-center justify-between shadow-sm animate-in fade-in slide-in-from-top-4">
+                      <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm animate-in fade-in slide-in-from-top-4">
                         <div className="flex items-center gap-3">
                           <Badge className="bg-black text-white px-3 py-1 text-sm font-bold">{selectedWpPosts.length}</Badge>
                           <span className="text-sm font-semibold text-gray-700">postagem(ns) selecionada(s)</span>

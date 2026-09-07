@@ -104,17 +104,69 @@ export function PlanosClient({ planos }: { planos: any[] }) {
                   Nenhum cliente assinando este plano no momento.
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-sm">
-                    <thead>
-                      <tr className="text-gray-500 border-b border-gray-100">
-                        <th className="pb-3 font-medium">Cliente</th>
-                        <th className="pb-3 font-medium">Status (Fatura)</th>
-                        <th className="pb-3 font-medium">Isenção</th>
-                        <th className="pb-3 font-medium text-right">Ações</th>
-                      </tr>
-                    </thead>
-                    <tbody>
+                <div>
+                  {/* Mobile Cards */}
+                  <div className="md:hidden flex flex-col gap-3">
+                    {plano.assinaturas.map((ass: any) => {
+                      const cliente = ass.clientes || {}
+                      const ultimoPagamento = ass.pagamentos && ass.pagamentos.length > 0 
+                        ? ass.pagamentos[0] 
+                        : null
+                      const statusFatura = ultimoPagamento ? ultimoPagamento.status : (ass.status === 'ativa' ? 'pendente' : ass.status)
+
+                      return (
+                        <div key={ass.id} className="p-4 border border-gray-100 rounded-2xl bg-white shadow-sm flex flex-col gap-3">
+                          <div className="flex justify-between items-start gap-2">
+                            <span className="font-semibold text-gray-900 text-[14.5px] truncate">{cliente.nome || 'Desconhecido'}</span>
+                            <Badge variant={statusFatura === 'pago' ? 'default' : statusFatura === 'pendente' ? 'outline' : 'destructive'} className={statusFatura === 'pago' ? 'bg-green-100 text-green-700' : ''}>
+                              {statusFatura.toUpperCase()}
+                            </Badge>
+                          </div>
+                          
+                          <div className="flex justify-between items-center mt-1">
+                            {ass.isento_pagamento ? (
+                              <Badge className="bg-purple-100 text-purple-700 border-0 flex items-center gap-1">
+                                <Shield className="w-3 h-3" /> 
+                                {ass.isencao_fim ? `Até ${new Date(ass.isencao_fim).toLocaleDateString('pt-BR')}` : 'Vitalício'}
+                              </Badge>
+                            ) : (
+                              <span className="text-[12px] text-gray-500">Sem isenção</span>
+                            )}
+
+                            <div className="flex items-center gap-2">
+                              <Button 
+                                variant="ghost" size="sm" 
+                                className="text-purple-600 hover:text-purple-700 hover:bg-purple-50 h-8 w-8 p-0 rounded-full"
+                                onClick={() => { setIsencaoAssinatura(ass); setIsIsencaoModalOpen(true); }}
+                              >
+                                <CreditCard className="w-4 h-4" />
+                              </Button>
+                              <Button 
+                                variant="ghost" size="sm" 
+                                className="text-red-500 hover:text-red-600 hover:bg-red-50 h-8 w-8 p-0 rounded-full"
+                                onClick={() => handleDesvincular(ass.id)}
+                              >
+                                <Ban className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+
+                  {/* Desktop Table */}
+                  <div className="hidden md:block overflow-x-auto">
+                    <table className="w-full text-left text-sm">
+                      <thead>
+                        <tr className="text-gray-500 border-b border-gray-100">
+                          <th className="pb-3 font-medium">Cliente</th>
+                          <th className="pb-3 font-medium">Status (Fatura)</th>
+                          <th className="pb-3 font-medium">Isenção</th>
+                          <th className="pb-3 font-medium text-right">Ações</th>
+                        </tr>
+                      </thead>
+                      <tbody>
                       {plano.assinaturas.map((ass: any) => {
                         const cliente = ass.clientes || {}
                         // Simular status da ultima fatura baseando nos pagamentos
@@ -170,8 +222,9 @@ export function PlanosClient({ planos }: { planos: any[] }) {
                           </tr>
                         )
                       })}
-                    </tbody>
-                  </table>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               )}
             </div>

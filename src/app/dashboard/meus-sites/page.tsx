@@ -93,7 +93,37 @@ export default async function MeusSitesPage() {
           </p>
         </div>
       ) : (
-        <div className="bg-white border border-gray-200 rounded-[1.5rem] overflow-hidden shadow-sm">
+        <>
+        {/* ===== MOBILE: Card List ===== */}
+        <div className="md:hidden flex flex-col gap-3">
+          {sites.map((site: any) => (
+            <Link key={site.id} href={`/dashboard/meus-sites/${site.id}`}
+              className="flex items-center gap-3 bg-white border border-gray-100 rounded-[26px] p-3.5 shadow-[0_2px_10px_-7px_rgba(17,24,39,0.14)] active:scale-[0.98] transition-transform"
+            >
+              <div className="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center text-[15px] font-bold text-gray-500 shrink-0">
+                {site.nome?.charAt(0)?.toUpperCase() || 'S'}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[14.5px] font-semibold text-gray-900 truncate tracking-tight">{site.nome}</p>
+                <p className="text-[12.5px] text-gray-400 truncate mt-0.5">{site.dominio}</p>
+                <div className="flex items-center gap-2 mt-2">
+                  {site.status === 'no_ar' ? (
+                    <span className="text-[10.5px] font-semibold text-[#111827] bg-[#DFFF00] px-2.5 py-0.5 rounded-full">No ar</span>
+                  ) : (
+                    <span className="text-[10.5px] font-semibold text-gray-500 bg-gray-100 px-2.5 py-0.5 rounded-full">Fora do ar</span>
+                  )}
+                  {site.integracoes_google?.length > 0 && (
+                    <span className="text-[11px] text-gray-400">GSC ativo</span>
+                  )}
+                </div>
+              </div>
+              <ArrowRight className="w-4 h-4 text-gray-300 shrink-0" />
+            </Link>
+          ))}
+        </div>
+
+        {/* ===== DESKTOP: Table ===== */}
+        <div className="hidden md:block bg-white border border-gray-200 rounded-[1.5rem] overflow-hidden shadow-sm">
           <Table>
             <TableHeader className="bg-gray-50/50">
               <TableRow>
@@ -131,6 +161,7 @@ export default async function MeusSitesPage() {
             </TableBody>
           </Table>
         </div>
+        </>
       )}
     </div>
   )

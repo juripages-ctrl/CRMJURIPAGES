@@ -3,15 +3,17 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Plus, Edit2, Trash2, Eye } from 'lucide-react'
+import { Plus, Edit2, Trash2, Eye, MoreVertical } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/Table'
 import { ClienteModal, ClienteType } from './ClienteModal'
 import { deleteCliente } from './actions'
+import { BottomSheet } from '@/components/ui/BottomSheet'
 
 export function ClientesClient({ clientes, planos }: { clientes: ClienteType[], planos: any[] }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedCliente, setSelectedCliente] = useState<ClienteType | null>(null)
+  const [actionSheetCliente, setActionSheetCliente] = useState<ClienteType | null>(null)
 
   const handleOpenNew = () => {
     setSelectedCliente(null)
@@ -45,7 +47,44 @@ export function ClientesClient({ clientes, planos }: { clientes: ClienteType[], 
         </Button>
       </div>
 
-      <div className="w-full overflow-x-auto pb-10">
+      {/* ===== MOBILE: Card List ===== */}
+      <div className="md:hidden flex flex-col gap-3 pb-10">
+        {clientes.length === 0 ? (
+          <div className="bg-white border border-dashed border-gray-200 rounded-[2rem] p-11 text-center">
+            <p className="text-base font-semibold text-gray-900 mb-1">Nenhum cliente</p>
+            <p className="text-[13.5px] text-gray-500">Cadastre o primeiro cliente.</p>
+          </div>
+        ) : (
+          clientes.map((cliente) => (
+            <div key={cliente.id}
+              className="flex items-center gap-3 bg-white border border-gray-100 rounded-[26px] p-3.5 shadow-[0_2px_10px_-7px_rgba(17,24,39,0.14)] active:scale-[0.98] transition-transform"
+            >
+              <div className="w-[46px] h-[46px] rounded-full bg-primary/10 text-primary flex items-center justify-center text-[15px] font-bold shrink-0 overflow-hidden">
+                {cliente.avatar_url ? (
+                  <Image src={cliente.avatar_url} alt={cliente.nome} width={46} height={46} className="w-full h-full object-cover" />
+                ) : (
+                  cliente.nome.charAt(0).toUpperCase()
+                )}
+              </div>
+              <Link href={`/dashboard/clientes/${cliente.id}`} className="flex-1 min-w-0 block">
+                <p className="text-[14.5px] font-semibold text-gray-900 truncate tracking-tight">{cliente.nome}</p>
+                <p className="text-[12.5px] text-gray-400 truncate mt-0.5">{cliente.email}</p>
+                <div className="flex items-center gap-1.5 mt-2">
+                  <span className="text-[10.5px] font-semibold text-gray-600 bg-gray-100 px-2.5 py-0.5 rounded-full">
+                    {cliente.empresa || 'Sem empresa'}
+                  </span>
+                </div>
+              </Link>
+              <button onClick={() => setActionSheetCliente(cliente)} className="p-2 -mr-2 text-gray-400 hover:text-black">
+                <MoreVertical className="w-5 h-5" />
+              </button>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* ===== DESKTOP: Grid Layout ===== */}
+      <div className="hidden md:block w-full overflow-x-auto pb-10">
         <div className="min-w-[900px]">
           {/* Cabeçalho */}
           <div className="grid grid-cols-[2fr_2fr_1.5fr_2.5fr_100px] gap-4 px-6 py-3 mb-2">
@@ -108,6 +147,29 @@ export function ClientesClient({ clientes, planos }: { clientes: ClienteType[], 
         cliente={selectedCliente} 
         planos={planos}
       />
+
+      <BottomSheet open={!!actionSheetCliente} onClose={() => setActionSheetCliente(null)}>
+        {actionSheetCliente && (
+          <div className="flex flex-col gap-1 pb-4">
+            <h3 className="text-[15px] font-semibold text-gray-900 mb-3 px-2 truncate tracking-tight">{actionSheetCliente.nome}</h3>
+            
+            <Link href={`/dashboard/clientes/${actionSheetCliente.id}`} onClick={() => setActionSheetCliente(null)} className="flex items-center gap-3 px-4 py-3.5 text-gray-700 hover:bg-gray-50 rounded-xl active:bg-gray-100 transition-colors">
+              <Eye className="w-5 h-5 text-gray-400" />
+              <span className="font-medium text-[15px]">Ver Perfil & Projetos</span>
+            </Link>
+            
+            <button onClick={() => { setActionSheetCliente(null); handleOpenEdit(actionSheetCliente); }} className="flex items-center gap-3 px-4 py-3.5 text-gray-700 hover:bg-gray-50 rounded-xl active:bg-gray-100 transition-colors text-left w-full">
+              <Edit2 className="w-5 h-5 text-gray-400" />
+              <span className="font-medium text-[15px]">Editar Cliente</span>
+            </button>
+
+            <button onClick={() => { setActionSheetCliente(null); handleDelete(actionSheetCliente.id); }} className="flex items-center gap-3 px-4 py-3.5 text-red-600 hover:bg-red-50 rounded-xl active:bg-red-100 transition-colors text-left w-full mt-1">
+              <Trash2 className="w-5 h-5 text-red-500" />
+              <span className="font-medium text-[15px]">Excluir Cliente</span>
+            </button>
+          </div>
+        )}
+      </BottomSheet>
     </div>
   )
 }
