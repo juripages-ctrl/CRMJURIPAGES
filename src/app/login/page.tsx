@@ -1,110 +1,64 @@
-import { Button } from "@/components/ui/Button"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/Card"
-import { Input } from "@/components/ui/Input"
-import { PasswordInput } from "@/components/ui/PasswordInput"
-import { Badge } from "@/components/ui/Badge"
-import { Sparkles, CheckCircle2 } from "lucide-react"
-import { login, signup } from "./actions"
-import { PublicPlansShowcase } from "./PublicPlansShowcase"
-import { createClient } from "@/utils/supabase/server"
-import Link from 'next/link'
+import { Sparkles } from "lucide-react"
+import Link from "next/link"
+import Image from "next/image"
 
-export default async function LoginPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ error?: string }>
-}) {
-  const { error } = await searchParams;
-  
-  // Buscar planos publicamente
-  const supabase = await createClient();
-  const { data: planos } = await supabase.from('planos').select('*').eq('ativo', true).order('valor', { ascending: true })
-  
+export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-page flex flex-col font-sans">
-      
-      {/* Header Simples */}
-      <header className="w-full bg-white border-b border-gray-100 py-4 px-6 md:px-12 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-6 h-6 text-primary fill-current" />
-          <span className="text-xl font-bold text-gray-900 tracking-tight">JuriPages</span>
-        </div>
-      </header>
+    <div className="min-h-screen bg-[#EDEDEB] flex flex-col items-center justify-center p-4 relative overflow-hidden font-sans">
+      {/* Background decoration */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div className="absolute -top-20 -left-20 w-[500px] h-[500px] bg-violet-200/50 rounded-full blur-[100px]"></div>
+        <div className="absolute bottom-10 right-10 w-[400px] h-[400px] bg-[#DFFF00]/30 rounded-full blur-[80px]"></div>
+      </div>
 
-      {/* Hero Section */}
-      <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-        
-        {/* Lado Esquerdo: Copywriting */}
-        <div className="space-y-8">
-          <Badge className="bg-primary/10 text-primary border-0 px-3 py-1 text-sm font-medium">CRM Inteligente</Badge>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight tracking-tight">
-            Seu escritório sob controle absoluto.
-          </h1>
-          <p className="text-lg text-gray-600 max-w-lg leading-relaxed">
-            Gerencie clientes, assinaturas de suporte, histórico de sites e métricas de desempenho em um único painel integrado, seguro e projetado para escritórios jurídicos.
-          </p>
-          
-          <ul className="space-y-4">
-            {['Gestão financeira simplificada', 'Acompanhamento de SEO e tráfego', 'Suporte técnico prioritário', 'Planos escaláveis para seu tamanho'].map((item, i) => (
-              <li key={i} className="flex items-center gap-3 text-gray-700">
-                <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-                <span className="font-medium">{item}</span>
-              </li>
-            ))}
-          </ul>
+      <Link href="/" className="flex flex-col items-center justify-center mb-8 hover:opacity-80 transition-opacity">
+        <Image src="/logo.webp" alt="JuriPages" width={180} height={40} className="h-10 w-auto object-contain mb-2" />
+        <span className="text-xs text-slate-500 font-medium">CRM Workspace</span>
+      </Link>
+
+      <div className="w-full max-w-[400px] bg-white/70 backdrop-blur-xl rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/80">
+        <div className="text-center mb-8">
+            <h1 className="text-2xl font-bold text-slate-900">Acesse sua conta</h1>
+            <p className="text-sm text-slate-500 mt-2">Gerencie seu escritório no app.</p>
         </div>
 
-        {/* Lado Direito: Formulário de Autenticação */}
-        <div className="w-full max-w-md mx-auto lg:ml-auto shadow-2xl rounded-2xl relative">
-          {/* Efeito visual atrás do card */}
-          <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-[2rem] blur-xl opacity-70"></div>
-          
-          <Card className="w-full bg-white relative border-0 shadow-none rounded-[1.5rem] z-10 p-2">
-            <CardHeader className="text-center pb-6 pt-6">
-              <CardTitle className="text-2xl font-bold text-gray-900">Acesse sua conta</CardTitle>
-              <CardDescription className="text-gray-500 mt-1">Crie sua conta ou faça login para continuar.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {error && (
-                <div className="bg-red-50 text-red-600 text-sm p-3 rounded-xl mb-4 text-center font-medium">
-                  {error === 'true' ? 'E-mail ou senha incorretos.' : error}
+        <form className="space-y-5">
+            <div className="space-y-2">
+                <label className="text-[13px] font-semibold text-slate-700 ml-1">E-mail</label>
+                <input 
+                  type="email" 
+                  placeholder="seu@email.com" 
+                  className="flex h-12 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-2 text-[15px] focus:outline-none focus:ring-2 focus:ring-violet-500 transition-all placeholder:text-slate-400"
+                />
+            </div>
+            <div className="space-y-2">
+                <div className="flex items-center justify-between ml-1">
+                    <label className="text-[13px] font-semibold text-slate-700">Senha</label>
+                    <a href="#" className="text-[13px] font-medium text-violet-600 hover:text-violet-700 transition-colors">Esqueci</a>
                 </div>
-              )}
-              <form className="space-y-5">
-                <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-gray-700" htmlFor="email">E-mail</label>
-                  <Input id="email" name="email" type="email" placeholder="seu@email.com" required className="h-11 rounded-xl" />
-                </div>
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <label className="text-sm font-semibold text-gray-700" htmlFor="password">Senha</label>
-                    <Link href="/recuperar-senha" className="text-sm font-medium text-blue-600 hover:text-blue-500">
-                      Esqueci minha senha
-                    </Link>
-                  </div>
-                  <PasswordInput id="password" name="password" placeholder="••••••••" required className="h-11 rounded-xl" />
-                </div>
-                <div className="flex gap-3 pt-4">
-                  <Button formAction={signup} variant="outline" className="flex-1 h-11 rounded-xl font-semibold">Criar Conta</Button>
-                  <Button formAction={login} variant="default" className="flex-1 h-11 rounded-xl font-semibold bg-gray-900 text-white hover:bg-gray-800">Entrar</Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      {/* Showcase de Planos (Vitrine) */}
-      <section className="bg-white border-t border-gray-100 flex-1">
-        <PublicPlansShowcase planos={planos || []} />
-      </section>
-
-      {/* Footer Simples */}
-      <footer className="bg-gray-50 border-t border-gray-200 py-8 text-center">
-        <p className="text-sm text-gray-500">
-          © {new Date().getFullYear()} JuriPages. Todos os direitos reservados.
-        </p>
-      </footer>
+                <input 
+                  type="password" 
+                  placeholder="••••••••" 
+                  className="flex h-12 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-2 text-[15px] focus:outline-none focus:ring-2 focus:ring-violet-500 transition-all placeholder:text-slate-400"
+                />
+            </div>
+            
+            <div className="pt-4 space-y-3">
+                <button 
+                  type="submit"
+                  className="w-full h-12 rounded-2xl font-semibold bg-slate-900 hover:bg-slate-800 text-white shadow-md active:scale-[0.98] transition-all text-[15px]"
+                >
+                  Entrar
+                </button>
+                <button 
+                  type="button" 
+                  className="w-full h-12 rounded-2xl font-semibold bg-white/50 hover:bg-white/80 border border-slate-200 text-slate-700 active:scale-[0.98] transition-all text-[15px]"
+                >
+                  Criar Conta
+                </button>
+            </div>
+        </form>
+      </div>
     </div>
   )
 }
