@@ -1,6 +1,6 @@
 import {
-  Sparkles, Asterisk, GripHorizontal, ArrowUpRight,
-  Check, Info, ArrowRight, ShieldCheck, LifeBuoy, Zap, ArrowDown
+  ArrowRight, ShieldCheck, ArrowDown,
+  LayoutDashboard, LineChart, MessageSquare, Bell, CreditCard, Lock, Eye, Layers, Focus
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -11,10 +11,9 @@ const WhatsAppIcon = ({ className }: { className?: string }) => (
   </svg>
 )
 
-export default function SupportPlansPage() {
+export default function JuriPagesAppLanding() {
   return (
     <div className="bg-[#F3F4F6] text-gray-800 antialiased selection:bg-[#DFFF00] selection:text-black min-h-screen font-sans">
-
       {/* Navbar Sticky */}
       <nav className="sticky top-0 z-50 bg-[#F3F4F6]/80 backdrop-blur-md border-b border-gray-200/50 px-4 md:px-8 py-4">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
@@ -24,7 +23,7 @@ export default function SupportPlansPage() {
 
           <div className="flex items-center gap-6">
             <button className="text-gray-500 text-sm font-medium hidden sm:flex items-center gap-1.5 group hover:text-[#25D366] transition-colors">
-              <span>Falar com um web desing</span>
+              <span>Falar com o suporte</span>
               <WhatsAppIcon className="w-5 h-5 hidden group-hover:block text-[#25D366]" />
             </button>
             <Link href="/login">
@@ -37,7 +36,7 @@ export default function SupportPlansPage() {
       </nav>
 
       {/* Main Content - Sections */}
-      <main className="max-w-7xl mx-auto px-4 md:px-8 py-12 flex flex-col gap-20">
+      <main className="max-w-7xl mx-auto px-4 md:px-8 py-12 flex flex-col gap-24">
 
         {/* Section 1: Hero */}
         <section className="relative flex flex-col md:flex-row items-center justify-between py-10 md:py-20 lg:py-24">
@@ -45,221 +44,176 @@ export default function SupportPlansPage() {
           <div className="absolute top-0 right-10 w-96 h-96 bg-[#DFFF00]/20 rounded-full blur-3xl pointer-events-none"></div>
           <div className="absolute bottom-10 left-10 w-96 h-96 bg-blue-100/30 rounded-full blur-3xl pointer-events-none"></div>
 
-          <div className="relative z-10 md:w-3/5 lg:w-1/2">
+          <div className="relative z-10 md:w-3/5 lg:w-[55%]">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-medium text-gray-900 tracking-tight leading-[1.1] mb-6">
-              Sua estrutura online sempre
-              <span className="italic text-gray-500"> segura e Atualizada.</span>
+              Toda a gestão do seu <span className="italic text-gray-500">site jurídico</span> em um só lugar.
             </h1>
             <p className="text-gray-500 text-lg md:text-xl mb-10 max-w-xl leading-relaxed">
-              Foque em advogar enquanto nós cuidamos de toda a tecnologia do seu escritório. Hospedagem, atualizações e suporte contínuo.
+              Acompanhe o desempenho do seu site, acesse relatórios de SEO e gerencie seu plano de suporte de forma centralizada e intuitiva com o aplicativo exclusivo da JuriPages.
             </p>
 
             <div className="flex items-center gap-4">
-              <button className="bg-black text-white px-8 py-4 rounded-full font-medium flex items-center gap-2 hover:bg-gray-800 transition-colors text-lg shadow-lg shadow-black/10">
-                Explorar Planos <ArrowDown className="w-5 h-5" />
-              </button>
+              <Link href="/login">
+                <button className="bg-black text-white px-8 py-4 rounded-full font-medium flex items-center gap-2 hover:bg-gray-800 transition-colors text-lg shadow-lg shadow-black/10">
+                  Acessar meu painel <ArrowRight className="w-5 h-5" />
+                </button>
+              </Link>
             </div>
           </div>
 
           {/* Abstract Graphic */}
-          <div className="relative z-10 mt-16 md:mt-0 md:w-2/5 lg:w-1/2 flex justify-center md:justify-end">
+          <div className="relative z-10 mt-16 md:mt-0 md:w-2/5 lg:w-[40%] flex justify-center md:justify-end">
             <div className="w-72 h-72 md:w-96 md:h-96 bg-white/40 backdrop-blur-xl rounded-full border border-white flex items-center justify-center relative shadow-[0_0_60px_rgba(0,0,0,0.05)]">
               <div className="absolute inset-8 border-2 border-dashed border-gray-200/60 rounded-full animate-spin-slow"></div>
               <div className="absolute inset-16 border border-gray-100/50 rounded-full"></div>
               <div className="w-40 h-40 md:w-48 md:h-48 bg-[#DFFF00] rounded-full flex items-center justify-center shadow-2xl z-10 relative">
-                <ShieldCheck className="w-16 h-16 md:w-20 md:h-20 text-black" />
+                <LayoutDashboard className="w-16 h-16 md:w-20 md:h-20 text-black" />
               </div>
             </div>
           </div>
         </section>
 
-        {/* Section 2: Pricing Cards */}
-        <section className="flex flex-col gap-10">
+        {/* Section 2: Serviços de suporte */}
+        <section className="bg-black rounded-[3rem] p-10 md:p-16 lg:p-20 text-white relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-[#DFFF00]/10 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="relative z-10 max-w-3xl">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight mb-6">
+              Suporte técnico completo após a entrega do seu projeto.
+            </h2>
+            <p className="text-gray-400 text-lg md:text-xl leading-relaxed">
+              Nosso compromisso não termina quando o seu site vai ao ar. Com o nosso plano de suporte, você conta com uma infraestrutura robusta e uma equipe dedicada para manter a sua presença digital sempre atualizada e segura, sem que você precise lidar com questões técnicas.
+            </p>
+          </div>
+        </section>
 
+        {/* Section 3: Funcionalidades do aplicativo */}
+        <section className="flex flex-col gap-12">
           <div className="text-center flex flex-col items-center">
-            <h2 className="text-3xl lg:text-4xl font-medium text-gray-900 tracking-tight mb-4">Escolha o Plano Ideal</h2>
-
-            {/* Cycle Filter Pill */}
-            <div className="bg-gray-200/60 p-1.5 rounded-full flex flex-wrap justify-center items-center gap-1 mb-6">
-              <button className="px-5 py-2 text-sm text-white bg-black font-medium rounded-full shadow-md transition-colors">Mensal</button>
-              <button className="px-5 py-2 text-sm text-gray-500 hover:text-gray-900 font-medium rounded-full transition-colors">Semestral (-10%)</button>
-              <button className="px-5 py-2 text-sm text-gray-500 hover:text-gray-900 font-medium rounded-full transition-colors">Anual (-20%)</button>
-            </div>
-
-            <p className="text-gray-500 text-lg max-w-2xl mx-auto">Tudo o que você precisa para manter o site do seu escritório no ar, rápido e gerando resultados.</p>
+            <h2 className="text-3xl lg:text-4xl font-medium text-gray-900 tracking-tight mb-4">
+              Tudo o que você precisa para acompanhar a sua presença digital.
+            </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-            {/* Plano Essencial */}
-            <div className="bg-[#F2F2F2] rounded-[2.5rem] p-8 md:p-10 relative border border-white/60 flex flex-col hover:-translate-y-2 transition-transform duration-300">
-              <div className="flex justify-between items-start mb-8">
-                <span className="text-lg text-gray-600 font-medium">Essencial</span>
-                <button className="w-10 h-10 bg-white/50 hover:bg-white rounded-full flex items-center justify-center transition-colors">
-                  <ArrowUpRight className="w-5 h-5 text-gray-500" />
-                </button>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+            {/* Card 1 */}
+            <div className="bg-white rounded-[2rem] p-8 border border-gray-200/50 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-6">
+              <div className="w-14 h-14 bg-[#F3F4F6] rounded-2xl flex items-center justify-center text-gray-900">
+                <LayoutDashboard className="w-7 h-7" />
               </div>
-
-              <div className="mb-8">
-                <div className="flex items-baseline gap-1">
-                  <span className="text-2xl font-medium text-gray-500">R$</span>
-                  <span className="text-5xl font-medium text-gray-900 tracking-tight">120</span>
-                  <span className="text-base text-gray-500">/mês</span>
-                </div>
-                <div className="mt-4 bg-white/50 py-1.5 px-4 rounded-full inline-block text-sm font-medium text-gray-600 border border-white/60">
-                  Até 1 Site
-                </div>
+              <div>
+                <h3 className="text-xl font-medium text-gray-900 mb-3">Controle da sua rede de sites.</h3>
+                <p className="text-gray-500 leading-relaxed">Visualize o status de todos os seus projetos online em tempo real. Saiba exatamente o que está ativo, pausado ou em desenvolvimento, sem precisar acessar múltiplas plataformas.</p>
               </div>
-
-              <ul className="space-y-4 flex-1 mb-10">
-                {[
-                  "Atualizações mensais do sistema",
-                  "Backup semanal preventivo",
-                  "Suporte em horário comercial",
-                  "Segurança básica (SSL)",
-                  "Checagem de indexação no Google"
-                ].map((item, idx) => (
-                  <li key={idx} className="flex items-start gap-3 text-base text-gray-600">
-                    <Check className="w-5 h-5 text-gray-400 shrink-0 mt-0.5" />
-                    <span className="leading-tight">{item}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <button className="w-full py-4 bg-white border border-gray-200 rounded-2xl font-medium text-gray-900 hover:bg-gray-50 transition-colors text-base shadow-sm">
-                Selecionar Essencial
-              </button>
             </div>
 
-            {/* Plano Profissional (Destaque Lime) */}
-            <div className="bg-[#DFFF00] rounded-[2.5rem] p-8 md:p-10 relative overflow-hidden flex flex-col group hover:-translate-y-2 transition-transform duration-300 shadow-xl">
-              {/* Decorative Circles */}
-              <div className="absolute -right-10 -top-10 w-64 h-64 border border-black/5 rounded-full pointer-events-none"></div>
-              <div className="absolute -right-2 -top-2 w-64 h-64 border border-black/5 rounded-full pointer-events-none"></div>
-
-              <div className="relative z-10 flex justify-between items-start mb-8">
-                <div className="flex flex-col gap-2">
-                  <span className="text-lg text-black/70 font-medium">Profissional</span>
-                  <span className="text-xs uppercase font-bold tracking-wider bg-black text-[#DFFF00] px-3 py-1 rounded-full w-max">Mais Popular</span>
-                </div>
-                <button className="w-10 h-10 bg-black/10 hover:bg-black/20 rounded-full flex items-center justify-center transition-colors mt-1">
-                  <ArrowUpRight className="w-5 h-5 text-black" />
-                </button>
+            {/* Card 2 */}
+            <div className="bg-white rounded-[2rem] p-8 border border-gray-200/50 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-6">
+              <div className="w-14 h-14 bg-[#DFFF00]/20 rounded-2xl flex items-center justify-center text-black">
+                <LineChart className="w-7 h-7" />
               </div>
-
-              <div className="relative z-10 mb-8">
-                <div className="flex items-baseline gap-1">
-                  <span className="text-2xl font-medium text-black/50">R$</span>
-                  <span className="text-5xl font-medium text-black tracking-tight">220</span>
-                  <span className="text-base text-black/50">/mês</span>
-                </div>
-                <div className="mt-4 bg-white/30 py-1.5 px-4 rounded-full inline-block text-sm font-medium text-black border border-black/10">
-                  Até 3 Sites
-                </div>
+              <div>
+                <h3 className="text-xl font-medium text-gray-900 mb-3">Relatórios de performance e SEO.</h3>
+                <p className="text-gray-500 leading-relaxed">Entenda como o seu site está se saindo no Google. Acesse gráficos claros e simplificados de cliques e impressões diretamente do Search Console, focados no que realmente importa.</p>
               </div>
-
-              <ul className="relative z-10 space-y-4 flex-1 mb-10">
-                {[
-                  "Atualização de conteúdo (15 dias)",
-                  "Backup diário automático",
-                  "Suporte 7 dias por semana",
-                  "Segurança avançada (WAF)",
-                  "Otimização SEO básico",
-                  "Atualização de blog (6 textos)",
-                  "Hospedagem e Domínio grátis"
-                ].map((item, idx) => (
-                  <li key={idx} className="flex items-start gap-3 text-base text-black/80 font-medium">
-                    <Check className="w-5 h-5 text-black shrink-0 mt-0.5" />
-                    <span className="leading-tight">{item}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <button className="relative z-10 w-full py-4 bg-black rounded-2xl font-medium text-[#DFFF00] hover:bg-gray-900 transition-colors text-base shadow-2xl shadow-black/20">
-                Selecionar Profissional
-              </button>
             </div>
 
-            {/* Plano Premium (Black) */}
-            <div className="bg-black rounded-[2.5rem] p-8 md:p-10 relative overflow-hidden flex flex-col text-white hover:-translate-y-2 transition-transform duration-300 shadow-2xl">
-              {/* Decorative Circles */}
-              <div className="absolute -left-10 bottom-0 w-64 h-64 border border-white/10 rounded-full pointer-events-none"></div>
-              <div className="absolute -left-2 bottom-4 w-64 h-64 border border-white/10 rounded-full pointer-events-none"></div>
-
-              <div className="relative z-10 flex justify-between items-start mb-8">
-                <span className="text-lg text-gray-400 font-medium">Premium</span>
-                <button className="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors">
-                  <ArrowUpRight className="w-5 h-5 text-white" />
-                </button>
+            {/* Card 3 */}
+            <div className="bg-white rounded-[2rem] p-8 border border-gray-200/50 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-6">
+              <div className="w-14 h-14 bg-[#F3F4F6] rounded-2xl flex items-center justify-center text-gray-900">
+                <MessageSquare className="w-7 h-7" />
               </div>
-
-              <div className="relative z-10 mb-8">
-                <div className="flex items-baseline gap-1">
-                  <span className="text-2xl font-medium text-gray-500">R$</span>
-                  <span className="text-5xl font-medium text-white tracking-tight">350</span>
-                  <span className="text-base text-gray-500">/mês</span>
-                </div>
-                <div className="mt-4 bg-white/10 py-1.5 px-4 rounded-full inline-block text-sm font-medium text-gray-300 border border-white/10">
-                  Até 12 Sites
-                </div>
+              <div>
+                <h3 className="text-xl font-medium text-gray-900 mb-3">Comunicação direta e transparente.</h3>
+                <p className="text-gray-500 leading-relaxed">Receba comunicados oficiais, notas técnicas da nossa equipe e atualizações importantes sobre o andamento do seu projeto através de um feed exclusivo.</p>
               </div>
+            </div>
 
-              <ul className="relative z-10 space-y-4 flex-1 mb-10">
-                {[
-                  "Atualização de conteúdo semanal",
-                  "Backup diário duplo (Offsite)",
-                  "Monitoramento 24h Proativo",
-                  "Segurança avançada prioritária",
-                  "Otimização para campanhas (Ads)",
-                  "SEO contínuo (GSC/Clarity)",
-                  "Blog e Novas páginas ilimitado*",
-                  "Hospedagem VIP e Domínio"
-                ].map((item, idx) => (
-                  <li key={idx} className="flex items-start gap-3 text-base text-gray-300">
-                    <Check className="w-5 h-5 text-gray-500 shrink-0 mt-0.5" />
-                    <span className="leading-tight">{item}</span>
-                  </li>
-                ))}
-              </ul>
+            {/* Card 4 */}
+            <div className="bg-white rounded-[2rem] p-8 border border-gray-200/50 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-6">
+              <div className="w-14 h-14 bg-[#F3F4F6] rounded-2xl flex items-center justify-center text-gray-900">
+                <Bell className="w-7 h-7" />
+              </div>
+              <div>
+                <h3 className="text-xl font-medium text-gray-900 mb-3">Alertas dinâmicos e atualizações em tempo real.</h3>
+                <p className="text-gray-500 leading-relaxed">Fique por dentro de avisos de SEO, status da sua hospedagem e andamento de manutenções com um sistema de notificações inteligente.</p>
+              </div>
+            </div>
 
-              <button className="relative z-10 w-full py-4 bg-white/10 border border-white/20 rounded-2xl font-medium text-white hover:bg-white hover:text-black transition-colors text-base">
-                Selecionar Premium
-              </button>
+            {/* Card 5 */}
+            <div className="bg-white rounded-[2rem] p-8 border border-gray-200/50 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-6">
+              <div className="w-14 h-14 bg-[#F3F4F6] rounded-2xl flex items-center justify-center text-gray-900">
+                <CreditCard className="w-7 h-7" />
+              </div>
+              <div>
+                <h3 className="text-xl font-medium text-gray-900 mb-3">Controle de planos e faturas.</h3>
+                <p className="text-gray-500 leading-relaxed">Acesse seu painel financeiro para visualizar os detalhes da sua assinatura de suporte, extrato de pagamentos e próximas renovações com total clareza.</p>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Section 3: Condições / FAQ */}
-        <section className="mb-12">
-          <div className="mb-8">
-            <h3 className="text-2xl font-medium text-gray-900">Transparência e Condições</h3>
+        {/* Section 4: Benefícios do app e do suporte */}
+        <section className="flex flex-col gap-12 bg-gray-100/50 rounded-[3rem] p-8 md:p-12 lg:p-16 border border-white">
+          <div className="text-center flex flex-col items-center">
+            <h2 className="text-3xl lg:text-4xl font-medium text-gray-900 tracking-tight mb-4">
+              Por que utilizar o painel do cliente JuriPages?
+            </h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-[#EAEAEA] rounded-[2rem] p-8 border border-white/50 flex flex-col gap-4 transition-colors hover:bg-white">
-              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
-                <Info className="w-6 h-6 text-gray-600" />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+            <div className="flex gap-6 items-start">
+              <div className="mt-1 w-12 h-12 shrink-0 bg-white shadow-sm rounded-full flex items-center justify-center text-gray-800">
+                <Focus className="w-6 h-6" />
               </div>
-              <h4 className="font-medium text-lg text-gray-900">Forma de Contratação</h4>
-              <p className="text-base text-gray-500 leading-relaxed">Planos em ciclos mensal, semestral e anual. Descontos aplicados automaticamente em pagamentos adiantados para garantir sua tranquilidade a longo prazo.</p>
+              <div>
+                <h3 className="text-xl font-medium text-gray-900 mb-2">Foco no seu escritório.</h3>
+                <p className="text-gray-600 leading-relaxed">Deixe a parte técnica conosco. Evite a necessidade de navegar por plataformas complexas de hospedagem e foca no atendimento aos seus clientes.</p>
+              </div>
             </div>
 
-            <div className="bg-[#EAEAEA] rounded-[2rem] p-8 border border-white/50 flex flex-col gap-4 transition-colors hover:bg-white">
-              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
-                <Zap className="w-6 h-6 text-gray-600" />
+            <div className="flex gap-6 items-start">
+              <div className="mt-1 w-12 h-12 shrink-0 bg-white shadow-sm rounded-full flex items-center justify-center text-gray-800">
+                <Lock className="w-6 h-6" />
               </div>
-              <h4 className="font-medium text-lg text-gray-900">Atualizações Extras</h4>
-              <p className="text-base text-gray-500 leading-relaxed">Alterações fora do escopo ou ciclo de cada plano estão sujeitas a uma taxa avulsa de R$ 50 por solicitação específica, sempre com orçamento prévio.</p>
+              <div>
+                <h3 className="text-xl font-medium text-gray-900 mb-2">Proteção e segurança.</h3>
+                <p className="text-gray-600 leading-relaxed">Mantenha as credenciais das suas ferramentas e integrações protegidas, acessando apenas o que é relevante para o acompanhamento dos resultados.</p>
+              </div>
             </div>
 
-            <div className="bg-[#EAEAEA] rounded-[2rem] p-8 border border-white/50 flex flex-col gap-4 transition-colors hover:bg-white">
-              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
-                <LifeBuoy className="w-6 h-6 text-gray-600" />
+            <div className="flex gap-6 items-start">
+              <div className="mt-1 w-12 h-12 shrink-0 bg-white shadow-sm rounded-full flex items-center justify-center text-gray-800">
+                <Eye className="w-6 h-6" />
               </div>
-              <h4 className="font-medium text-lg text-gray-900">Agende um Diagnóstico</h4>
-              <p className="text-base text-gray-500 leading-relaxed mb-4">Em dúvida sobre o melhor plano? Conversamos sobre as necessidades específicas do seu escritório.</p>
-              <button className="text-base font-medium text-black flex items-center gap-2 hover:gap-3 transition-all mt-auto w-max py-2">
-                Falar no WhatsApp <ArrowRight className="w-5 h-5" />
+              <div>
+                <h3 className="text-xl font-medium text-gray-900 mb-2">Visão clara de resultados.</h3>
+                <p className="text-gray-600 leading-relaxed">Acompanhe o crescimento da sua visibilidade online com relatórios limpos, sem excesso de jargões técnicos.</p>
+              </div>
+            </div>
+
+            <div className="flex gap-6 items-start">
+              <div className="mt-1 w-12 h-12 shrink-0 bg-white shadow-sm rounded-full flex items-center justify-center text-gray-800">
+                <Layers className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="text-xl font-medium text-gray-900 mb-2">Centralização da comunicação.</h3>
+                <p className="text-gray-600 leading-relaxed">Troque as dezenas de e-mails perdidos por um ambiente único, onde todo o histórico do seu site e do nosso suporte fica registrado e organizado.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Section 5: CTA Final */}
+        <section className="bg-[#DFFF00] rounded-[3rem] p-12 md:p-16 lg:p-20 text-center relative overflow-hidden mb-12 shadow-xl">
+          <div className="relative z-10 max-w-2xl mx-auto flex flex-col items-center gap-8">
+            <h2 className="text-4xl md:text-5xl font-medium tracking-tight text-black">
+              Tenha o controle do seu projeto digital na palma da mão.
+            </h2>
+            <Link href="/login">
+              <button className="bg-black text-white px-8 py-4 rounded-full font-medium flex items-center gap-2 hover:bg-gray-800 transition-colors text-lg shadow-2xl shadow-black/20">
+                Acessar o aplicativo JuriPages <ArrowRight className="w-5 h-5" />
               </button>
-            </div>
+            </Link>
           </div>
         </section>
 
