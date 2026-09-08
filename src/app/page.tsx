@@ -1,7 +1,6 @@
-import {
-  ArrowRight, ShieldCheck, ArrowDown,
-  LayoutDashboard, LineChart, MessageSquare, Bell, CreditCard, Lock, Eye, Layers, Focus
-} from "lucide-react"
+"use client"
+
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 
@@ -11,213 +10,993 @@ const WhatsAppIcon = ({ className }: { className?: string }) => (
   </svg>
 )
 
-export default function JuriPagesAppLanding() {
+function Typewriter({ text }: { text: string }) {
+  const [displayedText, setDisplayedText] = useState("")
+
+  useEffect(() => {
+    setDisplayedText("")
+    let i = 0
+    const intervalId = setInterval(() => {
+      setDisplayedText(text.slice(0, i + 1))
+      i++
+      if (i >= text.length) {
+        clearInterval(intervalId)
+      }
+    }, 50)
+    
+    return () => clearInterval(intervalId)
+  }, [text])
+
   return (
-    <div className="bg-[#F3F4F6] text-gray-800 antialiased selection:bg-[#DFFF00] selection:text-black min-h-screen font-sans">
-      {/* Navbar Sticky */}
-      <nav className="sticky top-0 z-50 bg-[#F3F4F6]/80 backdrop-blur-md border-b border-gray-200/50 px-4 md:px-8 py-4">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex items-center">
-            <Image src="/logo.webp" alt="JuriPages" width={180} height={40} className="h-8 w-auto object-contain" />
-          </div>
+    <>
+      {displayedText}
+      <span className="inline-block w-[2px] h-[1em] bg-[#8b5cf6] ml-[2px] animate-pulse align-middle opacity-80"></span>
+    </>
+  )
+}
 
-          <div className="flex items-center gap-6">
-            <button className="text-gray-500 text-sm font-medium hidden sm:flex items-center gap-1.5 group hover:text-[#25D366] transition-colors">
-              <span>Falar com o suporte</span>
-              <WhatsAppIcon className="w-5 h-5 hidden group-hover:block text-[#25D366]" />
-            </button>
-            <Link href="/login">
-              <button className="px-6 h-10 bg-black text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors text-sm font-medium">
+export default function JuriPagesAppLanding() {
+  const [period, setPeriod] = useState<"mensal" | "semestral" | "anual">("mensal")
+  const [currentSlide, setCurrentSlide] = useState(0)
+
+  const slides = [
+    {
+      image: "/assets/imagem/Planilha-de-teses-validadas-1536x864.webp",
+      text: "Métricas e estratégias validadas"
+    },
+    {
+      image: "/assets/imagem/clarity.gif",
+      text: "Gravação de tela dos usuários"
+    },
+    {
+      image: "/assets/imagem/google-search-console.webp",
+      text: "Análise de performance no Google"
+    }
+  ]
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length)
+    }, 4000)
+    return () => clearInterval(timer)
+  }, [slides.length])
+
+  const periodLabels = {
+    mensal: "/mês",
+    semestral: "/6 meses",
+    anual: "/ano"
+  }
+
+  const prices = {
+    essencial: { mensal: "120", semestral: "650", anual: "1150" },
+    profissional: { mensal: "220", semestral: "1180", anual: "2100" },
+    premium: { mensal: "350", semestral: "1890", anual: "3360" }
+  }
+
+  return (
+    <>
+      <style dangerouslySetInnerHTML={{
+        __html: `
+        @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+
+        .page-container {
+            background-color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            color: #334155;
+            overflow-x: hidden;
+        }
+
+        .hero {
+            padding-top: 180px;
+            padding-bottom: 60px;
+            text-align: center;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-family: 'Bricolage Grotesque', sans-serif;
+            font-size: 72px;
+            font-weight: 400;
+            color: #0f172a;
+            line-height: 1.1;
+            margin-bottom: 0px;
+            letter-spacing: -0.02em;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 46px; }
+        }
+
+        .hero h1 em {
+            color: #8b5cf6;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-weight: 400;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            color: #64748b;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+        .services-watermark {
+            position: absolute;
+            font-weight: 400;
+            color: #8b5cf6;
+            white-space: nowrap;
+            pointer-events: none;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0.05;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            text-transform: lowercase;
+        }
+
+        .pricing-toggle-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 50px;
+        }
+        
+        .pricing-toggle {
+            background-color: #f1f5f9;
+            border-radius: 40px;
+            display: inline-flex;
+            padding: 6px;
+        }
+        
+        .toggle-btn {
+            background: transparent;
+            border: none;
+            color: #64748b;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600;
+            font-size: 15px;
+            padding: 10px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn:not(.active):hover {
+            color: #8b5cf6;
+            background-color: rgba(139, 92, 246, 0.05);
+        }
+        
+        .toggle-btn.active {
+            background: #fff;
+            color: #8b5cf6;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+            border: 2px solid #8b5cf6;
+        }
+
+        .planos-section {
+            padding: 40px 20px 80px;
+            background-color: #ffffff;
+        }
+        
+        .planos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .plano-card {
+            background: #fff;
+            border-radius: 24px;
+            padding: 40px 32px;
+            border: 1px solid rgba(139, 92, 246, 0.1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .plano-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(139, 92, 246, 0.15);
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+        
+        .plano-card.destaque {
+            border: 2px solid #8b5cf6;
+        }
+        
+        .plano-badge {
+            position: absolute;
+            top: -16px;
+            right: 32px;
+            background: #2563eb;
+            color: #fff;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .plano-title {
+            font-family: 'Bricolage Grotesque', sans-serif;
+            font-size: 24px;
+            font-weight: 400;
+            color: #0f172a;
+            margin-bottom: 20px;
+        }
+        
+        .plano-price {
+            font-family: 'Bricolage Grotesque', sans-serif;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+        }
+        
+        .plano-price .currency {
+            font-size: 18px;
+            color: #64748b;
+            font-weight: 500;
+        }
+        
+        .plano-price .price-value {
+            font-size: 48px;
+            line-height: 1;
+            transition: opacity 0.2s ease;
+        }
+        
+        .plano-price .period {
+            font-size: 16px;
+            color: #64748b;
+            font-weight: 500;
+            font-family: 'DM Sans', sans-serif;
+            transition: opacity 0.2s ease;
+        }
+
+        .site-limit {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            color: #334155;
+            margin-bottom: 30px;
+            border: 1px solid rgba(139, 92, 246, 0.1);
+        }
+
+        .plano-features {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 40px 0;
+            flex-grow: 1;
+        }
+        
+        .plano-features li {
+            margin-bottom: 16px;
+            color: #475569;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            line-height: 1.5;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .plano-features li strong {
+            color: #0f172a;
+            font-weight: 600;
+        }
+        
+        .plano-features li svg {
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+            color: #8b5cf6; 
+        }
+
+        .btn-plano-outline {
+            background: transparent;
+            color: #0f172a;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px 32px;
+            border-radius: 100px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 700;
+            font-size: 15px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-plano-outline:hover {
+            background: rgba(139, 92, 246, 0.05);
+            border-color: #8b5cf6;
+            color: #8b5cf6;
+        }
+
+        .btn-primary {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 16px 32px;
+            border-radius: 100px;
+            background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+            color: #fff;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 700;
+            font-size: 15px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(139, 92, 246, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px rgba(139, 92, 246, 0.3);
+            background: linear-gradient(135deg, #6d28d9, #7c3aed);
+        }
+
+        .btn-hero-planos {
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            width: auto; 
+            padding: 16px 40px; 
+            font-size: 16px; 
+            border-radius: 100px; 
+            text-decoration: none; 
+            background: linear-gradient(135deg, #7c3aed, #8b5cf6); 
+            color: #fff; 
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 700;
+            box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3); 
+            transition: all 0.3s ease; 
+            gap: 10px;
+        }
+
+        .btn-hero-planos:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px rgba(139, 92, 246, 0.4); 
+            background: linear-gradient(135deg, #6d28d9, #7c3aed); 
+        }
+
+        .service-card {
+            background: #fff;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            border: 1px solid rgba(139, 92, 246, 0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .service-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(139, 92, 246, 0.1);
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+
+        .service-icon {
+            width: 56px;
+            height: 56px;
+            background: rgba(139, 92, 246, 0.1);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8b5cf6;
+        }
+
+        .service-icon svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .service-card h3 {
+            font-family: 'Bricolage Grotesque', sans-serif;
+            font-size: 22px;
+            font-weight: 400;
+            color: #0f172a;
+        }
+
+        .service-card p {
+            font-size: 15px;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .section-tag {
+            display: inline-block;
+            background: rgba(139, 92, 246, 0.1);
+            color: #8b5cf6;
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 46px; }
+            .pricing-toggle { flex-direction: column; width: 100%; border-radius: 20px; }
+            .toggle-btn { width: 100%; margin-bottom: 5px; }
+            .services-grid { gap: 20px; }
+            .hero { padding-top: 140px; padding-bottom: 40px; }
+            .planos-grid { gap: 20px; }
+        }
+
+        @keyframes infinite-scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .animate-infinite-scroll {
+            animation: infinite-scroll 40s linear infinite;
+        }
+
+        @keyframes sweep {
+            0% { transform: translateX(-100%) skewX(-15deg); }
+            15% { transform: translateX(300%) skewX(-15deg); }
+            100% { transform: translateX(300%) skewX(-15deg); }
+        }
+        .animate-sweep {
+            animation: sweep 7s infinite;
+        }
+        .bg-grid-pattern {
+            background-image: 
+                linear-gradient(to right, rgba(0,0,0,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0,0,0,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+      `}} />
+
+      <div className="page-container">
+        {/* Navbar Sticky */}
+        <nav className="sticky top-0 z-50 bg-[#f8fafc]/80 backdrop-blur-md border-b border-gray-200/50 px-4 md:px-8 py-4">
+          <div className="max-w-[1200px] mx-auto flex justify-between items-center gap-4">
+            <div className="flex items-center">
+              <Image src="/assets/imagem/juripages.webp" alt="JuriPages" width={180} height={40} className="h-8 w-auto object-contain" />
+            </div>
+
+            <div className="flex items-center gap-6">
+              {/* WhatsApp somente no Navbar */}
+              <a href="https://wa.me/559184921464" target="_blank" rel="noreferrer" className="text-gray-500 text-sm font-medium hidden sm:flex items-center gap-1.5 group hover:text-[#25D366] transition-colors">
+                <span>Falar com o suporte</span>
+                <WhatsAppIcon className="w-5 h-5 hidden group-hover:block text-[#25D366]" />
+              </a>
+              <Link href="/login" className="px-6 h-10 bg-gradient-to-r from-[#7c3aed] to-[#8b5cf6] text-white rounded-full flex items-center justify-center hover:shadow-lg transition-all text-sm font-bold shadow-[0_4px_10px_rgba(139,92,246,0.2)] hover:-translate-y-0.5">
                 Entrar
-              </button>
-            </Link>
-          </div>
-        </div>
-      </nav>
-
-      {/* Main Content - Sections */}
-      <main className="max-w-7xl mx-auto px-4 md:px-8 py-12 flex flex-col gap-24">
-
-        {/* Section 1: Hero */}
-        <section className="relative flex flex-col md:flex-row items-center justify-between py-10 md:py-20 lg:py-24">
-          {/* Decorative blur */}
-          <div className="absolute top-0 right-10 w-96 h-96 bg-[#DFFF00]/20 rounded-full blur-3xl pointer-events-none"></div>
-          <div className="absolute bottom-10 left-10 w-96 h-96 bg-blue-100/30 rounded-full blur-3xl pointer-events-none"></div>
-
-          <div className="relative z-10 md:w-3/5 lg:w-[55%]">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-medium text-gray-900 tracking-tight leading-[1.1] mb-6">
-              Toda a gestão do seu <span className="italic text-gray-500">site jurídico</span> em um só lugar.
-            </h1>
-            <p className="text-gray-500 text-lg md:text-xl mb-10 max-w-xl leading-relaxed">
-              Acompanhe o desempenho do seu site, acesse relatórios de SEO e gerencie seu plano de suporte de forma centralizada e intuitiva com o aplicativo exclusivo da JuriPages.
-            </p>
-
-            <div className="flex items-center gap-4">
-              <Link href="/login">
-                <button className="bg-black text-white px-8 py-4 rounded-full font-medium flex items-center gap-2 hover:bg-gray-800 transition-colors text-lg shadow-lg shadow-black/10">
-                  Acessar meu painel <ArrowRight className="w-5 h-5" />
-                </button>
               </Link>
             </div>
           </div>
+        </nav>
 
-          {/* Abstract Graphic */}
-          <div className="relative z-10 mt-16 md:mt-0 md:w-2/5 lg:w-[40%] flex justify-center md:justify-end">
-            <div className="w-72 h-72 md:w-96 md:h-96 bg-white/40 backdrop-blur-xl rounded-full border border-white flex items-center justify-center relative shadow-[0_0_60px_rgba(0,0,0,0.05)]">
-              <div className="absolute inset-8 border-2 border-dashed border-gray-200/60 rounded-full animate-spin-slow"></div>
-              <div className="absolute inset-16 border border-gray-100/50 rounded-full"></div>
-              <div className="w-40 h-40 md:w-48 md:h-48 bg-[#DFFF00] rounded-full flex items-center justify-center shadow-2xl z-10 relative">
-                <LayoutDashboard className="w-16 h-16 md:w-20 md:h-20 text-black" />
+        {/* HERO SECTION */}
+        <section className="hero" style={{ backgroundImage: "url('/assets/imagem/backg01.webp')", paddingBottom: 0 }}>
+          <div className="max-w-[1200px] mx-auto px-4 relative z-10">
+            <div className="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-10 mb-16">
+              <div className="w-full lg:w-[45%] text-left">
+                <h1 className="relative z-10 m-0 lg:translate-y-3">
+                  Toda a gestão do seu
+                  <span className="font-['Playfair_Display'] text-[#8b5cf6] font-normal italic"> site jurídico em um só lugar</span>
+                </h1>
+              </div>
+
+              <div className="w-full lg:w-[50%] flex flex-col text-left lg:text-right">
+                <p className="hero-subtitle relative z-10 !mb-[30px] mx-0 w-full lg:ml-auto">
+                  Acompanhe o desempenho do seu site, acesse relatórios de SEO e gerencie seu plano de suporte de forma centralizada e intuitiva com o aplicativo exclusivo da JuriPages.
+                </p>
+
+                <div className="flex flex-col xl:flex-row items-center gap-4 relative z-10 lg:justify-end">
+                  <Link href="/login" className="btn-hero-planos m-0 shrink-0">
+                    Começar Agora
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M19 12l-7 7-7-7" /></svg>
+                  </Link>
+                  <div className="flex items-center shrink-0">
+                    <div className="flex -space-x-3">
+                      <img src="/assets/imagem/perfis/01.enc" alt="Advogado" className="w-10 h-10 rounded-full border-2 border-white object-cover" />
+                      <img src="/assets/imagem/perfis/02.enc" alt="Advogado" className="w-10 h-10 rounded-full border-2 border-white object-cover" />
+                      <img src="/assets/imagem/perfis/03.enc" alt="Advogado" className="w-10 h-10 rounded-full border-2 border-white object-cover" />
+                      <img src="/assets/imagem/perfis/04.enc" alt="Advogado" className="w-10 h-10 rounded-full border-2 border-white object-cover" />
+                    </div>
+                    <span className="ml-3 text-sm font-medium text-slate-500 font-['Inter']">+ de mil advogados atendidos</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="w-[95%] md:w-[90%] mx-auto pb-10">
+            <div className="w-full bg-slate-200/50 flex items-center justify-center overflow-hidden relative rounded-2xl shadow-xl border border-slate-200" style={{ aspectRatio: '1920/1080' }}>
+              <div className="absolute inset-0 flex items-center justify-center text-slate-400 font-medium font-['Inter'] text-xs md:text-base text-center px-4">
+                [ MOLDE DE IMAGEM DA PLATAFORMA - 1920x1080 ]
               </div>
             </div>
           </div>
         </section>
 
-        {/* Section 2: Serviços de suporte */}
-        <section className="bg-black rounded-[3rem] p-10 md:p-16 lg:p-20 text-white relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-[#DFFF00]/10 rounded-full blur-3xl pointer-events-none"></div>
-          <div className="relative z-10 max-w-3xl">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight mb-6">
-              Suporte técnico completo após a entrega do seu projeto.
+
+
+        {/* SERVIÇOS DE SUPORTE */}
+        <section className="py-20 bg-white">
+          <div className="max-w-[1200px] mx-auto px-4 text-center">
+            <span className="section-tag">Nossa Entrega</span>
+            <h2 className="font-['Bricolage_Grotesque'] text-4xl md:text-5xl font-normal text-slate-900 mb-6 max-w-[800px] mx-auto leading-tight">
+              <em className="text-[#8b5cf6] font-['Playfair_Display'] italic font-normal">Suporte técnico completo</em> após a entrega do seu projeto.
             </h2>
-            <p className="text-gray-400 text-lg md:text-xl leading-relaxed">
+            <p className="text-slate-500 text-lg max-w-3xl mx-auto leading-relaxed">
               Nosso compromisso não termina quando o seu site vai ao ar. Com o nosso plano de suporte, você conta com uma infraestrutura robusta e uma equipe dedicada para manter a sua presença digital sempre atualizada e segura, sem que você precise lidar com questões técnicas.
             </p>
           </div>
         </section>
 
-        {/* Section 3: Funcionalidades do aplicativo */}
-        <section className="flex flex-col gap-12">
-          <div className="text-center flex flex-col items-center">
-            <h2 className="text-3xl lg:text-4xl font-medium text-gray-900 tracking-tight mb-4">
-              Tudo o que você precisa para acompanhar a sua presença digital.
-            </h2>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-            {/* Card 1 */}
-            <div className="bg-white rounded-[2rem] p-8 border border-gray-200/50 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-6">
-              <div className="w-14 h-14 bg-[#F3F4F6] rounded-2xl flex items-center justify-center text-gray-900">
-                <LayoutDashboard className="w-7 h-7" />
-              </div>
-              <div>
-                <h3 className="text-xl font-medium text-gray-900 mb-3">Controle da sua rede de sites.</h3>
-                <p className="text-gray-500 leading-relaxed">Visualize o status de todos os seus projetos online em tempo real. Saiba exatamente o que está ativo, pausado ou em desenvolvimento, sem precisar acessar múltiplas plataformas.</p>
-              </div>
+        {/* ESTRATÉGIA */}
+        <section className="py-20 bg-white relative overflow-hidden">
+          <div className="max-w-[1200px] mx-auto px-4 flex flex-wrap items-center justify-between gap-10">
+            <div className="flex-1 min-w-[320px] relative z-10">
+              <div className="services-watermark text-[80px] md:text-[130px] font-['Playfair_Display'] italic font-normal lowercase opacity-5 -left-10 top-1/2 -translate-y-1/2">estratégia</div>
+              <h2 className="font-['Bricolage_Grotesque'] text-4xl md:text-[42px] font-normal text-slate-900 mb-5 leading-[1.2]">
+                Transformamos <br />
+                <strong className="font-['Playfair_Display'] italic text-[#8b5cf6] font-normal">dados em estratégias</strong>
+              </h2>
+              <p className="text-slate-500 text-base leading-[1.6] max-w-[500px]">
+                Monitoramos acessos, cliques e comportamento do usuário, transformando esses dados em relatórios estratégicos e ajustes contínuos que aumentam a captação de clientes.
+              </p>
             </div>
-
-            {/* Card 2 */}
-            <div className="bg-white rounded-[2rem] p-8 border border-gray-200/50 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-6">
-              <div className="w-14 h-14 bg-[#DFFF00]/20 rounded-2xl flex items-center justify-center text-black">
-                <LineChart className="w-7 h-7" />
+            <div className="flex-1 min-w-[320px] relative">
+              <div className="relative w-full aspect-video rounded-xl shadow-[0_20px_40px_rgba(0,0,0,0.08)] overflow-hidden z-10 bg-slate-50">
+                {slides.map((slide, index) => (
+                  <Image
+                    key={index}
+                    src={slide.image}
+                    alt={slide.text}
+                    fill
+                    className={`object-cover transition-opacity duration-1000 ${
+                      index === currentSlide ? "opacity-100" : "opacity-0"
+                    }`}
+                  />
+                ))}
               </div>
-              <div>
-                <h3 className="text-xl font-medium text-gray-900 mb-3">Relatórios de performance e SEO.</h3>
-                <p className="text-gray-500 leading-relaxed">Entenda como o seu site está se saindo no Google. Acesse gráficos claros e simplificados de cliques e impressões diretamente do Search Console, focados no que realmente importa.</p>
-              </div>
-            </div>
-
-            {/* Card 3 */}
-            <div className="bg-white rounded-[2rem] p-8 border border-gray-200/50 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-6">
-              <div className="w-14 h-14 bg-[#F3F4F6] rounded-2xl flex items-center justify-center text-gray-900">
-                <MessageSquare className="w-7 h-7" />
-              </div>
-              <div>
-                <h3 className="text-xl font-medium text-gray-900 mb-3">Comunicação direta e transparente.</h3>
-                <p className="text-gray-500 leading-relaxed">Receba comunicados oficiais, notas técnicas da nossa equipe e atualizações importantes sobre o andamento do seu projeto através de um feed exclusivo.</p>
-              </div>
-            </div>
-
-            {/* Card 4 */}
-            <div className="bg-white rounded-[2rem] p-8 border border-gray-200/50 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-6">
-              <div className="w-14 h-14 bg-[#F3F4F6] rounded-2xl flex items-center justify-center text-gray-900">
-                <Bell className="w-7 h-7" />
-              </div>
-              <div>
-                <h3 className="text-xl font-medium text-gray-900 mb-3">Alertas dinâmicos e atualizações em tempo real.</h3>
-                <p className="text-gray-500 leading-relaxed">Fique por dentro de avisos de SEO, status da sua hospedagem e andamento de manutenções com um sistema de notificações inteligente.</p>
-              </div>
-            </div>
-
-            {/* Card 5 */}
-            <div className="bg-white rounded-[2rem] p-8 border border-gray-200/50 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-6">
-              <div className="w-14 h-14 bg-[#F3F4F6] rounded-2xl flex items-center justify-center text-gray-900">
-                <CreditCard className="w-7 h-7" />
-              </div>
-              <div>
-                <h3 className="text-xl font-medium text-gray-900 mb-3">Controle de planos e faturas.</h3>
-                <p className="text-gray-500 leading-relaxed">Acesse seu painel financeiro para visualizar os detalhes da sua assinatura de suporte, extrato de pagamentos e próximas renovações com total clareza.</p>
+              
+              {/* Fake Search Input */}
+              <div className="absolute -bottom-6 right-4 md:-right-6 bg-white/95 backdrop-blur-md border border-white shadow-xl rounded-full py-3 px-5 flex items-center gap-3 z-20 hover:scale-105 transition-transform duration-300">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <span className="font-['Inter'] text-sm text-slate-700 font-medium whitespace-nowrap min-w-[240px] transition-all duration-300">
+                  <Typewriter text={slides[currentSlide].text} />
+                </span>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Section 4: Benefícios do app e do suporte */}
-        <section className="flex flex-col gap-12 bg-gray-100/50 rounded-[3rem] p-8 md:p-12 lg:p-16 border border-white">
-          <div className="text-center flex flex-col items-center">
-            <h2 className="text-3xl lg:text-4xl font-medium text-gray-900 tracking-tight mb-4">
-              Por que utilizar o painel do cliente JuriPages?
-            </h2>
+        {/* RESPONSÁVEL POR +1000 SITES */}
+        <section className="relative w-full bg-white min-h-[40vh] flex flex-col items-center justify-center overflow-hidden py-[50px]">
+          
+          {/* Animação de Reflexo */}
+          <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-0 bottom-0 left-0 w-[60%] bg-gradient-to-r from-transparent via-white/90 to-transparent blur-2xl animate-sweep"></div>
           </div>
+          
+          {/* Title */}
+          <h2 className="relative z-10 text-center font-['Bricolage_Grotesque'] text-[28px] md:text-[42px] font-normal text-slate-900 mb-16 px-4 leading-[1.3] max-w-[1000px] mx-auto">
+            <em className="font-['Playfair_Display'] italic text-[#8b5cf6] font-normal">Responsável por +1000 sites</em> em todo o Brasil
+          </h2>
+          
+          {/* Carousel */}
+          <div className="relative w-full max-w-[1200px] mx-auto overflow-hidden z-10 flex">
+            <div className="flex animate-infinite-scroll w-max items-center gap-16 px-8 opacity-70 hover:opacity-100 transition-opacity duration-300">
+               {/* Original logos */}
+               <img src="/assets/imagem/logos/Logo-Cleyton-Vertical-300x62-2.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
+               <img src="/assets/imagem/logos/colorido_vertical-png-300x74-1.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
+               <img src="/assets/imagem/logos/logoHorizontal-1.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
+               <img src="/assets/imagem/logos/Alvaro-Alfredo_logotipo_horizontal-01-scaled-1-300x100-1.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
+               <img src="/assets/imagem/logos/Copia_de_5-removebg-preview-2-2-e1745499268558-300x184-copiar.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
+               <img src="/assets/imagem/logos/Logotipo-Horizontal-1-1.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
+               <img src="/assets/imagem/logos/DIREITO-copiar-3.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
+               <img src="/assets/imagem/logos/IP-MKT-01-1.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
+               <img src="/assets/imagem/logos/logoHorizontal.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-            <div className="flex gap-6 items-start">
-              <div className="mt-1 w-12 h-12 shrink-0 bg-white shadow-sm rounded-full flex items-center justify-center text-gray-800">
-                <Focus className="w-6 h-6" />
+               {/* Duplicated for infinite scroll */}
+               <img src="/assets/imagem/logos/Logo-Cleyton-Vertical-300x62-2.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
+               <img src="/assets/imagem/logos/colorido_vertical-png-300x74-1.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
+               <img src="/assets/imagem/logos/logoHorizontal-1.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
+               <img src="/assets/imagem/logos/Alvaro-Alfredo_logotipo_horizontal-01-scaled-1-300x100-1.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
+               <img src="/assets/imagem/logos/Copia_de_5-removebg-preview-2-2-e1745499268558-300x184-copiar.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
+               <img src="/assets/imagem/logos/Logotipo-Horizontal-1-1.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
+               <img src="/assets/imagem/logos/DIREITO-copiar-3.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
+               <img src="/assets/imagem/logos/IP-MKT-01-1.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
+               <img src="/assets/imagem/logos/logoHorizontal.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
+            </div>
+            
+            {/* Fade edges */}
+            <div className="absolute inset-y-0 left-0 w-16 md:w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
+            <div className="absolute inset-y-0 right-0 w-16 md:w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
+          </div>
+        </section>
+
+        {/* BENEFÍCIOS */}
+        <section className="py-20 bg-white">
+          <div className="max-w-[1200px] mx-auto px-4">
+            <div className="flex flex-col md:flex-row gap-12 items-center">
+              <div className="flex-1">
+                <span className="section-tag">Vantagens</span>
+                <h2 className="font-['Bricolage_Grotesque'] text-3xl md:text-4xl font-normal text-slate-900 mb-6">
+                  Tudo isso você tem acesso no seu <em className="text-[#8b5cf6] font-['Playfair_Display'] italic font-normal">painel do cliente</em>.
+                </h2>
+                <div className="space-y-6">
+                  <div className="flex gap-4">
+                    <div className="w-10 h-10 rounded-full bg-[#f8fafc] flex items-center justify-center shrink-0 border border-gray-100">
+                      <svg className="w-5 h-5 text-[#8b5cf6]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" /></svg>
+                    </div>
+                    <div>
+                      <h4 className="font-['Bricolage_Grotesque'] text-xl font-normal text-slate-900">Foco no seu escritório.</h4>
+                      <p className="text-slate-500 mt-1">Deixe a parte técnica conosco. Evite navegar por plataformas complexas de hospedagem e foca no atendimento aos seus clientes.</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-4">
+                    <div className="w-10 h-10 rounded-full bg-[#f8fafc] flex items-center justify-center shrink-0 border border-gray-100">
+                      <svg className="w-5 h-5 text-[#8b5cf6]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+                    </div>
+                    <div>
+                      <h4 className="font-['Bricolage_Grotesque'] text-xl font-normal text-slate-900">Proteção e segurança.</h4>
+                      <p className="text-slate-500 mt-1">Mantenha as credenciais das suas ferramentas protegidas, acessando apenas o que é relevante para o acompanhamento dos resultados.</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-4">
+                    <div className="w-10 h-10 rounded-full bg-[#f8fafc] flex items-center justify-center shrink-0 border border-gray-100">
+                      <svg className="w-5 h-5 text-[#8b5cf6]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
+                    </div>
+                    <div>
+                      <h4 className="font-['Bricolage_Grotesque'] text-xl font-normal text-slate-900">Visão clara de resultados.</h4>
+                      <p className="text-slate-500 mt-1">Acompanhe o crescimento da sua visibilidade online com relatórios limpos, sem excesso de jargões técnicos.</p>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div>
-                <h3 className="text-xl font-medium text-gray-900 mb-2">Foco no seu escritório.</h3>
-                <p className="text-gray-600 leading-relaxed">Deixe a parte técnica conosco. Evite a necessidade de navegar por plataformas complexas de hospedagem e foca no atendimento aos seus clientes.</p>
+              <div className="flex-1 flex justify-center items-center py-6">
+                {/* Mobile Frame Wrapper */}
+                <div className="w-[280px] md:w-[300px] p-2 bg-[#111827] rounded-[44px] shadow-[0_30px_60px_-20px_rgba(17,24,39,0.5),0_0_0_2px_rgba(17,24,39,0.9)] relative pointer-events-none select-none overflow-hidden group">
+                  <div className="relative w-full aspect-[375/812] rounded-[36px] overflow-hidden bg-[#F3F4F6] flex flex-col">
+                    {/* Notch */}
+                    <div className="absolute top-2 left-1/2 -translate-x-1/2 w-[90px] h-[22px] rounded-full bg-[#111827] z-[90]"></div>
+                    
+                    {/* Screen Content */}
+                    {/* Top Bar */}
+                    <div className="h-11 flex items-center justify-between px-6 text-[10px] font-semibold tracking-tight text-slate-900 z-10 shrink-0">
+                      <span>9:41</span>
+                      <div className="flex items-center gap-1">
+                        <svg width="14" height="10" viewBox="0 0 17 11" fill="none"><rect x="0" y="7" width="3" height="4" rx="1" fill="#111827"></rect><rect x="4.5" y="5" width="3" height="6" rx="1" fill="#111827"></rect><rect x="9" y="2.5" width="3" height="8.5" rx="1" fill="#111827"></rect><rect x="13.5" y="0" width="3" height="11" rx="1" fill="#111827"></rect></svg>
+                        <svg width="18" height="10" viewBox="0 0 24 12" fill="none"><rect x="0.5" y="0.5" width="19" height="11" rx="3.5" stroke="#111827" strokeOpacity=".4"></rect><rect x="2" y="2" width="14" height="8" rx="2" fill="#111827"></rect><path d="M21 4v4a2.5 2.5 0 0 0 0-4z" fill="#111827" fillOpacity=".5"></path></svg>
+                      </div>
+                    </div>
+                    
+                    {/* Header Action */}
+                    <div className="flex items-center gap-3 px-4 py-2 bg-white/70 backdrop-blur-md border-b border-white/90 shrink-0">
+                      <div className="flex-1 min-w-0 flex items-center justify-start py-1">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/images/novo-projeto.webp" alt="JuriPages" className="h-6 w-auto object-contain" />
+                      </div>
+                    </div>
+
+                    {/* Dashboard Content */}
+                    <div className="flex-1 px-4 py-3 flex flex-col gap-3 overflow-hidden pb-8">
+                      {/* Welcome Card */}
+                      <div className="relative overflow-hidden bg-gradient-to-b from-white to-[#F1F2F4] border border-white/70 rounded-[24px] p-4 shadow-[0_2px_12px_-6px_rgba(17,24,39,0.14)] shrink-0 text-left">
+                        <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-blue-100/70 blur-2xl"></div>
+                        <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full bg-[#DFFF00]/40 blur-2xl"></div>
+                        <div className="relative">
+                          <h1 className="text-lg font-medium tracking-tight leading-tight mb-3">Bom dia,<br/>Ana Silva</h1>
+                          <p className="text-[11px] text-slate-500 mb-0.5">Métrica de visibilidade</p>
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-2xl font-semibold tracking-tight">1.450</span>
+                            <span className="text-[9px] font-semibold text-green-800 bg-green-100 px-2 py-0.5 rounded-full">+12%</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Lime Card */}
+                      <div className="relative overflow-hidden bg-[#DFFF00] rounded-[24px] p-4 shrink-0 text-left">
+                        <div className="absolute -right-6 -top-6 w-32 h-32 border border-black/5 rounded-full"></div>
+                        <div className="relative flex items-start justify-between">
+                          <span className="text-xs font-medium text-black/70">Sites no ar</span>
+                          <div className="w-7 h-7 rounded-full bg-white/40 flex items-center justify-center shrink-0">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="9"></circle><path d="M8 12.4l2.6 2.6L16 9.6"></path></svg>
+                          </div>
+                        </div>
+                        <div className="relative mt-5">
+                          <p className="text-3xl font-medium tracking-tight text-black mb-0">3</p>
+                          <p className="text-[10px] font-medium text-black/50">Projetos ativos</p>
+                        </div>
+                      </div>
+
+                      {/* Metrics Row */}
+                      <div className="grid grid-cols-2 gap-3 shrink-0">
+                        <div className="bg-[#EAEAEA] border border-white/60 rounded-[20px] p-3 text-left">
+                          <div className="text-[10px] font-medium text-slate-500 mb-2">Acessos 30d</div>
+                          <p className="text-base font-semibold tracking-tight">1.240</p>
+                        </div>
+                        <div className="bg-[#EAEAEA] border border-white/60 rounded-[20px] p-3 text-left">
+                          <div className="text-[10px] font-medium text-slate-500 mb-2">Leads</div>
+                          <p className="text-base font-semibold tracking-tight">48</p>
+                        </div>
+                      </div>
+                      
+                      {/* Fake Chart Area */}
+                      <div className="bg-white border border-gray-100 rounded-[24px] p-4 shrink-0 h-[100px] flex flex-col justify-end gap-1 items-end relative overflow-hidden">
+                        <div className="absolute top-3 left-4 text-xs font-medium text-slate-900">Desempenho</div>
+                        <div className="w-full flex items-end justify-between h-[50px] px-2">
+                           <div className="w-4 h-[30%] bg-[#f4f0fa] rounded-t-sm"></div>
+                           <div className="w-4 h-[50%] bg-[#f4f0fa] rounded-t-sm"></div>
+                           <div className="w-4 h-[70%] bg-[#f4f0fa] rounded-t-sm"></div>
+                           <div className="w-4 h-[40%] bg-[#f4f0fa] rounded-t-sm"></div>
+                           <div className="w-4 h-[90%] bg-[#6214d1] rounded-t-sm"></div>
+                           <div className="w-4 h-[60%] bg-[#f4f0fa] rounded-t-sm"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-
-            <div className="flex gap-6 items-start">
-              <div className="mt-1 w-12 h-12 shrink-0 bg-white shadow-sm rounded-full flex items-center justify-center text-gray-800">
-                <Lock className="w-6 h-6" />
-              </div>
-              <div>
-                <h3 className="text-xl font-medium text-gray-900 mb-2">Proteção e segurança.</h3>
-                <p className="text-gray-600 leading-relaxed">Mantenha as credenciais das suas ferramentas e integrações protegidas, acessando apenas o que é relevante para o acompanhamento dos resultados.</p>
-              </div>
-            </div>
-
-            <div className="flex gap-6 items-start">
-              <div className="mt-1 w-12 h-12 shrink-0 bg-white shadow-sm rounded-full flex items-center justify-center text-gray-800">
-                <Eye className="w-6 h-6" />
-              </div>
-              <div>
-                <h3 className="text-xl font-medium text-gray-900 mb-2">Visão clara de resultados.</h3>
-                <p className="text-gray-600 leading-relaxed">Acompanhe o crescimento da sua visibilidade online com relatórios limpos, sem excesso de jargões técnicos.</p>
-              </div>
-            </div>
-
-            <div className="flex gap-6 items-start">
-              <div className="mt-1 w-12 h-12 shrink-0 bg-white shadow-sm rounded-full flex items-center justify-center text-gray-800">
-                <Layers className="w-6 h-6" />
-              </div>
-              <div>
-                <h3 className="text-xl font-medium text-gray-900 mb-2">Centralização da comunicação.</h3>
-                <p className="text-gray-600 leading-relaxed">Troque as dezenas de e-mails perdidos por um ambiente único, onde todo o histórico do seu site e do nosso suporte fica registrado e organizado.</p>
-              </div>
+          </div>
+          
+          {/* Carrossel de Vantagens Infinito */}
+          <div className="w-full mt-24 overflow-hidden relative" style={{ maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)' }}>
+            <div className="flex w-max animate-infinite-scroll gap-6 py-4 px-3 hover:[animation-play-state:paused]">
+              {[...Array(2)].map((_, i) => (
+                <div key={i} className="flex gap-6">
+                  {/* Card 1 */}
+                  <div className="w-[350px] h-full shrink-0 bg-white rounded-3xl p-8 border border-slate-200/60 shadow-[0_2px_12px_-6px_rgba(17,24,39,0.06)] flex flex-col relative overflow-hidden group hover:border-[#8b5cf6]/30 transition-colors hover:shadow-[0_8px_30px_-6px_rgba(139,92,246,0.12)]">
+                    <div className="w-12 h-12 rounded-xl bg-[#f8fafc] shadow-sm flex items-center justify-center mb-6 text-[#8b5cf6] border border-slate-100 group-hover:scale-110 transition-transform">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><line x1="3" y1="9" x2="21" y2="9" /><line x1="9" y1="21" x2="9" y2="9" /></svg>
+                    </div>
+                    <h3 className="text-xl font-['Bricolage_Grotesque'] text-slate-900 mb-2">Controle da rede</h3>
+                    <p className="text-slate-500 text-sm leading-relaxed">
+                      Visualize o status de todos os seus projetos online em tempo real. Saiba exatamente o que está ativo, pausado ou em desenvolvimento.
+                    </p>
+                  </div>
+                  {/* Card 2 */}
+                  <div className="w-[350px] h-full shrink-0 bg-white rounded-3xl p-8 border border-slate-200/60 shadow-[0_2px_12px_-6px_rgba(17,24,39,0.06)] flex flex-col relative overflow-hidden group hover:border-[#8b5cf6]/30 transition-colors hover:shadow-[0_8px_30px_-6px_rgba(139,92,246,0.12)]">
+                    <div className="w-12 h-12 rounded-xl bg-[#f8fafc] shadow-sm flex items-center justify-center mb-6 text-[#8b5cf6] border border-slate-100 group-hover:scale-110 transition-transform">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
+                    </div>
+                    <h3 className="text-xl font-['Bricolage_Grotesque'] text-slate-900 mb-2">Relatórios de performance</h3>
+                    <p className="text-slate-500 text-sm leading-relaxed">
+                      Entenda como o seu site está se saindo no Google. Acesse gráficos claros e simplificados de cliques e impressões diretamente do Search Console.
+                    </p>
+                  </div>
+                  {/* Card 3 */}
+                  <div className="w-[350px] h-full shrink-0 bg-white rounded-3xl p-8 border border-slate-200/60 shadow-[0_2px_12px_-6px_rgba(17,24,39,0.06)] flex flex-col relative overflow-hidden group hover:border-[#8b5cf6]/30 transition-colors hover:shadow-[0_8px_30px_-6px_rgba(139,92,246,0.12)]">
+                    <div className="w-12 h-12 rounded-xl bg-[#f8fafc] shadow-sm flex items-center justify-center mb-6 text-[#8b5cf6] border border-slate-100 group-hover:scale-110 transition-transform">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+                    </div>
+                    <h3 className="text-xl font-['Bricolage_Grotesque'] text-slate-900 mb-2">Comunicação direta</h3>
+                    <p className="text-slate-500 text-sm leading-relaxed">
+                      Receba comunicados oficiais, notas técnicas da nossa equipe e atualizações importantes sobre o andamento do seu projeto através de um feed exclusivo.
+                    </p>
+                  </div>
+                  {/* Card 4 */}
+                  <div className="w-[350px] h-full shrink-0 bg-white rounded-3xl p-8 border border-slate-200/60 shadow-[0_2px_12px_-6px_rgba(17,24,39,0.06)] flex flex-col relative overflow-hidden group hover:border-[#8b5cf6]/30 transition-colors hover:shadow-[0_8px_30px_-6px_rgba(139,92,246,0.12)]">
+                    <div className="w-12 h-12 rounded-xl bg-[#f8fafc] shadow-sm flex items-center justify-center mb-6 text-[#8b5cf6] border border-slate-100 group-hover:scale-110 transition-transform">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>
+                    </div>
+                    <h3 className="text-xl font-['Bricolage_Grotesque'] text-slate-900 mb-2">Alertas dinâmicos</h3>
+                    <p className="text-slate-500 text-sm leading-relaxed">
+                      Fique por dentro de avisos de SEO, status da sua hospedagem e andamento de manutenções com um sistema de notificações inteligente.
+                    </p>
+                  </div>
+                  {/* Card 5 */}
+                  <div className="w-[350px] h-full shrink-0 bg-white rounded-3xl p-8 border border-slate-200/60 shadow-[0_2px_12px_-6px_rgba(17,24,39,0.06)] flex flex-col relative overflow-hidden group hover:border-[#8b5cf6]/30 transition-colors hover:shadow-[0_8px_30px_-6px_rgba(139,92,246,0.12)]">
+                    <div className="w-12 h-12 rounded-xl bg-[#f8fafc] shadow-sm flex items-center justify-center mb-6 text-[#8b5cf6] border border-slate-100 group-hover:scale-110 transition-transform">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                    </div>
+                    <h3 className="text-xl font-['Bricolage_Grotesque'] text-slate-900 mb-2">Suporte Contra Queda</h3>
+                    <p className="text-slate-500 text-sm leading-relaxed">
+                      Monitoramento contínuo. Se o seu site sofrer instabilidade, somos notificados na hora para reestabelecer o acesso rapidamente.
+                    </p>
+                  </div>
+                  {/* Card 6 */}
+                  <div className="w-[350px] h-full shrink-0 bg-white rounded-3xl p-8 border border-slate-200/60 shadow-[0_2px_12px_-6px_rgba(17,24,39,0.06)] flex flex-col relative overflow-hidden group hover:border-[#8b5cf6]/30 transition-colors hover:shadow-[0_8px_30px_-6px_rgba(139,92,246,0.12)]">
+                    <div className="w-12 h-12 rounded-xl bg-[#f8fafc] shadow-sm flex items-center justify-center mb-6 text-[#8b5cf6] border border-slate-100 group-hover:scale-110 transition-transform">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>
+                    </div>
+                    <h3 className="text-xl font-['Bricolage_Grotesque'] text-slate-900 mb-2">Otimização do SEO</h3>
+                    <p className="text-slate-500 text-sm leading-relaxed">
+                      Ajustes para manter seu site rápido e bem posicionado.
+                    </p>
+                  </div>
+                  {/* Card 7 */}
+                  <div className="w-[350px] h-full shrink-0 bg-white rounded-3xl p-8 border border-slate-200/60 shadow-[0_2px_12px_-6px_rgba(17,24,39,0.06)] flex flex-col relative overflow-hidden group hover:border-[#8b5cf6]/30 transition-colors hover:shadow-[0_8px_30px_-6px_rgba(139,92,246,0.12)]">
+                    <div className="w-12 h-12 rounded-xl bg-[#f8fafc] shadow-sm flex items-center justify-center mb-6 text-[#8b5cf6] border border-slate-100 group-hover:scale-110 transition-transform">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    </div>
+                    <h3 className="text-xl font-['Bricolage_Grotesque'] text-slate-900 mb-2">Backups de Segurança</h3>
+                    <p className="text-slate-500 text-sm leading-relaxed">
+                      Cópias de segurança frequentes para proteger todos os seus dados.
+                    </p>
+                  </div>
+                  {/* Card 8 */}
+                  <div className="w-[350px] h-full shrink-0 bg-white rounded-3xl p-8 border border-slate-200/60 shadow-[0_2px_12px_-6px_rgba(17,24,39,0.06)] flex flex-col relative overflow-hidden group hover:border-[#8b5cf6]/30 transition-colors hover:shadow-[0_8px_30px_-6px_rgba(139,92,246,0.12)]">
+                    <div className="w-12 h-12 rounded-xl bg-[#f8fafc] shadow-sm flex items-center justify-center mb-6 text-[#8b5cf6] border border-slate-100 group-hover:scale-110 transition-transform">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/><path d="M14 3v5h5M16 13H8M16 17H8M10 9H8"/></svg>
+                    </div>
+                    <h3 className="text-xl font-['Bricolage_Grotesque'] text-slate-900 mb-2">Agende Postagens</h3>
+                    <p className="text-slate-500 text-sm leading-relaxed">
+                      Escreva e programe publicações diretamente pela plataforma. Mantenha seu site sempre vivo com conteúdo novo sem esforço.
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* Section 5: CTA Final */}
-        <section className="bg-[#DFFF00] rounded-[3rem] p-12 md:p-16 lg:p-20 text-center relative overflow-hidden mb-12 shadow-xl">
-          <div className="relative z-10 max-w-2xl mx-auto flex flex-col items-center gap-8">
-            <h2 className="text-4xl md:text-5xl font-medium tracking-tight text-black">
-              Tenha o controle do seu projeto digital na palma da mão.
+        {/* Espaço reservado (seção movida para cima) */}
+
+        {/* PLANOS DE SUPORTE */}
+        <section id="planos" className="planos-section">
+          <div className="text-center mb-[50px] relative">
+            <div className="services-watermark text-[80px] md:text-[160px] -top-12 font-['Inter'] font-normal italic">planos</div>
+            <h2 className="font-['Bricolage_Grotesque'] text-4xl md:text-5xl font-normal text-slate-900 mb-4 relative z-10">
+              Planos de Suporte e <em className="text-[#8b5cf6] font-['Playfair_Display'] italic font-normal">Manutenção</em>
             </h2>
-            <Link href="/login">
-              <button className="bg-black text-white px-8 py-4 rounded-full font-medium flex items-center gap-2 hover:bg-gray-800 transition-colors text-lg shadow-2xl shadow-black/20">
-                Acessar o aplicativo JuriPages <ArrowRight className="w-5 h-5" />
-              </button>
-            </Link>
+            <p className="text-slate-500 max-w-[600px] mx-auto mb-[30px] leading-relaxed">
+              Proposta de manutenção, segurança e crescimento contínuo do site. Escolha o melhor pacote para você.
+            </p>
+
+            <div className="pricing-toggle-wrapper">
+              <div className="pricing-toggle">
+                <button onClick={() => setPeriod("mensal")} className={`toggle-btn ${period === "mensal" ? "active" : ""}`}>Mensal</button>
+                <button onClick={() => setPeriod("semestral")} className={`toggle-btn ${period === "semestral" ? "active" : ""}`}>Semestral (-10%)</button>
+                <button onClick={() => setPeriod("anual")} className={`toggle-btn ${period === "anual" ? "active" : ""}`}>Anual (-20%)</button>
+              </div>
+            </div>
+          </div>
+
+          <div className="services-grid">
+            {/* Plano Essencial */}
+            <div className="plano-card items-start text-left">
+              <h3 className="plano-title">Essencial</h3>
+
+              <div className="plano-price">
+                <span className="currency">R$</span>
+                <span className="price-value">{prices.essencial[period]}</span>
+                <span className="period">{periodLabels[period]}</span>
+              </div>
+
+              <div className="site-limit w-full">Até 1 Site</div>
+
+              <ul className="plano-features">
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="M22 4L12 14.01l-3-3" /></svg><span><strong>Atualizações mensais:</strong> o site é atualizado uma vez por mês</span></li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="M22 4L12 14.01l-3-3" /></svg><span><strong>Backup semanal:</strong> cópia de segurança feita toda semana</span></li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="M22 4L12 14.01l-3-3" /></svg><span><strong>Suporte em horário comercial:</strong> resposta em até 24h</span></li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="M22 4L12 14.01l-3-3" /></svg><span><strong>Segurança básica:</strong> certificado SSL e atualizações de segurança</span></li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="M22 4L12 14.01l-3-3" /></svg><span><strong>Checagem no Google:</strong> verificação mensal nas buscas</span></li>
+              </ul>
+
+              <Link href="/login" className="btn-plano-outline">Começar Agora</Link>
+            </div>
+
+            {/* Plano Profissional */}
+            <div className="plano-card destaque items-start text-left">
+              <div className="plano-badge bg-[#8b5cf6]">Mais Popular</div>
+              <h3 className="plano-title">Profissional</h3>
+
+              <div className="plano-price">
+                <span className="currency">R$</span>
+                <span className="price-value">{prices.profissional[period]}</span>
+                <span className="period">{periodLabels[period]}</span>
+              </div>
+
+              <div className="site-limit w-full">Até 3 Sites</div>
+
+              <ul className="plano-features">
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="M22 4L12 14.01l-3-3" /></svg><span><strong>Atualização de conteúdo:</strong> a cada 15 dias no site</span></li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="M22 4L12 14.01l-3-3" /></svg><span><strong>Backup diário:</strong> cópia de segurança todos os dias</span></li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="M22 4L12 14.01l-3-3" /></svg><span><strong>Suporte 7 dias por semana:</strong> resposta em até 6 horas</span></li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="M22 4L12 14.01l-3-3" /></svg><span><strong>Segurança avançada:</strong> firewall (WAF), monitoramento de malware</span></li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="M22 4L12 14.01l-3-3" /></svg><span><strong>SEO básico:</strong> ajustes pra ajudar nas buscas</span></li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="M22 4L12 14.01l-3-3" /></svg><span><strong>Atualização de blog:</strong> até 6 textos por mês</span></li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="M22 4L12 14.01l-3-3" /></svg><span><strong>Hospedagem e Domínio:</strong> gratuitos a partir da anual.</span></li>
+              </ul>
+
+              <Link href="/login" className="btn-primary">Começar Agora</Link>
+            </div>
+
+            {/* Plano Premium */}
+            <div className="plano-card items-start text-left">
+              <h3 className="plano-title">Premium</h3>
+
+              <div className="plano-price">
+                <span className="currency">R$</span>
+                <span className="price-value">{prices.premium[period]}</span>
+                <span className="period">{periodLabels[period]}</span>
+              </div>
+
+              <div className="site-limit w-full">Até 12 Sites</div>
+
+              <ul className="plano-features">
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="M22 4L12 14.01l-3-3" /></svg><span><strong>Atualização de conteúdo:</strong> toda semana, prioridade máxima</span></li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="M22 4L12 14.01l-3-3" /></svg><span><strong>Backup diário duplo:</strong> guardado em dois lugares</span></li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="M22 4L12 14.01l-3-3" /></svg><span><strong>Monitoramento 24h:</strong> correção imediata se o site cair</span></li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="M22 4L12 14.01l-3-3" /></svg><span><strong>Segurança avançada:</strong> WAF de alta capacidade</span></li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="M22 4L12 14.01l-3-3" /></svg><span><strong>Otimização para campanhas:</strong> ajustes em landing pages</span></li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="M22 4L12 14.01l-3-3" /></svg><span><strong>SEO contínuo:</strong> acompanhamento e relatórios</span></li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="M22 4L12 14.01l-3-3" /></svg><span><strong>Blog e Páginas:</strong> até 12 publicações e 4 páginas/mês</span></li>
+              </ul>
+
+              <Link href="/login" className="btn-plano-outline">Começar Agora</Link>
+            </div>
           </div>
         </section>
 
-      </main>
-    </div>
+
+        {/* CTA FINAL / DUVIDA */}
+        <section className="px-5 pb-20 bg-white">
+          <div className="max-w-[1200px] mx-auto">
+            <div className="bg-gradient-to-br from-slate-900 to-indigo-950 rounded-3xl p-10 md:p-16 text-center relative overflow-hidden shadow-[0_20px_40px_rgba(0,0,0,0.1)]">
+              <div className="absolute -top-1/2 -left-[10%] w-[60%] h-[200%] bg-[radial-gradient(ellipse_at_center,rgba(139,92,246,0.2)_0%,transparent_70%)] pointer-events-none rotate-12"></div>
+
+              <h2 className="font-['Bricolage_Grotesque'] text-3xl md:text-[38px] text-white font-normal mb-5 relative z-10">
+                Está em dúvida sobre qual o<br />plano ideal para seu site?
+              </h2>
+
+              <p className="font-['Inter'] text-slate-300 max-w-[700px] mx-auto mb-10 leading-[1.6] relative z-10">
+                Sem problemas! Vamos agendar um bate-papo rápido para entender suas necessidades, analisar a estrutura do seu site e te propor o melhor plano de manutenção para o seu momento atual, ou você pode começar agora mesmo.
+              </p>
+
+              <Link href="/login" className="btn-primary w-auto inline-flex relative z-10 mx-auto border border-[#8b5cf6]/60">
+                Começar Agora
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* FOOTER */}
+        <footer className="bg-[#f5f3ff] py-6 border-t border-[#a78bfa]">
+          <div className="max-w-[1200px] mx-auto px-4 flex flex-wrap justify-between items-center gap-5">
+            <div>
+              <Image src="/assets/imagem/juripages.webp" alt="JuriPages" width={150} height={40} className="h-10 w-auto" />
+            </div>
+            <p className="text-[#8b5cf6] font-['DM_Sans'] text-sm m-0 text-right">
+              © 2026 JuriPages - Sites para Advogados. Todos os direitos reservados.
+            </p>
+          </div>
+        </footer>
+      </div>
+    </>
   )
 }
