@@ -520,14 +520,27 @@ export default function JuriPagesAppLanding() {
           <div className="w-[95%] md:w-[90%] mx-auto pb-10 perspective-1200">
             <div 
               ref={heroImageRef}
-              className="w-full relative rounded-[2rem] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] border border-slate-200 overflow-hidden transform-gpu will-change-transform" 
+              className="w-full relative rounded-xl md:rounded-[2rem] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] border border-slate-200 overflow-hidden transform-gpu will-change-transform" 
               style={{ 
-                aspectRatio: '1920/1080',
                 transform: 'perspective(1200px) rotateX(15deg) rotateY(-5deg) scale(0.95)',
                 transition: 'transform 0.1s ease-out'
               }}
             >
-              <HeroDashboardMockup />
+              {/* DESKTOP */}
+              <div className="hidden md:block w-full" style={{ aspectRatio: '1920/1080' }}>
+                <HeroDashboardMockup />
+              </div>
+
+              {/* MOBILE */}
+              <div className="block md:hidden w-full">
+                <Image 
+                  src="/assets/imagem/hero-mobile.png" 
+                  alt="Painel JuriPages Mobile" 
+                  width={600} 
+                  height={1200} 
+                  className="w-full h-auto object-cover" 
+                />
+              </div>
             </div>
           </div>
         </section>
