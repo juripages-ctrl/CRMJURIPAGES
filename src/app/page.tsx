@@ -1,8 +1,10 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import Image from "next/image"
+import { HeroDashboardMockup } from "@/components/HeroDashboardMockup"
+import { FeatureCarouselSection } from "@/components/FeatureCarouselSection"
 
 const WhatsAppIcon = ({ className }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className={className} fill="currentColor">
@@ -10,56 +12,33 @@ const WhatsAppIcon = ({ className }: { className?: string }) => (
   </svg>
 )
 
-function Typewriter({ text }: { text: string }) {
-  const [displayedText, setDisplayedText] = useState("")
-
-  useEffect(() => {
-    setDisplayedText("")
-    let i = 0
-    const intervalId = setInterval(() => {
-      setDisplayedText(text.slice(0, i + 1))
-      i++
-      if (i >= text.length) {
-        clearInterval(intervalId)
-      }
-    }, 50)
-    
-    return () => clearInterval(intervalId)
-  }, [text])
-
-  return (
-    <>
-      {displayedText}
-      <span className="inline-block w-[2px] h-[1em] bg-[#8b5cf6] ml-[2px] animate-pulse align-middle opacity-80"></span>
-    </>
-  )
-}
-
 export default function JuriPagesAppLanding() {
   const [period, setPeriod] = useState<"mensal" | "semestral" | "anual">("mensal")
-  const [currentSlide, setCurrentSlide] = useState(0)
 
-  const slides = [
-    {
-      image: "/assets/imagem/Planilha-de-teses-validadas-1536x864.webp",
-      text: "Métricas e estratégias validadas"
-    },
-    {
-      image: "/assets/imagem/clarity.gif",
-      text: "Gravação de tela dos usuários"
-    },
-    {
-      image: "/assets/imagem/google-search-console.webp",
-      text: "Análise de performance no Google"
-    }
-  ]
+  const heroImageRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length)
-    }, 4000)
-    return () => clearInterval(timer)
-  }, [slides.length])
+    const handleScroll = () => {
+      if (!heroImageRef.current) return
+      
+      const scrollY = window.scrollY
+      const maxScroll = 400
+      const progress = Math.min(scrollY / maxScroll, 1)
+      
+      // Starts tilted: rotateX(15deg) rotateY(-5deg) scale(0.95)
+      // Ends straight: rotateX(0) rotateY(0) scale(1)
+      const rotateX = 15 - (15 * progress)
+      const rotateY = -5 - (-5 * progress)
+      const scale = 0.95 + (0.05 * progress)
+      
+      heroImageRef.current.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(${scale})`
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    handleScroll() // initial call
+    
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
   const periodLabels = {
     mensal: "/mês",
@@ -538,11 +517,17 @@ export default function JuriPagesAppLanding() {
             </div>
           </div>
 
-          <div className="w-[95%] md:w-[90%] mx-auto pb-10">
-            <div className="w-full bg-slate-200/50 flex items-center justify-center overflow-hidden relative rounded-2xl shadow-xl border border-slate-200" style={{ aspectRatio: '1920/1080' }}>
-              <div className="absolute inset-0 flex items-center justify-center text-slate-400 font-medium font-['Inter'] text-xs md:text-base text-center px-4">
-                [ MOLDE DE IMAGEM DA PLATAFORMA - 1920x1080 ]
-              </div>
+          <div className="w-[95%] md:w-[90%] mx-auto pb-10 perspective-1200">
+            <div 
+              ref={heroImageRef}
+              className="w-full relative rounded-[2rem] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] border border-slate-200 overflow-hidden transform-gpu will-change-transform" 
+              style={{ 
+                aspectRatio: '1920/1080',
+                transform: 'perspective(1200px) rotateX(15deg) rotateY(-5deg) scale(0.95)',
+                transition: 'transform 0.1s ease-out'
+              }}
+            >
+              <HeroDashboardMockup />
             </div>
           </div>
         </section>
@@ -564,43 +549,60 @@ export default function JuriPagesAppLanding() {
 
 
         {/* ESTRATÉGIA */}
-        <section className="py-20 bg-white relative overflow-hidden">
-          <div className="max-w-[1200px] mx-auto px-4 flex flex-wrap items-center justify-between gap-10">
-            <div className="flex-1 min-w-[320px] relative z-10">
-              <div className="services-watermark text-[80px] md:text-[130px] font-['Playfair_Display'] italic font-normal lowercase opacity-5 -left-10 top-1/2 -translate-y-1/2">estratégia</div>
-              <h2 className="font-['Bricolage_Grotesque'] text-4xl md:text-[42px] font-normal text-slate-900 mb-5 leading-[1.2]">
-                Transformamos <br />
-                <strong className="font-['Playfair_Display'] italic text-[#8b5cf6] font-normal">dados em estratégias</strong>
-              </h2>
-              <p className="text-slate-500 text-base leading-[1.6] max-w-[500px]">
-                Monitoramos acessos, cliques e comportamento do usuário, transformando esses dados em relatórios estratégicos e ajustes contínuos que aumentam a captação de clientes.
-              </p>
-            </div>
-            <div className="flex-1 min-w-[320px] relative">
-              <div className="relative w-full aspect-video rounded-xl shadow-[0_20px_40px_rgba(0,0,0,0.08)] overflow-hidden z-10 bg-slate-50">
-                {slides.map((slide, index) => (
-                  <Image
-                    key={index}
-                    src={slide.image}
-                    alt={slide.text}
-                    fill
-                    className={`object-cover transition-opacity duration-1000 ${
-                      index === currentSlide ? "opacity-100" : "opacity-0"
-                    }`}
-                  />
-                ))}
-              </div>
-              
-              {/* Fake Search Input */}
-              <div className="absolute -bottom-6 right-4 md:-right-6 bg-white/95 backdrop-blur-md border border-white shadow-xl rounded-full py-3 px-5 flex items-center gap-3 z-20 hover:scale-105 transition-transform duration-300">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                <span className="font-['Inter'] text-sm text-slate-700 font-medium whitespace-nowrap min-w-[240px] transition-all duration-300">
-                  <Typewriter text={slides[currentSlide].text} />
-                </span>
-              </div>
-            </div>
-          </div>
-        </section>
+        <FeatureCarouselSection
+          watermarkText="estratégia"
+          titlePlain="Transformamos"
+          titleHighlighted="dados em estratégias"
+          description="Monitoramos acessos, cliques e comportamento do usuário, transformando esses dados em relatórios estratégicos e ajustes contínuos que aumentam a captação de clientes."
+          slides={[
+            { image: "/assets/imagem/Planilha-de-teses-validadas-1536x864.webp", text: "Métricas e estratégias validadas" },
+            { image: "/assets/imagem/clarity.gif", text: "Gravação de tela dos usuários" },
+            { image: "/assets/imagem/google-search-console.webp", text: "Análise de performance no Google" }
+          ]}
+          reverse={false}
+        />
+
+        {/* SEGURANÇA */}
+        <FeatureCarouselSection
+          watermarkText="segurança"
+          titlePlain="Otimizações de"
+          titleHighlighted="segurança e backups"
+          description="Proteção contra quedas, backups regulares e suporte dedicado para garantir que seu site jurídico esteja sempre no ar e seguro."
+          slides={[
+            { image: "/assets/imagem/Planilha-de-teses-validadas-1536x864.webp", text: "Otimizações de segurança" },
+            { image: "/assets/imagem/clarity.gif", text: "Backups automatizados" },
+            { image: "/assets/imagem/google-search-console.webp", text: "Suporte contra quedas" }
+          ]}
+          reverse={true}
+        />
+
+        {/* COMUNICAÇÃO */}
+        <FeatureCarouselSection
+          watermarkText="contato"
+          titlePlain="Contato com a equipe"
+          titleHighlighted="pelo WhatsApp"
+          description="Fale diretamente com nossa equipe de suporte via WhatsApp e agende reuniões estratégicas para acompanhar a evolução do seu projeto."
+          slides={[
+            { image: "/assets/imagem/Planilha-de-teses-validadas-1536x864.webp", text: "Atendimento direto" },
+            { image: "/assets/imagem/clarity.gif", text: "Reuniões agendadas" },
+            { image: "/assets/imagem/google-search-console.webp", text: "Acompanhamento estratégico" }
+          ]}
+          reverse={false}
+        />
+
+        {/* BLOG */}
+        <FeatureCarouselSection
+          watermarkText="blog"
+          titlePlain="Funcionalidade de"
+          titleHighlighted="postagem no blog e agendamento"
+          description="Funcionalidade completa para gerenciamento do seu blog jurídico, permitindo criar, editar e agendar postagens com facilidade."
+          slides={[
+            { image: "/assets/imagem/Planilha-de-teses-validadas-1536x864.webp", text: "Criação de artigos" },
+            { image: "/assets/imagem/clarity.gif", text: "Agendamento de postagens" },
+            { image: "/assets/imagem/google-search-console.webp", text: "Gestão de conteúdo" }
+          ]}
+          reverse={true}
+        />
 
         {/* RESPONSÁVEL POR +1000 SITES */}
         <section className="relative w-full bg-white min-h-[40vh] flex flex-col items-center justify-center overflow-hidden py-[50px]">
@@ -610,40 +612,96 @@ export default function JuriPagesAppLanding() {
             <div className="absolute top-0 bottom-0 left-0 w-[60%] bg-gradient-to-r from-transparent via-white/90 to-transparent blur-2xl animate-sweep"></div>
           </div>
           
-          {/* Title */}
-          <h2 className="relative z-10 text-center font-['Bricolage_Grotesque'] text-[28px] md:text-[42px] font-normal text-slate-900 mb-16 px-4 leading-[1.3] max-w-[1000px] mx-auto">
-            <em className="font-['Playfair_Display'] italic text-[#8b5cf6] font-normal">Responsável por +1000 sites</em> em todo o Brasil
-          </h2>
-          
-          {/* Carousel */}
-          <div className="relative w-full max-w-[1200px] mx-auto overflow-hidden z-10 flex">
-            <div className="flex animate-infinite-scroll w-max items-center gap-16 px-8 opacity-70 hover:opacity-100 transition-opacity duration-300">
-               {/* Original logos */}
-               <img src="/assets/imagem/logos/Logo-Cleyton-Vertical-300x62-2.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
-               <img src="/assets/imagem/logos/colorido_vertical-png-300x74-1.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
-               <img src="/assets/imagem/logos/logoHorizontal-1.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
-               <img src="/assets/imagem/logos/Alvaro-Alfredo_logotipo_horizontal-01-scaled-1-300x100-1.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
-               <img src="/assets/imagem/logos/Copia_de_5-removebg-preview-2-2-e1745499268558-300x184-copiar.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
-               <img src="/assets/imagem/logos/Logotipo-Horizontal-1-1.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
-               <img src="/assets/imagem/logos/DIREITO-copiar-3.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
-               <img src="/assets/imagem/logos/IP-MKT-01-1.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
-               <img src="/assets/imagem/logos/logoHorizontal.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
 
-               {/* Duplicated for infinite scroll */}
-               <img src="/assets/imagem/logos/Logo-Cleyton-Vertical-300x62-2.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
-               <img src="/assets/imagem/logos/colorido_vertical-png-300x74-1.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
-               <img src="/assets/imagem/logos/logoHorizontal-1.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
-               <img src="/assets/imagem/logos/Alvaro-Alfredo_logotipo_horizontal-01-scaled-1-300x100-1.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
-               <img src="/assets/imagem/logos/Copia_de_5-removebg-preview-2-2-e1745499268558-300x184-copiar.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
-               <img src="/assets/imagem/logos/Logotipo-Horizontal-1-1.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
-               <img src="/assets/imagem/logos/DIREITO-copiar-3.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
-               <img src="/assets/imagem/logos/IP-MKT-01-1.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
-               <img src="/assets/imagem/logos/logoHorizontal.webp" alt="Logo" className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
+          
+          {/* Carrossel de Vantagens Infinito */}
+          <div className="w-full mt-24 overflow-hidden relative" style={{ maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)' }}>
+            <div className="flex w-max animate-infinite-scroll gap-6 py-4 px-3 hover:[animation-play-state:paused]">
+              {[...Array(2)].map((_, i) => (
+                <div key={i} className="flex gap-6">
+                  {/* Card 1 */}
+                  <div className="w-[350px] h-full shrink-0 bg-white rounded-3xl p-8 border border-slate-200/60 shadow-[0_2px_12px_-6px_rgba(17,24,39,0.06)] flex flex-col relative overflow-hidden group hover:border-[#8b5cf6]/30 transition-colors hover:shadow-[0_8px_30px_-6px_rgba(139,92,246,0.12)]">
+                    <div className="w-12 h-12 rounded-xl bg-[#f8fafc] shadow-sm flex items-center justify-center mb-6 text-[#8b5cf6] border border-slate-100 group-hover:scale-110 transition-transform">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><line x1="3" y1="9" x2="21" y2="9" /><line x1="9" y1="21" x2="9" y2="9" /></svg>
+                    </div>
+                    <h3 className="text-xl font-['Bricolage_Grotesque'] text-slate-900 mb-2">Controle da rede</h3>
+                    <p className="text-slate-500 text-sm leading-relaxed">
+                      Visualize o status de todos os seus projetos online em tempo real. Saiba exatamente o que está ativo, pausado ou em desenvolvimento.
+                    </p>
+                  </div>
+                  {/* Card 2 */}
+                  <div className="w-[350px] h-full shrink-0 bg-white rounded-3xl p-8 border border-slate-200/60 shadow-[0_2px_12px_-6px_rgba(17,24,39,0.06)] flex flex-col relative overflow-hidden group hover:border-[#8b5cf6]/30 transition-colors hover:shadow-[0_8px_30px_-6px_rgba(139,92,246,0.12)]">
+                    <div className="w-12 h-12 rounded-xl bg-[#f8fafc] shadow-sm flex items-center justify-center mb-6 text-[#8b5cf6] border border-slate-100 group-hover:scale-110 transition-transform">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
+                    </div>
+                    <h3 className="text-xl font-['Bricolage_Grotesque'] text-slate-900 mb-2">Relatórios de performance</h3>
+                    <p className="text-slate-500 text-sm leading-relaxed">
+                      Entenda como o seu site está se saindo no Google. Acesse gráficos claros e simplificados de cliques e impressões diretamente do Search Console.
+                    </p>
+                  </div>
+                  {/* Card 3 */}
+                  <div className="w-[350px] h-full shrink-0 bg-white rounded-3xl p-8 border border-slate-200/60 shadow-[0_2px_12px_-6px_rgba(17,24,39,0.06)] flex flex-col relative overflow-hidden group hover:border-[#8b5cf6]/30 transition-colors hover:shadow-[0_8px_30px_-6px_rgba(139,92,246,0.12)]">
+                    <div className="w-12 h-12 rounded-xl bg-[#f8fafc] shadow-sm flex items-center justify-center mb-6 text-[#8b5cf6] border border-slate-100 group-hover:scale-110 transition-transform">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+                    </div>
+                    <h3 className="text-xl font-['Bricolage_Grotesque'] text-slate-900 mb-2">Comunicação direta</h3>
+                    <p className="text-slate-500 text-sm leading-relaxed">
+                      Receba comunicados oficiais, notas técnicas da nossa equipe e atualizações importantes sobre o andamento do seu projeto através de um feed exclusivo.
+                    </p>
+                  </div>
+                  {/* Card 4 */}
+                  <div className="w-[350px] h-full shrink-0 bg-white rounded-3xl p-8 border border-slate-200/60 shadow-[0_2px_12px_-6px_rgba(17,24,39,0.06)] flex flex-col relative overflow-hidden group hover:border-[#8b5cf6]/30 transition-colors hover:shadow-[0_8px_30px_-6px_rgba(139,92,246,0.12)]">
+                    <div className="w-12 h-12 rounded-xl bg-[#f8fafc] shadow-sm flex items-center justify-center mb-6 text-[#8b5cf6] border border-slate-100 group-hover:scale-110 transition-transform">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>
+                    </div>
+                    <h3 className="text-xl font-['Bricolage_Grotesque'] text-slate-900 mb-2">Alertas dinâmicos</h3>
+                    <p className="text-slate-500 text-sm leading-relaxed">
+                      Fique por dentro de avisos de SEO, status da sua hospedagem e andamento de manutenções com um sistema de notificações inteligente.
+                    </p>
+                  </div>
+                  {/* Card 5 */}
+                  <div className="w-[350px] h-full shrink-0 bg-white rounded-3xl p-8 border border-slate-200/60 shadow-[0_2px_12px_-6px_rgba(17,24,39,0.06)] flex flex-col relative overflow-hidden group hover:border-[#8b5cf6]/30 transition-colors hover:shadow-[0_8px_30px_-6px_rgba(139,92,246,0.12)]">
+                    <div className="w-12 h-12 rounded-xl bg-[#f8fafc] shadow-sm flex items-center justify-center mb-6 text-[#8b5cf6] border border-slate-100 group-hover:scale-110 transition-transform">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                    </div>
+                    <h3 className="text-xl font-['Bricolage_Grotesque'] text-slate-900 mb-2">Suporte Contra Queda</h3>
+                    <p className="text-slate-500 text-sm leading-relaxed">
+                      Monitoramento contínuo. Se o seu site sofrer instabilidade, somos notificados na hora para reestabelecer o acesso rapidamente.
+                    </p>
+                  </div>
+                  {/* Card 6 */}
+                  <div className="w-[350px] h-full shrink-0 bg-white rounded-3xl p-8 border border-slate-200/60 shadow-[0_2px_12px_-6px_rgba(17,24,39,0.06)] flex flex-col relative overflow-hidden group hover:border-[#8b5cf6]/30 transition-colors hover:shadow-[0_8px_30px_-6px_rgba(139,92,246,0.12)]">
+                    <div className="w-12 h-12 rounded-xl bg-[#f8fafc] shadow-sm flex items-center justify-center mb-6 text-[#8b5cf6] border border-slate-100 group-hover:scale-110 transition-transform">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>
+                    </div>
+                    <h3 className="text-xl font-['Bricolage_Grotesque'] text-slate-900 mb-2">Otimização do SEO</h3>
+                    <p className="text-slate-500 text-sm leading-relaxed">
+                      Ajustes para manter seu site rápido e bem posicionado.
+                    </p>
+                  </div>
+                  {/* Card 7 */}
+                  <div className="w-[350px] h-full shrink-0 bg-white rounded-3xl p-8 border border-slate-200/60 shadow-[0_2px_12px_-6px_rgba(17,24,39,0.06)] flex flex-col relative overflow-hidden group hover:border-[#8b5cf6]/30 transition-colors hover:shadow-[0_8px_30px_-6px_rgba(139,92,246,0.12)]">
+                    <div className="w-12 h-12 rounded-xl bg-[#f8fafc] shadow-sm flex items-center justify-center mb-6 text-[#8b5cf6] border border-slate-100 group-hover:scale-110 transition-transform">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    </div>
+                    <h3 className="text-xl font-['Bricolage_Grotesque'] text-slate-900 mb-2">Backups de Segurança</h3>
+                    <p className="text-slate-500 text-sm leading-relaxed">
+                      Cópias de segurança frequentes para proteger todos os seus dados.
+                    </p>
+                  </div>
+                  {/* Card 8 */}
+                  <div className="w-[350px] h-full shrink-0 bg-white rounded-3xl p-8 border border-slate-200/60 shadow-[0_2px_12px_-6px_rgba(17,24,39,0.06)] flex flex-col relative overflow-hidden group hover:border-[#8b5cf6]/30 transition-colors hover:shadow-[0_8px_30px_-6px_rgba(139,92,246,0.12)]">
+                    <div className="w-12 h-12 rounded-xl bg-[#f8fafc] shadow-sm flex items-center justify-center mb-6 text-[#8b5cf6] border border-slate-100 group-hover:scale-110 transition-transform">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/><path d="M14 3v5h5M16 13H8M16 17H8M10 9H8"/></svg>
+                    </div>
+                    <h3 className="text-xl font-['Bricolage_Grotesque'] text-slate-900 mb-2">Agende Postagens</h3>
+                    <p className="text-slate-500 text-sm leading-relaxed">
+                      Escreva e programe publicações diretamente pela plataforma. Mantenha seu site sempre vivo com conteúdo novo sem esforço.
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
-            
-            {/* Fade edges */}
-            <div className="absolute inset-y-0 left-0 w-16 md:w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
-            <div className="absolute inset-y-0 right-0 w-16 md:w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
           </div>
         </section>
 
@@ -773,95 +831,6 @@ export default function JuriPagesAppLanding() {
             </div>
           </div>
           
-          {/* Carrossel de Vantagens Infinito */}
-          <div className="w-full mt-24 overflow-hidden relative" style={{ maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)' }}>
-            <div className="flex w-max animate-infinite-scroll gap-6 py-4 px-3 hover:[animation-play-state:paused]">
-              {[...Array(2)].map((_, i) => (
-                <div key={i} className="flex gap-6">
-                  {/* Card 1 */}
-                  <div className="w-[350px] h-full shrink-0 bg-white rounded-3xl p-8 border border-slate-200/60 shadow-[0_2px_12px_-6px_rgba(17,24,39,0.06)] flex flex-col relative overflow-hidden group hover:border-[#8b5cf6]/30 transition-colors hover:shadow-[0_8px_30px_-6px_rgba(139,92,246,0.12)]">
-                    <div className="w-12 h-12 rounded-xl bg-[#f8fafc] shadow-sm flex items-center justify-center mb-6 text-[#8b5cf6] border border-slate-100 group-hover:scale-110 transition-transform">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><line x1="3" y1="9" x2="21" y2="9" /><line x1="9" y1="21" x2="9" y2="9" /></svg>
-                    </div>
-                    <h3 className="text-xl font-['Bricolage_Grotesque'] text-slate-900 mb-2">Controle da rede</h3>
-                    <p className="text-slate-500 text-sm leading-relaxed">
-                      Visualize o status de todos os seus projetos online em tempo real. Saiba exatamente o que está ativo, pausado ou em desenvolvimento.
-                    </p>
-                  </div>
-                  {/* Card 2 */}
-                  <div className="w-[350px] h-full shrink-0 bg-white rounded-3xl p-8 border border-slate-200/60 shadow-[0_2px_12px_-6px_rgba(17,24,39,0.06)] flex flex-col relative overflow-hidden group hover:border-[#8b5cf6]/30 transition-colors hover:shadow-[0_8px_30px_-6px_rgba(139,92,246,0.12)]">
-                    <div className="w-12 h-12 rounded-xl bg-[#f8fafc] shadow-sm flex items-center justify-center mb-6 text-[#8b5cf6] border border-slate-100 group-hover:scale-110 transition-transform">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
-                    </div>
-                    <h3 className="text-xl font-['Bricolage_Grotesque'] text-slate-900 mb-2">Relatórios de performance</h3>
-                    <p className="text-slate-500 text-sm leading-relaxed">
-                      Entenda como o seu site está se saindo no Google. Acesse gráficos claros e simplificados de cliques e impressões diretamente do Search Console.
-                    </p>
-                  </div>
-                  {/* Card 3 */}
-                  <div className="w-[350px] h-full shrink-0 bg-white rounded-3xl p-8 border border-slate-200/60 shadow-[0_2px_12px_-6px_rgba(17,24,39,0.06)] flex flex-col relative overflow-hidden group hover:border-[#8b5cf6]/30 transition-colors hover:shadow-[0_8px_30px_-6px_rgba(139,92,246,0.12)]">
-                    <div className="w-12 h-12 rounded-xl bg-[#f8fafc] shadow-sm flex items-center justify-center mb-6 text-[#8b5cf6] border border-slate-100 group-hover:scale-110 transition-transform">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
-                    </div>
-                    <h3 className="text-xl font-['Bricolage_Grotesque'] text-slate-900 mb-2">Comunicação direta</h3>
-                    <p className="text-slate-500 text-sm leading-relaxed">
-                      Receba comunicados oficiais, notas técnicas da nossa equipe e atualizações importantes sobre o andamento do seu projeto através de um feed exclusivo.
-                    </p>
-                  </div>
-                  {/* Card 4 */}
-                  <div className="w-[350px] h-full shrink-0 bg-white rounded-3xl p-8 border border-slate-200/60 shadow-[0_2px_12px_-6px_rgba(17,24,39,0.06)] flex flex-col relative overflow-hidden group hover:border-[#8b5cf6]/30 transition-colors hover:shadow-[0_8px_30px_-6px_rgba(139,92,246,0.12)]">
-                    <div className="w-12 h-12 rounded-xl bg-[#f8fafc] shadow-sm flex items-center justify-center mb-6 text-[#8b5cf6] border border-slate-100 group-hover:scale-110 transition-transform">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>
-                    </div>
-                    <h3 className="text-xl font-['Bricolage_Grotesque'] text-slate-900 mb-2">Alertas dinâmicos</h3>
-                    <p className="text-slate-500 text-sm leading-relaxed">
-                      Fique por dentro de avisos de SEO, status da sua hospedagem e andamento de manutenções com um sistema de notificações inteligente.
-                    </p>
-                  </div>
-                  {/* Card 5 */}
-                  <div className="w-[350px] h-full shrink-0 bg-white rounded-3xl p-8 border border-slate-200/60 shadow-[0_2px_12px_-6px_rgba(17,24,39,0.06)] flex flex-col relative overflow-hidden group hover:border-[#8b5cf6]/30 transition-colors hover:shadow-[0_8px_30px_-6px_rgba(139,92,246,0.12)]">
-                    <div className="w-12 h-12 rounded-xl bg-[#f8fafc] shadow-sm flex items-center justify-center mb-6 text-[#8b5cf6] border border-slate-100 group-hover:scale-110 transition-transform">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
-                    </div>
-                    <h3 className="text-xl font-['Bricolage_Grotesque'] text-slate-900 mb-2">Suporte Contra Queda</h3>
-                    <p className="text-slate-500 text-sm leading-relaxed">
-                      Monitoramento contínuo. Se o seu site sofrer instabilidade, somos notificados na hora para reestabelecer o acesso rapidamente.
-                    </p>
-                  </div>
-                  {/* Card 6 */}
-                  <div className="w-[350px] h-full shrink-0 bg-white rounded-3xl p-8 border border-slate-200/60 shadow-[0_2px_12px_-6px_rgba(17,24,39,0.06)] flex flex-col relative overflow-hidden group hover:border-[#8b5cf6]/30 transition-colors hover:shadow-[0_8px_30px_-6px_rgba(139,92,246,0.12)]">
-                    <div className="w-12 h-12 rounded-xl bg-[#f8fafc] shadow-sm flex items-center justify-center mb-6 text-[#8b5cf6] border border-slate-100 group-hover:scale-110 transition-transform">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>
-                    </div>
-                    <h3 className="text-xl font-['Bricolage_Grotesque'] text-slate-900 mb-2">Otimização do SEO</h3>
-                    <p className="text-slate-500 text-sm leading-relaxed">
-                      Ajustes para manter seu site rápido e bem posicionado.
-                    </p>
-                  </div>
-                  {/* Card 7 */}
-                  <div className="w-[350px] h-full shrink-0 bg-white rounded-3xl p-8 border border-slate-200/60 shadow-[0_2px_12px_-6px_rgba(17,24,39,0.06)] flex flex-col relative overflow-hidden group hover:border-[#8b5cf6]/30 transition-colors hover:shadow-[0_8px_30px_-6px_rgba(139,92,246,0.12)]">
-                    <div className="w-12 h-12 rounded-xl bg-[#f8fafc] shadow-sm flex items-center justify-center mb-6 text-[#8b5cf6] border border-slate-100 group-hover:scale-110 transition-transform">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                    </div>
-                    <h3 className="text-xl font-['Bricolage_Grotesque'] text-slate-900 mb-2">Backups de Segurança</h3>
-                    <p className="text-slate-500 text-sm leading-relaxed">
-                      Cópias de segurança frequentes para proteger todos os seus dados.
-                    </p>
-                  </div>
-                  {/* Card 8 */}
-                  <div className="w-[350px] h-full shrink-0 bg-white rounded-3xl p-8 border border-slate-200/60 shadow-[0_2px_12px_-6px_rgba(17,24,39,0.06)] flex flex-col relative overflow-hidden group hover:border-[#8b5cf6]/30 transition-colors hover:shadow-[0_8px_30px_-6px_rgba(139,92,246,0.12)]">
-                    <div className="w-12 h-12 rounded-xl bg-[#f8fafc] shadow-sm flex items-center justify-center mb-6 text-[#8b5cf6] border border-slate-100 group-hover:scale-110 transition-transform">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/><path d="M14 3v5h5M16 13H8M16 17H8M10 9H8"/></svg>
-                    </div>
-                    <h3 className="text-xl font-['Bricolage_Grotesque'] text-slate-900 mb-2">Agende Postagens</h3>
-                    <p className="text-slate-500 text-sm leading-relaxed">
-                      Escreva e programe publicações diretamente pela plataforma. Mantenha seu site sempre vivo com conteúdo novo sem esforço.
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
         </section>
 
         {/* Espaço reservado (seção movida para cima) */}

@@ -1,459 +1,149 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<script>
-try{if(window.parent&&window.parent!==window){window.parent.promotekit_referral="1fd2949a-d22c-431b-92bf-02d4ad04ee24";window.parent.document.cookie="promotekit_referral=1fd2949a-d22c-431b-92bf-02d4ad04ee24;path=/;domain=.aura.build;max-age=31536000"}}catch(e){}
-</script>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Enterprise Holding Intelligence Dashboard</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://unpkg.com/lucide@latest"></script>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
-body { font-family: 'Inter', sans-serif; }
-/* Custom scrollbar for clean look */
-::-webkit-scrollbar { width: 0px; background: transparent; }
-</style></head>
-<body class="bg-[#F3F4F6] text-gray-800 antialiased selection:bg-[#DFFF00] selection:text-black min-h-screen flex overflow-hidden">
-
-    <!-- Sidebar -->
-    <aside class="w-20 hidden md:flex flex-col items-center py-8 bg-white/50 backdrop-blur-md border-r border-white/40 h-screen fixed left-0 top-0 z-50">
-        <!-- Logo Icon -->
-        <div class="mb-10 text-gray-900">
-            <i data-lucide="sparkles" class="w-6 h-6 fill-current"></i>
-        </div>
-
-        <!-- Nav Items -->
-        <nav class="flex-1 flex flex-col gap-6 w-full items-center">
-            <button class="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center shadow-lg shadow-black/20">
-                <i data-lucide="home" class="w-5 h-5"></i>
-            </button>
-            <button class="w-10 h-10 text-gray-400 hover:bg-white hover:text-black rounded-full flex items-center justify-center transition-all">
-                <i data-lucide="layout-grid" class="w-5 h-5"></i>
-            </button>
-            <button class="w-10 h-10 text-gray-400 hover:bg-white hover:text-black rounded-full flex items-center justify-center transition-all">
-                <i data-lucide="wallet" class="w-5 h-5"></i>
-            </button>
-            <button class="w-10 h-10 text-gray-400 hover:bg-white hover:text-black rounded-full flex items-center justify-center transition-all">
-                <i data-lucide="pie-chart" class="w-5 h-5"></i>
-            </button>
-            <button class="w-10 h-10 text-gray-400 hover:bg-white hover:text-black rounded-full flex items-center justify-center transition-all">
-                <i data-lucide="users" class="w-5 h-5"></i>
-            </button>
-        </nav>
-
-        <!-- Bottom Actions -->
-        <div class="flex flex-col gap-6 items-center mt-auto">
-            <button class="w-10 h-10 text-gray-400 hover:text-black transition-all">
-                <i data-lucide="bell" class="w-5 h-5"></i>
-            </button>
-            <div class="w-10 h-10 rounded-full overflow-hidden border border-white shadow-sm">
-                <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="User" class="w-full h-full object-cover">
-            </div>
-        </div>
+<aside style={{ boxSizing: 'border-box', width: '80px', flex: 'none', height: '900px', background: 'rgba(255,255,255,.5)', backdropFilter: 'blur(14px)', borderRight: '1px solid rgba(255,255,255,.4)', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '28px 0' }}>
+      <div style={{ width: '44px', height: '44px', borderRadius: '999px', background: '#111827', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '38px' }}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="#DFFF00"><path d="M12 2.5l1.9 5.1 5.1 1.9-5.1 1.9L12 16.5l-1.9-5.1L5 9.5l5.1-1.9z" /></svg>
+      </div>
+      <nav style={{ flex: '1', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+        
+          <button  title="{{ n.label }}" style={{ width: '40px', height: '40px', border: '0', borderRadius: '999px', background: '{{ n.bg }}', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '{{ n.shadow }}', transition: 'background .15s' }} >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{ n.fg }}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ n.d }}" /></svg>
+          </button>
+        
+      </nav>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
+        <button  style={{ width: '40px', height: '40px', border: '0', borderRadius: '999px', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 17l5-5-5-5M20 12H9M12 20H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h6" /></svg>
+        </button>
+        <button  style={{ width: '40px', height: '40px', border: '1px solid #fff', borderRadius: '999px', background: 'rgba(98,20,209,.18)', color: '#6214d1', fontFamily: 'inherit', fontSize: '14px', fontWeight: '700', cursor: 'pointer' }}>A</button>
+      </div>
     </aside>
 
-    <!-- Main Content -->
-    <main class="flex-1 md:ml-20 p-4 md:p-6 lg:p-8 overflow-y-auto h-screen">
+    <div style={{ flex: '1', minWidth: '0', display: 'flex', flexDirection: 'column' }}>
+      <header style={{ flex: 'none', display: 'flex', alignItems: 'center', gap: '16px', padding: '26px 34px 18px' }}>
         
-        <!-- Header -->
-        <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-            <div class="flex items-center gap-3">
-                <i data-lucide="asterisk" class="w-6 h-6 text-black"></i>
-                <span class="text-xl font-medium tracking-tight text-gray-900">Apex Holdings</span>
-            </div>
-
-            <!-- Date Filter Pill -->
-            <div class="bg-gray-200/60 p-1 rounded-full flex items-center gap-1">
-                <button class="px-4 py-1.5 text-sm text-gray-500 hover:text-gray-900 font-medium rounded-full transition-colors">Today</button>
-                <button class="px-4 py-1.5 text-sm text-gray-500 hover:text-gray-900 font-medium rounded-full transition-colors">This Week</button>
-                <button class="px-5 py-1.5 text-sm text-white bg-black font-medium rounded-full shadow-md">This Month</button>
-            </div>
-
-            <div class="flex items-center gap-4">
-                <button class="text-gray-500 text-sm font-medium hover:text-black transition-colors">Generate Reports</button>
-                <button class="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-gray-200 text-sm font-medium hover:bg-gray-50">
-                    <span>All Subsidiaries</span>
-                    <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400"></i>
-                </button>
-                <button class="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center">
-                    <i data-lucide="grip-horizontal" class="w-5 h-5"></i>
-                </button>
-            </div>
-        </header>
-
-        <!-- Dashboard Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 pb-10">
-            
-            <!-- Welcome / Hero Card (4 Cols) -->
-            <div class="lg:col-span-4 bg-gradient-to-b from-white to-gray-100 rounded-[2.5rem] p-8 shadow-sm border border-white/50 relative overflow-hidden group">
-                <!-- Background decorative blur -->
-                <div class="absolute top-0 right-0 w-48 h-48 bg-blue-100/50 rounded-full blur-3xl -mr-10 -mt-10"></div>
-                <div class="absolute bottom-0 left-0 w-48 h-48 bg-[#DFFF00]/20 rounded-full blur-3xl -ml-10 -mb-10"></div>
-
-                <div class="relative z-10 h-full flex flex-col justify-between">
-                    <div>
-                        <h1 class="text-3xl lg:text-4xl font-medium text-gray-900 tracking-tight leading-[1.1] mb-6">
-                            Hi Alexander,<br>
-                            here's the holding performance.
-                        </h1>
-                    </div>
-
-                    <!-- Mini Chart Visualization inside Hero -->
-                    <div class="flex items-end justify-between gap-1 mb-8 px-2">
-                        <!-- Chart Bars -->
-                        <div class="flex flex-col items-center gap-2 group/bar">
-                            <div class="w-10 h-8 rounded-t-xl bg-gray-200 border-t border-white"></div>
-                            <span class="text-xs text-gray-400">may</span>
-                        </div>
-                        <div class="flex flex-col items-center gap-2 group/bar">
-                            <div class="w-10 h-12 rounded-t-xl bg-gray-200 border-t border-white"></div>
-                            <span class="text-xs text-gray-400">jun</span>
-                        </div>
-                        <div class="flex flex-col items-center gap-2 group/bar">
-                            <div class="w-10 h-10 rounded-t-xl bg-gray-200 border-t border-white"></div>
-                            <span class="text-xs text-gray-400">jul</span>
-                        </div>
-                        <div class="flex flex-col items-center gap-2 group/bar">
-                            <div class="w-10 h-14 rounded-t-xl bg-gray-200 border-t border-white"></div>
-                            <span class="text-xs text-gray-400">aug</span>
-                        </div>
-                        <div class="flex flex-col items-center gap-2 group/bar">
-                            <div class="w-10 h-11 rounded-t-xl bg-gray-300 border-t border-white"></div>
-                            <span class="text-xs text-gray-400">sep</span>
-                        </div>
-                        <!-- Active Bar -->
-                        <div class="flex flex-col items-center gap-2 relative">
-                            <div class="absolute -top-3 w-8 h-1 bg-[#ccff00] rounded-full"></div>
-                            <div class="w-12 h-20 rounded-2xl bg-black shadow-lg shadow-black/20 flex items-center justify-center">
-                                <div class="w-10 h-1 bg-[#DFFF00] rounded-full mt-auto mb-3 mx-auto"></div>
-                            </div>
-                            <span class="text-xs font-medium text-black bg-white px-2 py-0.5 rounded-full shadow-sm">oct</span>
-                        </div>
-                    </div>
-
-                    <div>
-                        <p class="text-gray-500 text-base mb-1">Total Revenue across Subsidiaries</p>
-                        <div class="flex items-baseline gap-2">
-                            <span class="text-2xl font-semibold tracking-tight text-gray-900">$ 331,224.74</span>
-                            <span class="text-xs text-green-600 bg-green-100 px-2 py-0.5 rounded-full">+12.5%</span>
-                        </div>
-                        <p class="text-gray-400 text-xs mt-1">vs last month</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Stats & Analytics Card (8 Cols) -->
-            <div class="lg:col-span-8 bg-[#EAEAEA] rounded-[2.5rem] p-8 shadow-sm border border-white/50 relative">
-                 <div class="absolute top-6 right-6">
-                    <button class="w-8 h-8 bg-white rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors">
-                        <i data-lucide="arrow-up-right" class="w-4 h-4 text-gray-500"></i>
-                    </button>
-                </div>
-
-                <!-- Top Half: Scatter / Dot Plot Simulation -->
-                <div class="mb-8">
-                    <div class="flex justify-between items-end mb-4">
-                        <div>
-                            <h3 class="text-base text-gray-500 font-medium">Group Efficiency Index</h3>
-                            <div class="flex items-baseline gap-2">
-                                <span class="text-2xl font-semibold text-gray-900">12.5</span>
-                                <span class="text-sm text-gray-400">pts above market avg</span>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                             <span class="text-xs text-gray-400">Monthly Trend</span>
-                        </div>
-                    </div>
-
-                    <!-- Abstract Dot Chart Representation -->
-                    <div class="h-16 w-full flex justify-between items-end gap-1 opacity-60">
-                         <!-- Generating random heights for visual effect -->
-                         <div class="w-full border-b border-gray-300 relative h-full">
-                            <svg class="w-full h-full text-gray-800" viewBox="0 0 600 60" preserveAspectRatio="none">
-                                <!-- Simulated Scatter Points -->
-                                <circle cx="20" cy="40" r="1.5" fill="currentColor" opacity="0.4"/>
-                                <circle cx="50" cy="30" r="1.5" fill="currentColor" opacity="0.6"/>
-                                <circle cx="80" cy="45" r="1.5" fill="currentColor" opacity="0.4"/>
-                                <circle cx="110" cy="20" r="1.5" fill="currentColor" opacity="0.7"/>
-                                <circle cx="150" cy="15" r="1.5" fill="currentColor" opacity="0.5"/>
-                                <circle cx="200" cy="35" r="1.5" fill="currentColor" opacity="0.4"/>
-                                <circle cx="250" cy="10" r="1.5" fill="currentColor" opacity="0.8"/>
-                                <circle cx="300" cy="25" r="1.5" fill="currentColor" opacity="0.5"/>
-                                <circle cx="350" cy="40" r="1.5" fill="currentColor" opacity="0.4"/>
-                                <circle cx="400" cy="15" r="1.5" fill="currentColor" opacity="0.7"/>
-                                <circle cx="450" cy="30" r="1.5" fill="currentColor" opacity="0.5"/>
-                                <circle cx="500" cy="20" r="1.5" fill="currentColor" opacity="0.8"/>
-                                <circle cx="550" cy="45" r="1.5" fill="currentColor" opacity="0.4"/>
-                                <!-- Connecting Dotted Line -->
-                                <path d="M0 40 Q 150 10 300 25 T 600 30" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2" opacity="0.3"/>
-                            </svg>
-                            <!-- Axis Labels -->
-                            <div class="absolute -bottom-6 left-[10%] text-[10px] text-gray-400 bg-white px-2 py-0.5 rounded-full shadow-sm">11.4</div>
-                            <div class="absolute -bottom-6 left-[40%] text-[10px] text-gray-400 bg-white px-2 py-0.5 rounded-full shadow-sm">21.0</div>
-                            <div class="absolute -bottom-6 left-[80%] text-[10px] text-gray-900 font-bold bg-white px-2 py-0.5 rounded-full shadow-sm">12.5</div>
-                         </div>
-                    </div>
-                </div>
-
-                <div class="w-full h-px bg-gray-300 my-8"></div>
-
-                <!-- Bottom Half: Custom Bar Chart -->
-                <div>
-                     <div class="flex justify-between items-end mb-6">
-                        <div>
-                            <h3 class="text-base text-gray-500 font-medium">Average Subsidiary Valuation</h3>
-                            <div class="flex items-baseline gap-2">
-                                <span class="text-2xl font-semibold text-gray-900">$ 41,221.41</span>
-                                <span class="text-sm text-gray-400 line-through decoration-red-400">$43,112.90</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Complex Bar Chart -->
-                    <div class="flex items-end justify-between h-24 gap-2">
-                        <!-- Bars -->
-                        <div class="flex-1 flex flex-col justify-end gap-1 group">
-                             <div class="w-full bg-gray-300/50 rounded-md h-8 group-hover:bg-gray-400 transition-colors"></div>
-                             <div class="w-full bg-gray-400 rounded-md h-4"></div>
-                        </div>
-                        <div class="flex-1 flex flex-col justify-end gap-1 group">
-                             <div class="w-full bg-gray-800 rounded-md h-12 relative overflow-hidden">
-                                <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNCIgaGVpZ2h0PSI0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxjaXJjbGUgY3g9IjIiIGN5PSIyIiByPSIxIiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMiIvPjwvc3ZnPg==')] opacity-30"></div>
-                             </div>
-                             <div class="w-full bg-gray-400 rounded-md h-6"></div>
-                        </div>
-                        <div class="flex-1 flex flex-col justify-end gap-1">
-                             <div class="w-full bg-gray-300/50 rounded-md h-6"></div>
-                             <div class="w-full bg-gray-400 rounded-md h-3"></div>
-                        </div>
-                         <div class="flex-1 flex flex-col justify-end gap-1">
-                             <div class="w-full bg-gray-400 rounded-md h-10"></div>
-                             <div class="w-full bg-gray-500 rounded-md h-5"></div> <!-- Negative/Down -->
-                        </div>
-                        <div class="flex-1 flex flex-col justify-end gap-1 pb-8"> <!-- Dip -->
-                             <div class="w-full bg-gray-500 rounded-b-md h-10 mt-auto opacity-50"></div>
-                        </div>
-                         <div class="flex-1 flex flex-col justify-end gap-1">
-                             <div class="w-full bg-gray-300/50 rounded-md h-14"></div>
-                             <div class="w-full bg-gray-400 rounded-md h-4"></div>
-                        </div>
-                         <div class="flex-1 flex flex-col justify-end gap-1 pb-4">
-                             <div class="w-full bg-gray-400 rounded-b-md h-6 opacity-60"></div>
-                        </div>
-                         <div class="flex-1 flex flex-col justify-end gap-1">
-                             <div class="w-full bg-gray-300/50 rounded-md h-10"></div>
-                             <div class="w-full bg-gray-400 rounded-md h-8"></div>
-                        </div>
-                        <!-- Highlight Bar -->
-                         <div class="flex-1 flex flex-col justify-end gap-1">
-                             <div class="w-full bg-[#DFFF00] rounded-t-md h-16 shadow-[0_0_15px_rgba(223,255,0,0.4)]"></div>
-                             <div class="w-full bg-black rounded-b-md h-6"></div>
-                        </div>
-                    </div>
-                     <!-- X Axis -->
-                    <div class="flex justify-between mt-2 px-1">
-                        <span class="text-[10px] text-gray-400">3</span>
-                        <span class="text-[10px] text-gray-400">4</span>
-                        <span class="text-[10px] text-gray-400">5</span>
-                        <span class="text-[10px] text-gray-400">6</span>
-                        <span class="text-[10px] text-gray-400">7</span>
-                        <span class="text-[10px] text-gray-400">8</span>
-                        <span class="text-[10px] text-gray-400">9</span>
-                        <span class="text-[10px] text-gray-400">10</span>
-                        <span class="text-[10px] font-bold text-black">17</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Middle Row: Sales Target (8 Cols) & Side Cards (4 Cols Stacked) -->
-            <div class="lg:col-span-8 flex flex-col gap-6">
-                
-                <!-- Target Card -->
-                <div class="bg-[#F2F2F2] rounded-[2.5rem] p-8 relative border border-white/60">
-                     <div class="absolute top-6 right-6">
-                        <button class="w-8 h-8 bg-white/50 hover:bg-white rounded-full flex items-center justify-center transition-colors">
-                            <i data-lucide="arrow-up-right" class="w-4 h-4 text-gray-500"></i>
-                        </button>
-                    </div>
-
-                    <h3 class="text-base text-gray-600 font-medium mb-6">Revenue Targets</h3>
-                    
-                    <!-- Large Progress Bar -->
-                    <div class="w-full h-10 bg-gray-200/50 rounded-full mb-4 relative overflow-hidden flex items-center border border-gray-300/30">
-                        <!-- Pattern Background for empty space -->
-                        <div class="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTS0xLDEgTDEsLTEgTTEwLDBMMCwxMCBNOSwxMSBMMTEsOSIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9zdmc+')]"></div>
-                        
-                        <!-- Filled Part -->
-                        <div class="h-full w-[65%] bg-[#DFFF00] rounded-full shadow-[0_0_20px_rgba(223,255,0,0.3)] relative z-10 flex items-center justify-end pr-2">
-                            <!-- Handle -->
-                            <div class="h-6 w-1 bg-black/20 rounded-full mr-1"></div>
-                            <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md">
-                                <i data-lucide="more-vertical" class="w-4 h-4 text-gray-400"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-4">
-                        <span class="text-xl font-medium text-gray-900">$ 400,500.00</span>
-                        <span class="text-sm text-gray-400">Target: <span class="line-through">$ 550,000.00</span></span>
-                    </div>
-                </div>
-
-                <!-- Graph Card (Bottom Left) -->
-                <div class="bg-gradient-to-br from-white to-[#F6F6F6] rounded-[2.5rem] p-8 flex-1 border border-white/60 relative">
-                     <div class="absolute top-6 right-6 flex gap-2">
-                        <button class="px-3 py-1 bg-white border border-gray-200 rounded-full text-xs font-medium text-gray-500 hover:text-black shadow-sm">+ Show More</button>
-                        <button class="w-8 h-8 bg-white/50 hover:bg-white rounded-full flex items-center justify-center transition-colors">
-                            <i data-lucide="arrow-up-right" class="w-4 h-4 text-gray-500"></i>
-                        </button>
-                    </div>
-
-                    <h3 class="text-base text-gray-600 font-medium mb-10">Annual Performance</h3>
-
-                    <!-- Line Chart SVG -->
-                    <div class="relative w-full h-40 mb-8">
-                        <!-- Tooltip simulation -->
-                        <div class="absolute top-0 left-[35%] transform -translate-x-1/2 -translate-y-full flex flex-col items-center">
-                            <div class="bg-black text-white text-xs px-3 py-1.5 rounded-full shadow-lg mb-2">
-                                $ 381,990.30
-                            </div>
-                            <div class="w-px h-20 border-l border-dashed border-gray-400"></div>
-                            <div class="w-2 h-2 bg-black rounded-full -mt-1"></div>
-                        </div>
-
-                         <svg class="w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 800 100">
-                             <!-- Secondary Line (Dashed) -->
-                             <path d="M0,80 Q200,90 400,70 T800,60" fill="none" stroke="#CBD5E1" stroke-width="2" stroke-dasharray="4 4" />
-                             <!-- Primary Line (Yellow) -->
-                             <path d="M0,70 Q100,65 200,75 T350,30 T600,65 T800,50" fill="none" stroke="#DFFF00" stroke-width="3" />
-                         </svg>
-
-                         <!-- X Axis Labels -->
-                         <div class="flex justify-between mt-4 border-t border-gray-200 pt-4">
-                             <span class="text-xs px-3 py-1 bg-white border border-gray-100 rounded-full text-gray-400">jan</span>
-                             <span class="text-xs px-3 py-1 bg-white border border-gray-100 rounded-full text-gray-400">feb</span>
-                             <span class="text-xs px-3 py-1 bg-white border border-gray-100 rounded-full text-gray-400">mar</span>
-                             <span class="text-xs px-3 py-1 bg-white border border-gray-100 rounded-full text-gray-400">may</span>
-                             <span class="text-xs px-3 py-1 bg-white border border-gray-100 rounded-full text-gray-400">jun</span>
-                             <span class="text-xs px-3 py-1 bg-black text-white rounded-full shadow-md">jul</span>
-                             <span class="text-xs px-3 py-1 bg-white border border-gray-100 rounded-full text-gray-400">aug</span>
-                             <span class="text-xs px-3 py-1 bg-white border border-gray-100 rounded-full text-gray-400">sep</span>
-                             <span class="text-xs px-3 py-1 bg-white border border-gray-100 rounded-full text-gray-400">oct</span>
-                             <span class="text-xs px-3 py-1 bg-white border border-gray-100 rounded-full text-gray-400">nov</span>
-                         </div>
-                    </div>
-
-                    <div class="flex justify-between items-end">
-                         <div>
-                            <p class="text-sm text-gray-500 mb-1">Average Sale Value</p>
-                            <h4 class="text-xl font-medium text-gray-900">$ 7,621,310.50</h4>
-                            <p class="text-xs text-gray-400 mt-1">-$155,291.00 <span class="opacity-60">less than last year</span></p>
-                         </div>
-                         <div class="text-right">
-                             <p class="text-sm text-gray-500 mb-1">Items per Sale</p>
-                             <h4 class="text-xl font-medium text-gray-900">22.1</h4>
-                             <p class="text-xs text-gray-400 mt-1">-0.26 <span class="opacity-60">less</span></p>
-                         </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right Column Stack (4 Cols) -->
-            <div class="lg:col-span-4 flex flex-col gap-6">
-                
-                <!-- Transfer Card -->
-                <div class="bg-[#F2F2F2] rounded-[2.5rem] p-6 border border-white/60">
-                     <div class="flex justify-between items-start mb-6">
-                        <span class="text-base text-gray-600 font-medium">Inter-company</span>
-                        <button class="w-8 h-8 bg-white/50 hover:bg-white rounded-full flex items-center justify-center transition-colors">
-                            <i data-lucide="arrow-up-right" class="w-4 h-4 text-gray-500"></i>
-                        </button>
-                    </div>
-                    <div class="mb-2">
-                        <h4 class="text-xl font-medium text-gray-900">1 Transfer</h4>
-                        <p class="text-sm text-gray-400 mt-1">Waiting to be received</p>
-                    </div>
-                </div>
-
-                <!-- Gross Profit Card (Lime) -->
-                <div class="bg-[#DFFF00] rounded-[2.5rem] p-8 relative overflow-hidden h-64 flex flex-col justify-between group">
-                    <!-- Circular pattern -->
-                     <div class="absolute -right-10 -top-10 w-48 h-48 border border-black/5 rounded-full"></div>
-                     <div class="absolute -right-6 -top-6 w-48 h-48 border border-black/5 rounded-full"></div>
-                     <div class="absolute -right-2 -top-2 w-48 h-48 border border-black/5 rounded-full"></div>
-                     <div class="absolute right-2 top-2 w-48 h-48 border border-black/5 rounded-full"></div>
-
-                    <div class="relative z-10 flex justify-between items-start">
-                        <span class="text-base text-black/70 font-medium">Gross Profit</span>
-                    </div>
-
-                    <div class="relative z-10">
-                        <h4 class="text-3xl font-medium text-black tracking-tight mb-2">$ 177,349.50</h4>
-                        <p class="text-sm text-black/40 font-medium w-3/4">+$44,357.23 more than this time last month</p>
-                    </div>
-                </div>
-
-                 <!-- Purchase Orders -->
-                 <div class="bg-[#F2F2F2] rounded-[2.5rem] p-6 border border-white/60">
-                     <div class="flex justify-between items-start mb-6">
-                        <span class="text-base text-gray-600 font-medium">Logistics</span>
-                        <button class="w-8 h-8 bg-white/50 hover:bg-white rounded-full flex items-center justify-center transition-colors">
-                            <i data-lucide="arrow-up-right" class="w-4 h-4 text-gray-500"></i>
-                        </button>
-                    </div>
-                    <div class="space-y-4">
-                        <div>
-                            <h4 class="text-lg font-medium text-gray-900">3 Dispatched</h4>
-                            <p class="text-sm text-gray-400">Orders waiting to be received</p>
-                        </div>
-                    </div>
-                </div>
-
-                 <!-- Purchase Orders (Sent) -->
-                 <div class="bg-[#F2F2F2] rounded-[2.5rem] p-6 border border-white/60 relative -mt-2">
-                     <div class="flex justify-between items-start mb-4">
-                        <span class="text-base text-gray-600 font-medium">Outbound</span>
-                        <button class="w-8 h-8 bg-white/50 hover:bg-white rounded-full flex items-center justify-center transition-colors">
-                            <i data-lucide="arrow-up-right" class="w-4 h-4 text-gray-500"></i>
-                        </button>
-                    </div>
-                    <div>
-                        <h4 class="text-lg font-medium text-gray-900">2 Sent</h4>
-                        <p class="text-sm text-gray-400">Orders waiting to be received</p>
-                    </div>
-                </div>
-
-                <!-- Net Profit (Black Card) -->
-                <!-- Note: The image shows this connected to the lime card with a unique curve, simulated here with negative margin and z-index -->
-                <div class="bg-black rounded-[2.5rem] p-8 relative overflow-hidden text-white -mt-4 z-20 shadow-2xl">
-                     <!-- Connection Notch Simulation -->
-                    <div class="absolute -top-4 right-[30%] w-10 h-10 bg-black rounded-full border-[6px] border-[#F3F4F6] flex items-center justify-center z-30">
-                        <i data-lucide="arrow-down" class="w-4 h-4 text-white"></i>
-                    </div>
-
-                     <!-- Circular pattern white -->
-                     <div class="absolute -right-10 top-1/2 transform -translate-y-1/2 w-40 h-40 border border-white/10 rounded-full"></div>
-                     <div class="absolute -right-14 top-1/2 transform -translate-y-1/2 w-40 h-40 border border-white/10 rounded-full"></div>
-                     <div class="absolute -right-18 top-1/2 transform -translate-y-1/2 w-40 h-40 border border-white/10 rounded-full"></div>
-
-                    <div class="relative z-10 flex justify-between items-start mb-12">
-                        <span class="text-base text-gray-400 font-medium">Net Profit</span>
-                    </div>
-
-                    <div class="relative z-10">
-                        <h4 class="text-2xl font-medium text-white tracking-tight mb-2">$ 331,224.74</h4>
-                        <p class="text-sm text-gray-500 w-3/4">+$44,357.23 more than this time last month</p>
-                    </div>
-                </div>
-
-            </div>
+          <button  style={{ width: '42px', height: '42px', flex: 'none', border: '1px solid rgba(255,255,255,.7)', borderRadius: '999px', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 8px -5px rgba(17,24,39,.4)' }}>
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2" stroke-linecap="round"><path d="M15 5l-7 7 7 7" /></svg>
+          </button>
+        
+        <div style={{ flex: '1', minWidth: '0' }}>
+          <p style={{ margin: '0', fontSize: '11.5px', fontWeight: '600', letterSpacing: '.09em', textTransform: 'uppercase', color: '#9CA3AF' }}>SILVA & ASSOCIADOS</p>
+          <h1 style={{ margin: '2px 0 0', fontSize: '30px', fontWeight: '500', letterSpacing: '-.032em' }}>Visão Geral</h1>
         </div>
-    </main>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '11px', height: '44px', padding: '0 18px', background: 'rgba(255,255,255,.7)', border: '1px solid rgba(255,255,255,.6)', borderRadius: '999px', width: '300px' }}>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.9" stroke-linecap="round"><circle cx="11" cy="11" r="7" /><path d="M16.5 16.5L21 21" /></svg>
+          <input value="{{ query }}"  placeholder="{{ searchPlaceholder }}" style={{ flex: '1', border: '0', outline: '0', background: 'transparent', fontFamily: 'inherit', fontSize: '14px', minWidth: '0' }} />
+        </div>
+        <button  style={{ position: 'relative', width: '44px', height: '44px', flex: 'none', border: '1px solid rgba(255,255,255,.6)', borderRadius: '999px', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="1.7" stroke-linecap="round"><path d="M6 9a6 6 0 0 1 12 0c0 6 2.5 8 2.5 8h-17S6 15 6 9z" /><path d="M10.3 21a2 2 0 0 0 3.4 0" /></svg>
+          <span style={{ position: 'absolute', top: '9px', right: '10px', width: '8px', height: '8px', borderRadius: '999px', background: '#6214d1', border: '1.5px solid #fff' }}></span>
+        </button>
+        
+          <button  style={{ display: 'flex', alignItems: 'center', gap: '8px', height: '44px', padding: '0 20px', border: '0', borderRadius: '999px', background: '#111827', color: '#fff', fontFamily: 'inherit', fontSize: '14px', fontWeight: '600', cursor: 'pointer', boxShadow: '0 12px 24px -14px rgba(17,24,39,.8)' }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#DFFF00" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14" /></svg>
+            <span>{{ primaryLabel }}</span>
+          </button>
+        
+      </header>
 
-    <script>
-        lucide.createIcons();
-    </script>
-</body>
-</html>
+      <div className="dk-scroll" style={{ flex: '1', overflowY: 'auto', padding: '6px 34px 34px', scrollbarWidth: 'none' }}>
+
+        
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '22px', animation: 'dkFade .25s ease-out' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '22px' }}>
+              <div style={{ boxSizing: 'border-box', position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg,#fff,#F1F2F4)', border: '1px solid rgba(255,255,255,.6)', borderRadius: '40px', padding: '34px', minHeight: '230px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div style={{ position: 'absolute', top: '-40px', right: '-40px', width: '260px', height: '260px', borderRadius: '999px', background: 'rgba(219,234,254,.6)', filter: 'blur(56px)' }}></div>
+                <div style={{ position: 'absolute', bottom: '-60px', left: '-50px', width: '260px', height: '260px', borderRadius: '999px', background: 'rgba(223,255,0,.28)', filter: 'blur(56px)' }}></div>
+                <h2 style={{ position: 'relative', margin: '0', fontSize: '38px', fontWeight: '500', letterSpacing: '-.038em', lineHeight: '1.1' }}>Olá Ana,<br />aqui está a sua rede.</h2>
+                <div style={{ position: 'relative' }}>
+                  <p style={{ margin: '0 0 3px', fontSize: '15px', color: '#6B7280' }}>Cliques orgânicos · 30 dias</p>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
+                    <span style={{ fontSize: '40px', fontWeight: '600', letterSpacing: '-.04em' }}>1.284</span>
+                    <span style={{ fontSize: '12.5px', fontWeight: '600', color: '#166534', background: '#DCFCE7', padding: '4px 11px', borderRadius: '999px' }}>+12,5%</span>
+                  </div>
+                </div>
+              </div>
+              <div style={{ position: 'relative', overflow: 'hidden', background: '#DFFF00', borderRadius: '40px', padding: '32px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div style={{ position: 'absolute', right: '-40px', top: '-40px', width: '230px', height: '230px', border: '1px solid rgba(0,0,0,.06)', borderRadius: '999px' }}></div>
+                <div style={{ position: 'absolute', right: '-22px', top: '-22px', width: '230px', height: '230px', border: '1px solid rgba(0,0,0,.06)', borderRadius: '999px' }}></div>
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: '16px', fontWeight: '500', color: 'rgba(0,0,0,.7)' }}>Site no ar</span>
+                  <div style={{ width: '42px', height: '42px', flex: 'none', borderRadius: '999px', background: 'rgba(255,255,255,.45)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="9" /><path d="M8 12.4l2.6 2.6L16 9.6" /></svg>
+                  </div>
+                </div>
+                <div style={{ position: 'relative' }}>
+                  <p style={{ margin: '0 0 6px', fontSize: '54px', fontWeight: '500', letterSpacing: '-.045em', color: '#000', lineHeight: '1' }}>1</p>
+                  <p style={{ margin: '0', fontSize: '13.5px', fontWeight: '500', color: 'rgba(0,0,0,.5)' }}>silvaadvocacia.com.br · SSL válido</p>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '22px', alignItems: 'start' }}>
+              <div style={{ boxSizing: 'border-box', background: '#F2F2F2', border: '1px solid rgba(255,255,255,.6)', borderRadius: '40px', padding: '24px', height: '520px', display: 'flex', flexDirection: 'column' }}>
+                <h3 style={{ margin: '0 0 16px', padding: '0 8px', fontSize: '17px', fontWeight: '500', color: '#6B7280' }}>Selecione um projeto</h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', height: '44px', margin: '0 8px 16px', padding: '0 16px', background: 'rgba(255,255,255,.7)', border: '1px solid rgba(255,255,255,.5)', borderRadius: '999px' }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.9" stroke-linecap="round"><circle cx="11" cy="11" r="7" /><path d="M16.5 16.5L21 21" /></svg>
+                  <input value="{{ query }}"  placeholder="Buscar projeto..." style={{ flex: '1', border: '0', outline: '0', background: 'transparent', fontFamily: 'inherit', fontSize: '13.5px', minWidth: '0' }} />
+                </div>
+                <div className="dk-scroll" style={{ flex: '1', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px', paddingRight: '6px', scrollbarWidth: 'none' }}>
+                  
+                    <button  style={{ width: '100%', textAlign: 'left', border: '1px solid {{ s.border }}', borderRadius: '22px', background: '{{ s.bg }}', color: '{{ s.fg }}', padding: '16px', cursor: 'pointer', fontFamily: 'inherit', boxShadow: '{{ s.shadow }}', transform: '{{ s.shift }}', transition: 'transform .15s' }}>
+                      <p style={{ margin: '0', fontSize: '15px', fontWeight: '500', letterSpacing: '-.01em' }}>{{ s.nome }}</p>
+                      <p style={{ margin: '3px 0 0', fontSize: '12px', color: '{{ s.sub }}' }}>{{ s.dom }}</p>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '9px', marginTop: '11px' }}>
+                        <span style={{ width: '8px', height: '8px', borderRadius: '999px', background: '{{ s.dot }}' }}></span>
+                        <span style={{ fontSize: '11px', fontWeight: '600', color: '{{ s.sub }}' }}>{{ s.status }}</span>
+                      </div>
+                      
+                        <span  style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', marginTop: '14px', padding: '7px 13px', borderRadius: '12px', background: '#fff', color: '#111827', fontSize: '12px', fontWeight: '600' }}>
+                          <span>Gerenciar site</span>
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2.6" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8" /></svg>
+                        </span>
+                      
+                    </button>
+                  
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '16px' }}>
+                  
+                    <div style={{ background: '#EAEAEA', border: '1px solid rgba(255,255,255,.6)', borderRadius: '32px', padding: '20px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+                        <span style={{ fontSize: '13px', fontWeight: '500', color: '#6B7280' }}>{{ m.label }}</span>
+                        <span style={{ fontSize: '10px', fontWeight: '700', color: '#111827', background: '#fff', padding: '3px 8px', borderRadius: '999px', boxShadow: '0 1px 3px rgba(0,0,0,.08)' }}>{{ m.tag }}</span>
+                      </div>
+                      <p style={{ margin: '0', fontSize: '28px', fontWeight: '600', letterSpacing: '-.035em' }}>{{ m.value }}</p>
+                    </div>
+                  
+                </div>
+
+                <div style={{ background: '#fff', border: '1px solid #EFEFEF', borderRadius: '40px', padding: '28px 30px' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '24px' }}>
+                    <div>
+                      <p style={{ margin: '0 0 4px', fontSize: '19px', fontWeight: '500', letterSpacing: '-.025em' }}>Cliques orgânicos</p>
+                      <p style={{ margin: '0', fontSize: '13.5px', color: '#9CA3AF' }}>Search Console - silvaadvocacia.com.br</p>
+                    </div>
+                    <div style={{ background: '#F3F4F6', borderRadius: '999px', padding: '4px', display: 'flex', gap: '4px' }}>
+                      
+                        <button  style={{ height: '34px', padding: '0 18px', border: '0', borderRadius: '999px', background: '{{ r.bg }}', color: '{{ r.fg }}', fontFamily: 'inherit', fontSize: '13px', fontWeight: '600', cursor: 'pointer', boxShadow: '{{ r.shadow }}' }}>{{ r.label }}</button>
+                      
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: '10px', height: '220px' }}>
+                    
+                      <div  style={{ flex: '1', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', cursor: 'pointer', position: 'relative' }}>
+                        <span style={{ position: 'absolute', top: '-26px', display: '{{ b.tipShow }}', background: '#111827', color: '#fff', fontSize: '11px', fontWeight: '600', padding: '4px 10px', borderRadius: '999px', whiteSpace: 'nowrap' }}>{{ b.tip }}</span>
+                        <div style={{ width: '100%', height: '{{ b.h }}px', borderRadius: '{{ b.radius }}', background: '{{ b.bg }}', borderTop: '1px solid rgba(255,255,255,.7)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: '9px' }}>
+                          <div style={{ width: '50%', height: '4px', borderRadius: '999px', background: '{{ b.cap }}' }}></div>
+                        </div>
+                        <span style={{ fontSize: '11.5px', fontWeight: '{{ b.lw }}', color: '{{ b.lc }}' }}>{{ b.label }}</span>
+                      </div>
+                    
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        
+      </div>
+    </div>
