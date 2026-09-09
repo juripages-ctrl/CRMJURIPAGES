@@ -457,7 +457,7 @@ export function DashboardHomeClient({ sites, firstName, isClientView = false }: 
                       </div>
                       
                       <div className="flex flex-col gap-2">
-                        <div className="flex gap-2 self-start lg:self-end">
+                        <div className="flex flex-wrap gap-2 self-start lg:self-end">
                           <div className="bg-[#F3F4F6] rounded-full p-[4px] flex gap-[4px]">
                             <button 
                               onClick={() => setChartType('bar')}
@@ -468,7 +468,7 @@ export function DashboardHomeClient({ sites, firstName, isClientView = false }: 
                               className={`h-[34px] px-[18px] border-0 rounded-full font-inherit text-[13px] font-semibold cursor-pointer transition-all ${chartType === 'line' ? 'bg-white text-[#111827] shadow-[0_2px_8px_rgba(0,0,0,0.06)]' : 'bg-transparent text-[#6B7280]'}`}
                             >Linha</button>
                           </div>
-                          <div className="bg-[#F3F4F6] rounded-full p-[4px] flex gap-[4px]">
+                          <div className="bg-[#F3F4F6] rounded-full p-[4px] flex flex-wrap gap-[4px]">
                             <button 
                               onClick={() => setDateFilter('hoje')}
                               className={`h-[34px] px-[18px] border-0 rounded-full font-inherit text-[13px] font-semibold cursor-pointer transition-all ${dateFilter === 'hoje' ? 'bg-white text-[#111827] shadow-[0_2px_8px_rgba(0,0,0,0.06)]' : 'bg-transparent text-[#6B7280]'}`}
@@ -558,7 +558,7 @@ export function DashboardHomeClient({ sites, firstName, isClientView = false }: 
                                 tickLine={false} 
                                 tick={{ fill: '#9CA3AF', fontSize: 10 }}
                                 dy={8}
-                                interval={0}
+                                minTickGap={10}
                               />
                               <Tooltip content={<CustomTooltipContent />} cursor={{ fill: 'rgba(0,0,0,0.04)' }} />
                               <Bar dataKey="clicks" name="Cliques" maxBarSize={36} shape={<CustomBar />}>
@@ -576,7 +576,7 @@ export function DashboardHomeClient({ sites, firstName, isClientView = false }: 
                                 tickLine={false} 
                                 tick={{ fill: '#9CA3AF', fontSize: 10 }}
                                 dy={8}
-                                interval={0}
+                                minTickGap={10}
                               />
                               <Tooltip content={<CustomTooltipContent />} />
                               <Line type="monotone" dataKey="clicks" name="Cliques" stroke="#111827" strokeWidth={3} dot={{ fill: '#111827', strokeWidth: 2, r: 4 }} activeDot={{ r: 6, fill: '#DFFF00', stroke: '#111827', strokeWidth: 2 }} />
