@@ -74,7 +74,7 @@ export default async function FinanceiroClientePage() {
                   <span className="text-[13px] text-gray-400 font-medium">Plano atual</span>
                   <span className="bg-[#DFFF00] text-[#111827] text-[11px] font-bold px-3 py-1 rounded-full">Ativo</span>
                 </div>
-                <h3 className="text-3xl font-bold text-white tracking-tight relative z-10">{assinaturas[0]?.planos?.nome || 'Plano Básico'}</h3>
+                <h3 className="text-3xl font-bold text-white tracking-tight relative z-10">{(assinaturas[0]?.planos as any)?.nome || 'Plano Básico'}</h3>
                 <p className="text-[13px] text-gray-400 mt-1 relative z-10">R$ {pendingTotal > 0 ? (Number(pagamentos[0]?.valor) || 0).toFixed(2).replace('.', ',') : '0,00'}/mês</p>
               </div>
               <div className="mt-8 relative z-10">
