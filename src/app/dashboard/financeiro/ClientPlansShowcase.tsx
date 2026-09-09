@@ -39,22 +39,22 @@ export function ClientPlansShowcase({ planos }: { planos: any[] }) {
         <p className="text-gray-500 mt-2">Você ainda não possui uma assinatura ativa. Selecione um pacote de suporte abaixo.</p>
         
         <div className="mt-8 flex items-center justify-center">
-          <div className="bg-gray-100 p-1 rounded-full flex gap-1">
+          <div className="bg-[#F3F4F6] p-1 rounded-full flex gap-1">
             <button
               onClick={() => setBillingCycle('mensal')}
-              className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${billingCycle === 'mensal' ? 'bg-white text-black shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
+              className={`px-6 py-2 rounded-full text-[13.5px] font-semibold transition-all ${billingCycle === 'mensal' ? 'bg-[#111827] text-white shadow-sm' : 'text-[#9CA3AF] hover:text-[#111827]'}`}
             >
               Mensal
             </button>
             <button
               onClick={() => setBillingCycle('semestral')}
-              className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${billingCycle === 'semestral' ? 'bg-white text-black shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
+              className={`px-6 py-2 rounded-full text-[13.5px] font-semibold transition-all ${billingCycle === 'semestral' ? 'bg-[#111827] text-white shadow-sm' : 'text-[#9CA3AF] hover:text-[#111827]'}`}
             >
               Semestral (-10%)
             </button>
             <button
               onClick={() => setBillingCycle('anual')}
-              className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${billingCycle === 'anual' ? 'bg-white text-black shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
+              className={`px-6 py-2 rounded-full text-[13.5px] font-semibold transition-all ${billingCycle === 'anual' ? 'bg-[#111827] text-white shadow-sm' : 'text-[#9CA3AF] hover:text-[#111827]'}`}
             >
               Anual (-20%)
             </button>
@@ -64,12 +64,12 @@ export function ClientPlansShowcase({ planos }: { planos: any[] }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
         {planos?.filter(p => p.periodicidade === billingCycle).map((plano) => (
-          <div key={plano.id} className={`bg-white rounded-[2rem] p-5 lg:p-6 shadow-sm border ${plano.valor === 350 ? 'border-[#DFFF00] ring-4 ring-[#DFFF00]/10' : 'border-gray-200'} relative flex flex-col`}>
+          <div key={plano.id} className={`bg-white rounded-[32px] p-5 lg:p-8 shadow-[0_2px_10px_-7px_rgba(17,24,39,0.14)] border ${plano.valor === 350 ? 'border-[#111827] ring-4 ring-black/5' : 'border-[#EFEFEF]'} relative flex flex-col`}>
             
             {plano.valor === 350 && (
               <div className="absolute top-0 right-8 -mt-3">
-                <Badge className="bg-black text-[#DFFF00] border-0 px-3 py-1 flex items-center gap-1 shadow-xl">
-                  <Shield className="w-3 h-3" /> Premium
+                <Badge className="bg-[#111827] text-[#DFFF00] border-0 px-3 py-1 flex items-center gap-1.5 shadow-xl font-bold">
+                  <Shield className="w-3.5 h-3.5" /> Premium
                 </Badge>
               </div>
             )}
@@ -98,10 +98,10 @@ export function ClientPlansShowcase({ planos }: { planos: any[] }) {
               </ul>
             </div>
 
-            <div className="mt-auto pt-6 border-t border-gray-100">
+            <div className="mt-auto pt-6 border-t border-[#EFEFEF]">
               <Button 
                 variant={plano.valor === 350 ? 'default' : 'outline'} 
-                className={`w-full ${plano.valor === 350 ? 'bg-[#DFFF00] text-black hover:bg-[#ccee00]' : ''}`}
+                className={`w-full ${plano.valor === 350 ? 'bg-[#DFFF00] text-[#111827] hover:bg-[#ccee00] font-bold' : ''}`}
                 onClick={() => handleSubscribe(plano.id)}
                 disabled={loadingId !== null}
               >

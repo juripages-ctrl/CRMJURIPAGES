@@ -60,27 +60,27 @@ export default async function ClientSiteReportPage({
 
   return (
     <div className="w-full pb-10">
-      <Link href="/dashboard/meus-sites" className="inline-flex items-center text-sm text-gray-500 hover:text-black transition-colors mb-6">
-        <ArrowLeft className="w-4 h-4 mr-1" />
+      <Link href="/dashboard/meus-sites" className="inline-flex items-center text-[13.5px] font-medium text-[#9CA3AF] hover:text-[#111827] transition-colors mb-6">
+        <ArrowLeft className="w-4 h-4 mr-1.5" />
         Voltar para Meus Sites
       </Link>
 
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-semibold text-gray-900 tracking-tight">{site.nome}</h1>
-          <a href={`https://${site.dominio}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1 mt-1">
-            {site.dominio} <ArrowUpRight className="w-3 h-3" />
+          <h1 className="text-[26px] font-semibold tracking-[-0.03em] text-[#111827]">{site.nome}</h1>
+          <a href={`https://${site.dominio}`} target="_blank" rel="noopener noreferrer" className="text-sm text-gray-500 hover:text-black flex items-center gap-1 mt-1">
+            {site.dominio} <ArrowUpRight className="w-3.5 h-3.5" />
           </a>
         </div>
         <div className="flex items-center gap-3">
           {isOnline ? (
-            <div className="bg-green-100 text-green-700 px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-2 border border-green-200 shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+            <div className="bg-[#DFFF00] text-[#111827] px-3.5 py-1.5 rounded-full text-[13px] font-semibold flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-[#111827] animate-pulse"></span>
               Sistema Online e Protegido
             </div>
           ) : (
-            <div className="bg-[#DFFF00]/40 text-black px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-2 border border-[#DFFF00]/60">
-              <span className="w-2 h-2 rounded-full bg-black"></span>
+            <div className="bg-red-100 text-red-700 px-3.5 py-1.5 rounded-full text-[13px] font-semibold flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-red-500"></span>
               Em Desenvolvimento
             </div>
           )}

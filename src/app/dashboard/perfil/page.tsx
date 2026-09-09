@@ -26,27 +26,18 @@ export default async function PerfilPage() {
   }
 
   return (
-    <div className="flex-1 w-full bg-gray-50/50 min-h-screen">
-      <div className="max-w-4xl mx-auto p-4 md:p-8 space-y-8">
-        
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Meu Perfil</h1>
-          <p className="text-muted-foreground mt-1">
-            Gerencie suas informações pessoais e foto de perfil.
-          </p>
-        </div>
-
+    <div className="flex-1 w-full bg-[#f8f9fa] min-h-screen">
+      <div className="w-full mx-auto p-4 md:p-8">
         <PerfilForm 
           usuario={{
             id: usuario.id,
             nome: usuario.nome,
-            email: usuario.email, // Preferindo o da tabela usuarios
+            email: usuario.email,
             telefone: usuario.telefone || '',
             avatar_url: usuario.avatar_url || '',
             role: usuario.role
           }} 
         />
-
       </div>
     </div>
   )

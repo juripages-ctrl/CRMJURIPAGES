@@ -555,15 +555,14 @@ export function SiteReportTabs({ isOnline, notas, site }: SiteReportTabsProps) {
   return (
     <div className="w-full">
       {/* Tabs */}
-      <div className="flex items-center gap-2 md:gap-6 md:border-b md:border-gray-200 mb-6 md:mb-8 overflow-x-auto whitespace-nowrap hide-scrollbar pb-2 md:pb-0 px-1 md:px-0 -mx-1 md:mx-0 snap-x">
+      <div className="flex items-center gap-2 mb-6 md:mb-8 overflow-x-auto whitespace-nowrap hide-scrollbar pb-2 md:pb-0 px-1 md:px-0 -mx-1 md:mx-0 snap-x">
         <button
           onClick={() => setActiveTab('geral')}
-          className={`snap-start px-4 py-2 rounded-full md:rounded-none md:p-0 md:pb-4 text-sm font-medium transition-colors relative flex-shrink-0 ${
-            activeTab === 'geral' ? 'bg-black text-white md:bg-transparent md:text-black' : 'bg-gray-100 text-gray-600 md:bg-transparent md:text-gray-500 hover:text-gray-900'
+          className={`snap-start px-4 py-2 rounded-full text-[13.5px] font-semibold transition-colors flex-shrink-0 ${
+            activeTab === 'geral' ? 'bg-[#111827] text-white' : 'bg-[#F3F4F6] text-[#9CA3AF] hover:text-[#111827]'
           }`}
         >
           Visão Geral
-          {activeTab === 'geral' && <div className="hidden md:block absolute bottom-0 left-0 w-full h-0.5 bg-black" />}
         </button>
         <button
           onClick={() => {
@@ -573,22 +572,20 @@ export function SiteReportTabs({ isOnline, notas, site }: SiteReportTabsProps) {
             }
             setActiveTab('seo')
           }}
-          className={`snap-start px-4 py-2 rounded-full md:rounded-none md:p-0 md:pb-4 text-sm font-medium transition-colors relative flex-shrink-0 flex items-center gap-1.5 ${
-            activeTab === 'seo' ? 'bg-black text-white md:bg-transparent md:text-black' : 'bg-gray-100 text-gray-600 md:bg-transparent md:text-gray-500 hover:text-gray-900'
+          className={`snap-start px-4 py-2 rounded-full text-[13.5px] font-semibold transition-colors flex-shrink-0 flex items-center gap-1.5 ${
+            activeTab === 'seo' ? 'bg-[#111827] text-white' : 'bg-[#F3F4F6] text-[#9CA3AF] hover:text-[#111827]'
           }`}
         >
           {!getBlogPlanPermissions(site).hasSeoAccess && <Lock className={`w-3.5 h-3.5 ${activeTab === 'seo' ? 'text-amber-300' : 'text-amber-500'}`} />}
           SEO (GSC)
-          {activeTab === 'seo' && <div className="hidden md:block absolute bottom-0 left-0 w-full h-0.5 bg-black" />}
         </button>
         <button
           onClick={() => setActiveTab('wp')}
-          className={`snap-start px-4 py-2 rounded-full md:rounded-none md:p-0 md:pb-4 text-sm font-medium transition-colors relative flex-shrink-0 ${
-            activeTab === 'wp' ? 'bg-black text-white md:bg-transparent md:text-black' : 'bg-gray-100 text-gray-600 md:bg-transparent md:text-gray-500 hover:text-gray-900'
+          className={`snap-start px-4 py-2 rounded-full text-[13.5px] font-semibold transition-colors flex-shrink-0 ${
+            activeTab === 'wp' ? 'bg-[#111827] text-white' : 'bg-[#F3F4F6] text-[#9CA3AF] hover:text-[#111827]'
           }`}
         >
           WordPress
-          {activeTab === 'wp' && <div className="hidden md:block absolute bottom-0 left-0 w-full h-0.5 bg-black" />}
         </button>
         <button
           onClick={() => {
@@ -598,25 +595,22 @@ export function SiteReportTabs({ isOnline, notas, site }: SiteReportTabsProps) {
             }
             setActiveTab('blog')
           }}
-          className={`snap-start px-4 py-2 rounded-full md:rounded-none md:p-0 md:pb-4 text-sm font-medium transition-colors relative flex-shrink-0 flex items-center gap-1.5 ${
-            activeTab === 'blog' ? 'bg-black text-white md:bg-transparent md:text-black font-bold' : 'bg-gray-100 text-gray-600 md:bg-transparent md:text-gray-500 hover:text-gray-900'
+          className={`snap-start px-4 py-2 rounded-full text-[13.5px] font-semibold transition-colors flex-shrink-0 flex items-center gap-1.5 ${
+            activeTab === 'blog' ? 'bg-[#111827] text-white' : 'bg-[#F3F4F6] text-[#9CA3AF] hover:text-[#111827]'
           }`}
         >
           {!getBlogPlanPermissions(site).hasBlogAccess && <Lock className={`w-3.5 h-3.5 ${activeTab === 'blog' ? 'text-amber-300' : 'text-amber-500'}`} />}
           Blog (Postagens)
-          {activeTab === 'blog' && <div className="hidden md:block absolute bottom-0 left-0 w-full h-0.5 bg-black" />}
         </button>
         <button
           onClick={() => setActiveTab('speed' as any)}
-          className={`snap-start px-4 py-2 rounded-full md:rounded-none md:p-0 md:pb-4 text-sm font-medium transition-colors relative flex-shrink-0 ${
-            activeTab === 'speed' as any ? 'bg-black text-white md:bg-transparent md:text-black' : 'bg-gray-100 text-gray-600 md:bg-transparent md:text-gray-500 hover:text-gray-900'
+          className={`snap-start px-4 py-2 rounded-full text-[13.5px] font-semibold transition-colors flex-shrink-0 ${
+            activeTab === 'speed' as any ? 'bg-[#111827] text-white' : 'bg-[#F3F4F6] text-[#9CA3AF] hover:text-[#111827]'
           }`}
         >
           Speed Insights
-          {activeTab === 'speed' as any && <div className="hidden md:block absolute bottom-0 left-0 w-full h-0.5 bg-black" />}
         </button>
 
-      
       <GlobalDialog
         {...dialogState}
         onClose={() => setDialogState(s => ({ ...s, isOpen: false }))}
@@ -629,11 +623,11 @@ export function SiteReportTabs({ isOnline, notas, site }: SiteReportTabsProps) {
       {activeTab !== 'speed' as any && (
       <div className="flex flex-col sm:flex-row justify-end items-start sm:items-center gap-4 mb-8">
         <div className="flex flex-col items-end gap-3">
-          <div className="bg-gray-200/60 p-1 rounded-full flex flex-wrap items-center gap-1">
-            <button onClick={() => setDateFilter('hoje')} className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all ${dateFilter === 'hoje' ? 'text-white bg-black shadow-md' : 'text-gray-500 hover:text-gray-900'}`}>Hoje</button>
-            <button onClick={() => setDateFilter('7_dias')} className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all ${dateFilter === '7_dias' ? 'text-white bg-black shadow-md' : 'text-gray-500 hover:text-gray-900'}`}>7 Dias</button>
-            <button onClick={() => setDateFilter('30_dias')} className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all ${dateFilter === '30_dias' ? 'text-white bg-black shadow-md' : 'text-gray-500 hover:text-gray-900'}`}>30 Dias</button>
-            <button onClick={() => setDateFilter('periodo')} className={`px-4 py-1.5 text-xs font-medium rounded-full transition-all ${dateFilter === 'periodo' ? 'text-white bg-black shadow-md' : 'text-gray-500 hover:text-gray-900'}`}>Período</button>
+          <div className="bg-[#F3F4F6] p-1 rounded-full flex flex-wrap items-center gap-1">
+            <button onClick={() => setDateFilter('hoje')} className={`px-3 py-1.5 text-xs font-semibold rounded-full transition-all ${dateFilter === 'hoje' ? 'text-white bg-[#111827] shadow-sm' : 'text-[#9CA3AF] hover:text-[#111827]'}`}>Hoje</button>
+            <button onClick={() => setDateFilter('7_dias')} className={`px-3 py-1.5 text-xs font-semibold rounded-full transition-all ${dateFilter === '7_dias' ? 'text-white bg-[#111827] shadow-sm' : 'text-[#9CA3AF] hover:text-[#111827]'}`}>7 Dias</button>
+            <button onClick={() => setDateFilter('30_dias')} className={`px-3 py-1.5 text-xs font-semibold rounded-full transition-all ${dateFilter === '30_dias' ? 'text-white bg-[#111827] shadow-sm' : 'text-[#9CA3AF] hover:text-[#111827]'}`}>30 Dias</button>
+            <button onClick={() => setDateFilter('periodo')} className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-all ${dateFilter === 'periodo' ? 'text-white bg-[#111827] shadow-sm' : 'text-[#9CA3AF] hover:text-[#111827]'}`}>Período</button>
           </div>
           {dateFilter === 'periodo' && (
             <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-gray-200 shadow-sm">
@@ -649,13 +643,13 @@ export function SiteReportTabs({ isOnline, notas, site }: SiteReportTabsProps) {
       {/* Tab Content */}
       {activeTab === 'geral' && (
         <div className="flex flex-col gap-6">
-          <div className="bg-gradient-to-r from-gray-900 to-black text-white rounded-3xl p-8 relative overflow-hidden shadow-lg">
+          <div className="bg-[#111827] text-white rounded-[32px] p-8 relative overflow-hidden shadow-[0_4px_20px_-7px_rgba(17,24,39,0.2)]">
             <div className="absolute -right-10 -top-10 w-48 h-48 bg-white/5 rounded-full blur-2xl"></div>
             <div className="relative z-10">
-              <h2 className="text-2xl font-medium mb-2">Visão Geral: {site.dominio}</h2>
+              <h2 className="text-[26px] font-semibold tracking-[-0.03em] mb-2">Visão Geral: {site.dominio}</h2>
               <div className="flex items-center gap-3">
-                <span className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${isOnline ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}`}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-green-400' : 'bg-red-400'}`}></span>
+                <span className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-[12.5px] font-semibold ${isOnline ? 'bg-[#DFFF00] text-[#111827]' : 'bg-red-100 text-red-700'}`}>
+                  <span className={`w-2 h-2 rounded-full ${isOnline ? 'bg-[#111827] animate-pulse' : 'bg-red-500'}`}></span>
                   {isOnline ? 'Site Online e Monitorado' : 'Site Offline'}
                 </span>
               </div>
@@ -664,10 +658,10 @@ export function SiteReportTabs({ isOnline, notas, site }: SiteReportTabsProps) {
           
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
             {/* SEO Summary Card */}
-            <div className={`p-6 rounded-3xl border relative overflow-hidden flex flex-col justify-between ${hasGsc ? 'bg-gradient-to-br from-blue-50/80 to-white border-blue-100 shadow-sm' : 'bg-gray-50 border-gray-100'}`}>
+            <div className={`p-6 rounded-[24px] border relative overflow-hidden flex flex-col justify-between ${hasGsc ? 'bg-white border-[#EFEFEF] shadow-[0_2px_10px_-7px_rgba(17,24,39,0.14)]' : 'bg-[#F9FAFB] border-[#EFEFEF]'}`}>
               <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-2">
-                  <div className={`p-2 rounded-xl ${hasGsc ? 'bg-blue-100 text-blue-600' : 'bg-gray-200 text-gray-400'}`}>
+                  <div className={`p-2 rounded-xl ${hasGsc ? 'bg-[#F3F4F6] text-[#111827]' : 'bg-gray-200 text-gray-400'}`}>
                     <Globe className="w-5 h-5" />
                   </div>
                   <h4 className="text-sm font-bold text-gray-700">SEO (GSC)</h4>
@@ -703,10 +697,10 @@ export function SiteReportTabs({ isOnline, notas, site }: SiteReportTabsProps) {
             </div>
             
             {/* WordPress / Security Summary Card */}
-            <div className={`p-6 rounded-3xl border relative overflow-hidden flex flex-col justify-between ${hasWp ? 'bg-gradient-to-br from-indigo-50/80 to-white border-indigo-100 shadow-sm' : 'bg-gray-50 border-gray-100'}`}>
+            <div className={`p-6 rounded-[24px] border relative overflow-hidden flex flex-col justify-between ${hasWp ? 'bg-white border-[#EFEFEF] shadow-[0_2px_10px_-7px_rgba(17,24,39,0.14)]' : 'bg-[#F9FAFB] border-[#EFEFEF]'}`}>
               <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-2">
-                  <div className={`p-2 rounded-xl ${hasWp ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-200 text-gray-400'}`}>
+                  <div className={`p-2 rounded-xl ${hasWp ? 'bg-[#F3F4F6] text-[#111827]' : 'bg-gray-200 text-gray-400'}`}>
                     <ShieldCheck className="w-5 h-5" />
                   </div>
                   <h4 className="text-sm font-bold text-gray-700">Segurança & WP</h4>
@@ -752,10 +746,10 @@ export function SiteReportTabs({ isOnline, notas, site }: SiteReportTabsProps) {
             </div>
 
             {/* Blog Summary Card */}
-            <div className={`p-6 rounded-3xl border relative overflow-hidden flex flex-col justify-between ${hasWp ? 'bg-gradient-to-br from-fuchsia-50/80 to-white border-fuchsia-100 shadow-sm' : 'bg-gray-50 border-gray-100'}`}>
+            <div className={`p-6 rounded-[24px] border relative overflow-hidden flex flex-col justify-between ${hasWp ? 'bg-white border-[#EFEFEF] shadow-[0_2px_10px_-7px_rgba(17,24,39,0.14)]' : 'bg-[#F9FAFB] border-[#EFEFEF]'}`}>
               <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-2">
-                  <div className={`p-2 rounded-xl ${hasWp ? 'bg-fuchsia-100 text-fuchsia-600' : 'bg-gray-200 text-gray-400'}`}>
+                  <div className={`p-2 rounded-xl ${hasWp ? 'bg-[#F3F4F6] text-[#111827]' : 'bg-gray-200 text-gray-400'}`}>
                     <FileText className="w-5 h-5" />
                   </div>
                   <h4 className="text-sm font-bold text-gray-700">Blog</h4>
@@ -789,9 +783,9 @@ export function SiteReportTabs({ isOnline, notas, site }: SiteReportTabsProps) {
 
             {/* Others: Speed & History */}
             <div className="flex flex-col gap-4">
-              <div className="p-5 rounded-3xl border border-gray-200 bg-white shadow-sm flex items-center justify-between group cursor-pointer hover:border-black transition-colors" onClick={() => setActiveTab('speed' as any)}>
+              <div className="p-5 rounded-[24px] border border-[#EFEFEF] bg-white shadow-[0_2px_10px_-7px_rgba(17,24,39,0.14)] flex items-center justify-between group cursor-pointer hover:border-black transition-colors" onClick={() => setActiveTab('speed' as any)}>
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-amber-50 text-amber-600 rounded-xl">
+                  <div className="p-2 bg-[#F3F4F6] text-[#111827] rounded-xl">
                     <Zap className="w-5 h-5" />
                   </div>
                   <div>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Cloud, Search, Globe, ChevronRight, Activity, Server, Unplug, ArrowUpRight, CheckCircle2, FileText, ChevronDown } from 'lucide-react'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts'
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts'
 import { fetchGscAnalytics, fetchGscIndexedPages, fetchWpStatus, fetchWpPosts } from './sites/integrations-actions'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -17,6 +17,7 @@ export function DashboardHomeClient({ sites, firstName, isClientView = false }: 
   const [selectedSite, setSelectedSite] = useState<any | null>(sites.length > 0 ? sites[0] : null)
   const [gscData, setGscData] = useState<any[]>([])
   const [loadingAnalytics, setLoadingAnalytics] = useState(false)
+  const [chartType, setChartType] = useState<'bar' | 'line'>('bar')
   const [indexedPages, setIndexedPages] = useState<any[]>([])
   
   // WP State
@@ -37,13 +38,52 @@ export function DashboardHomeClient({ sites, firstName, isClientView = false }: 
   const allClients = Array.from(uniqueClientsMap.values())
 
   type DateFilter = 'hoje' | '7_dias' | '30_dias' | 'periodo'
-  const [dateFilter, setDateFilter] = useState<DateFilter>('30_dias')
-  const [customStartDate, setCustomStartDate] = useState(() => {
-    const d = new Date()
-    d.setDate(d.getDate() - 30)
-    return d.toISOString().split('T')[0]
-  })
-  const [customEndDate, setCustomEndDate] = useState(() => new Date().toISOString().split('T')[0])
+  const [dateFilter, setDateFilter] = useState<'hoje' | '7_dias' | '30_dias' | 'periodo'>('30_dias')
+  const [customStartDate, setCustomStartDate] = useState('')
+  const [customEndDate, setCustomEndDate] = useState('')
+  const [selectedBarIndex, setSelectedBarIndex] = useState<number | null>(null)
+
+  const CustomBar = (props: any) => {
+    const { fill, x, y, width, height, index, payload } = props
+    const isSelected = fill === '#111827'
+    const clicks = payload?.clicks ?? 0
+    const labelText = `${clicks} ${clicks === 1 ? 'clique' : 'cliques'}`
+    const labelWidth = Math.max(labelText.length * 7 + 22, 70)
+    const barHeight = Math.max(height || 0, 12)
+    const barY = height && height > 0 ? y : y - 12
+
+    return (
+      <g style={{ cursor: 'pointer' }} onClick={() => setSelectedBarIndex(isSelected ? null : index)}>
+        <rect x={x} y={barY} width={width} height={barHeight} fill={fill} rx={width / 2} ry={width / 2} />
+        {isSelected && barHeight > 16 && (
+          <rect x={x + width / 2 - 8} y={barY + barHeight - 10} width={16} height={4} fill="#DFFF00" rx={2} ry={2} />
+        )}
+        {isSelected && (
+          <g style={{ pointerEvents: 'none' }}>
+            <rect 
+              x={x + width / 2 - labelWidth / 2} 
+              y={barY - 32} 
+              width={labelWidth} 
+              height={24} 
+              fill="#111827" 
+              rx={12} 
+              ry={12} 
+            />
+            <text 
+              x={x + width / 2} 
+              y={barY - 16} 
+              textAnchor="middle" 
+              fill="#fff" 
+              fontSize={11} 
+              fontWeight={600}
+            >
+              {labelText}
+            </text>
+          </g>
+        )}
+      </g>
+    )
+  }
   
   // Drill-down State
   const [selectedPageUrl, setSelectedPageUrl] = useState<string | null>(null)
@@ -115,11 +155,20 @@ export function DashboardHomeClient({ sites, firstName, isClientView = false }: 
           fetchWpStatus(wpConfig.site_url, wpConfig.username, wpConfig.app_password),
           fetchWpPosts(site.id, wpConfig.site_url, wpConfig.username, wpConfig.app_password, false)
         ])
-        if (statusRes.success) setWpStatus(statusRes.data)
-        else setWpStatus(null)
-
-        if (postsRes.success) setWpPosts(postsRes.data)
-        else setWpPosts([])
+        
+        if (postsRes.success) {
+          setWpPosts(postsRes.data)
+          // Se conseguimos buscar os posts, a conexão e autenticação estão funcionando
+          // Mesmo que o endpoint customizado de status (mu-plugin) não exista
+          if (statusRes.success) {
+            setWpStatus(statusRes.data)
+          } else {
+            setWpStatus({ connected: true, pluginMissing: true })
+          }
+        } else {
+          setWpPosts([])
+          setWpStatus(null)
+        }
       }
       setLoadingWp(false)
     } else {
@@ -154,209 +203,170 @@ export function DashboardHomeClient({ sites, firstName, isClientView = false }: 
   const avgPosition = validPositions.length > 0 ? (validPositions.reduce((a, b) => a + b, 0) / validPositions.length).toFixed(1) : '0.0'
 
   return (
-    <div className="w-full flex flex-col gap-6">
+    <div className="w-full flex flex-col gap-[22px] animate-[dkFade_.25s_ease-out]">
       
-      {/* Top Row: Enterprise Analytics Style */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6">
+      {/* Top Row: Welcome & Lime */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-[22px]">
         
         {/* Welcome Card (8 cols) */}
-        <div className="lg:col-span-8 bg-gradient-to-b from-white to-gray-100 rounded-[2.5rem] p-8 shadow-sm border border-white/50 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-48 h-48 bg-blue-100/50 rounded-full blur-3xl -mr-10 -mt-10"></div>
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#DFFF00]/20 rounded-full blur-3xl -ml-10 -mb-10"></div>
+        <div className="lg:col-span-8 box-border relative overflow-hidden bg-gradient-to-b from-white to-[#F1F2F4] border border-white/60 rounded-[40px] p-[34px] min-h-[230px] flex flex-col justify-between shadow-sm">
+          <div className="absolute -top-[40px] -right-[40px] w-[260px] h-[260px] rounded-full bg-[rgba(219,234,254,0.6)] blur-[56px] pointer-events-none"></div>
+          <div className="absolute -bottom-[60px] -left-[50px] w-[260px] h-[260px] rounded-full bg-[rgba(223,255,0,0.28)] blur-[56px] pointer-events-none"></div>
 
-          <div className="relative z-10 h-full flex flex-col justify-between">
-            <div>
-              <h1 className="text-3xl lg:text-4xl font-medium text-gray-900 tracking-tight leading-[1.1] mb-6">
-                Olá {firstName},<br />
-                aqui está a sua rede.
-              </h1>
-            </div>
-            <div>
-              <p className="text-gray-500 text-base mb-1">Total de Projetos</p>
-              <div className="flex items-baseline gap-2">
-                <span className="text-4xl font-semibold tracking-tight text-gray-900">{sites.length}</span>
-              </div>
+          <h2 className="relative m-0 text-[38px] font-medium tracking-[-0.038em] leading-[1.1] text-[#111827]">
+            Olá {firstName},<br />
+            aqui está {isClientView ? 'o seu projeto' : 'a sua rede'}.
+          </h2>
+          
+          <div className="relative mt-8">
+            <p className="m-0 mb-[3px] text-[15px] text-[#6B7280]">Total de Projetos</p>
+            <div className="flex items-baseline gap-[10px]">
+              <span className="text-[40px] font-semibold tracking-[-0.04em] text-[#111827]">{sites.length}</span>
+              {sites.length > 0 && <span className="text-[12.5px] font-semibold text-[#166534] bg-[#DCFCE7] px-[11px] py-[4px] rounded-full">Ativos</span>}
             </div>
           </div>
         </div>
 
         {/* Lime Card (4 cols) */}
-        <div className="lg:col-span-4 bg-[#DFFF00] rounded-[2.5rem] p-8 relative overflow-hidden flex flex-col justify-between group">
-          {/* Decorative circles */}
-          <div className="absolute -right-10 -top-10 w-48 h-48 border border-black/5 rounded-full"></div>
-          <div className="absolute -right-6 -top-6 w-48 h-48 border border-black/5 rounded-full"></div>
-          <div className="absolute -right-2 -top-2 w-48 h-48 border border-black/5 rounded-full"></div>
+        <div className="lg:col-span-4 relative overflow-hidden bg-[#DFFF00] rounded-[40px] p-[32px] flex flex-col justify-between">
+          <div className="absolute -right-[40px] -top-[40px] w-[230px] h-[230px] border border-black/5 rounded-full pointer-events-none"></div>
+          <div className="absolute -right-[22px] -top-[22px] w-[230px] h-[230px] border border-black/5 rounded-full pointer-events-none"></div>
           
-          <div className="relative z-10 flex justify-between items-start">
-            <span className="text-base text-black/70 font-medium">Sites Ativos (No Ar)</span>
-            <div className="w-10 h-10 bg-white/40 rounded-full flex items-center justify-center">
-              <CheckCircle2 className="w-5 h-5 text-black" />
+          <div className="relative flex items-start justify-between">
+            <span className="text-[16px] font-medium text-black/70">Sites Ativos (No Ar)</span>
+            <div className="w-[42px] h-[42px] flex-none rounded-full bg-white/45 flex items-center justify-center">
+              <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="1.9" strokeLinecap="round">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M8 12.4l2.6 2.6L16 9.6"></path>
+              </svg>
             </div>
           </div>
-          <div className="relative z-10 mt-10">
-            <h4 className="text-5xl font-medium text-black tracking-tight mb-2">{activeSitesCount}</h4>
-            <p className="text-sm text-black/50 font-medium">{sites.length - activeSitesCount} projetos pausados/em produção</p>
+          
+          <div className="relative mt-10">
+            <p className="m-0 mb-[6px] text-[54px] font-medium tracking-[-0.045em] text-[#000] leading-none">{activeSitesCount}</p>
+            <p className="m-0 text-[13.5px] font-medium text-black/50">{sites.length - activeSitesCount} projetos inativos/pausados</p>
           </div>
         </div>
 
       </div>
 
-      {/* Main Split Layout: Left List, Right Details */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6 min-h-0 lg:min-h-[600px]">
+      {/* Main Split Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-[22px] items-start">
         
         {/* Left Col: Site List */}
-        <div className="lg:col-span-4 bg-[#F2F2F2] rounded-3xl lg:rounded-[2.5rem] p-4 md:p-6 border border-white/60 flex flex-col h-auto max-h-[500px] lg:max-h-none lg:h-[700px]">
-          <div className="mb-6 space-y-3">
-            <h3 className="text-lg text-gray-600 font-medium px-2">Selecione um Projeto</h3>
-            
-            {!isClientView && allClients.length > 0 && (
-              <div className="px-2 relative">
-                <button
-                  type="button"
-                  onClick={() => setIsClientDropdownOpen(!isClientDropdownOpen)}
-                  className="w-full bg-white border border-gray-200 rounded-full text-sm px-4 py-2.5 flex items-center justify-between hover:bg-gray-50 transition-all focus:outline-none focus:ring-2 focus:ring-black shadow-sm"
-                >
-                  <div className="flex items-center gap-2 truncate">
-                    {selectedClientId === 'all' ? (
-                      <span className="font-medium text-gray-700">Todos os clientes</span>
-                    ) : (
-                      <>
-                        {(() => {
-                          const c = allClients.find((c: any) => c.id === selectedClientId)
-                          if (!c) return <span className="font-medium text-gray-700">Selecione</span>
-                          return (
-                            <>
-                              <div className="w-5 h-5 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center shrink-0 border border-gray-200">
-                                {c.avatar_url ? (
-                                  <Image src={c.avatar_url} alt={c.nome} width={20} height={20} className="w-full h-full object-cover" />
-                                ) : (
-                                  <span className="text-[10px] font-bold text-gray-500">{c.nome.charAt(0).toUpperCase()}</span>
-                                )}
-                              </div>
-                              <span className="font-medium text-gray-700 truncate">{c.nome}</span>
-                            </>
-                          )
-                        })()}
-                      </>
-                    )}
-                  </div>
-                  <ChevronDown className="w-4 h-4 text-gray-400 shrink-0" />
-                </button>
+        <div className="lg:col-span-4 box-border bg-[#F2F2F2] border border-white/60 rounded-[40px] p-[24px] flex flex-col lg:h-[650px] max-h-[600px] lg:max-h-none">
+          <h3 className="m-0 mb-[16px] px-[8px] text-[17px] font-medium text-[#6B7280]">Selecione um projeto</h3>
+          
+          {!isClientView && allClients.length > 0 && (
+            <div className="px-[8px] relative mb-[8px]">
+              <button
+                type="button"
+                onClick={() => setIsClientDropdownOpen(!isClientDropdownOpen)}
+                className="w-full h-[44px] bg-white/70 border border-white/50 rounded-full text-[13.5px] px-[16px] flex items-center justify-between hover:bg-white transition-all focus:outline-none"
+              >
+                <div className="flex items-center gap-2 truncate">
+                  {selectedClientId === 'all' ? (
+                    <span className="text-[#374151]">Todos os clientes</span>
+                  ) : (
+                    <>
+                      {(() => {
+                        const c = allClients.find((c: any) => c.id === selectedClientId)
+                        if (!c) return <span className="text-[#374151]">Selecione</span>
+                        return <span className="text-[#374151] truncate">{c.nome}</span>
+                      })()}
+                    </>
+                  )}
+                </div>
+                <ChevronDown className="w-4 h-4 text-[#9CA3AF] shrink-0" />
+              </button>
 
-                {isClientDropdownOpen && (
-                  <>
-                    <div className="fixed inset-0 z-40" onClick={() => setIsClientDropdownOpen(false)}></div>
-                    <div className="absolute top-full left-2 right-2 mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 max-h-60 overflow-y-auto">
+              {isClientDropdownOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setIsClientDropdownOpen(false)}></div>
+                  <div className="absolute top-full left-[8px] right-[8px] mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 max-h-60 overflow-y-auto">
+                    <button
+                      onClick={() => {
+                        setSelectedClientId('all')
+                        setIsClientDropdownOpen(false)
+                      }}
+                      className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors ${selectedClientId === 'all' ? 'text-black font-semibold' : 'text-gray-700'}`}
+                    >
+                      Todos os clientes
+                    </button>
+                    {allClients.map((c: any) => (
                       <button
+                        key={c.id}
                         onClick={() => {
-                          setSelectedClientId('all')
+                          setSelectedClientId(c.id)
                           setIsClientDropdownOpen(false)
                         }}
-                        className={`w-full text-left px-4 py-2.5 text-sm flex items-center gap-2 hover:bg-gray-50 transition-colors ${selectedClientId === 'all' ? 'bg-[#DFFF00]/20 text-black font-semibold' : 'text-gray-700'}`}
+                        className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors truncate ${selectedClientId === c.id ? 'text-black font-semibold' : 'text-gray-700'}`}
                       >
-                        <span>Todos os clientes</span>
+                        {c.nome}
                       </button>
-                      
-                      {allClients.map((c: any) => (
-                        <button
-                          key={c.id}
-                          onClick={() => {
-                            setSelectedClientId(c.id)
-                            setIsClientDropdownOpen(false)
-                          }}
-                          className={`w-full text-left px-4 py-2.5 text-sm flex items-center gap-2 hover:bg-gray-50 transition-colors ${selectedClientId === c.id ? 'bg-[#DFFF00]/20 text-black font-semibold' : 'text-gray-700'}`}
-                        >
-                          <div className="w-6 h-6 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center shrink-0 border border-gray-200">
-                            {c.avatar_url ? (
-                              <Image src={c.avatar_url} alt={c.nome} width={24} height={24} className="w-full h-full object-cover" />
-                            ) : (
-                              <span className="text-[10px] font-bold text-gray-500">{c.nome.charAt(0).toUpperCase()}</span>
-                            )}
-                          </div>
-                          <span className="truncate">{c.nome}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
-
-            <div className="relative mx-2">
-              <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input 
-                type="text" 
-                placeholder="Buscar projeto..." 
-                className="w-full pl-10 pr-4 py-3 bg-white/60 border border-white/40 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-black transition-all"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
+          )}
+
+          <div className="flex items-center gap-[10px] h-[44px] mx-[8px] mb-[16px] px-[16px] bg-white/70 border border-white/50 rounded-full">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="1.9" strokeLinecap="round">
+              <circle cx="11" cy="11" r="7"></circle>
+              <path d="M16.5 16.5L21 21"></path>
+            </svg>
+            <input 
+              type="text" 
+              placeholder="Buscar projeto..." 
+              className="flex-1 border-0 outline-none bg-transparent font-inherit text-[13.5px] min-w-0"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
           
-          <div className="flex-1 overflow-y-auto space-y-2 pr-2 hide-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+          <div className="flex-1 overflow-y-auto flex flex-col gap-[8px] pr-[6px]" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {filteredSites.length === 0 ? (
-              <div className="p-4 text-center text-gray-500 text-sm">Nenhum site encontrado.</div>
+              <div className="p-4 text-center text-[#9CA3AF] text-[13.5px]">Nenhum site encontrado.</div>
             ) : (
               filteredSites.map(site => {
                 const isSelected = selectedSite?.id === site.id
-                const hasGsc = site.integracoes_google && site.integracoes_google.length > 0
-                const hasWp = site.integracoes_wordpress && site.integracoes_wordpress.length > 0
                 
                 return (
                   <button 
                     key={site.id}
                     onClick={() => setSelectedSite(site)}
-                    className={`w-full text-left p-4 rounded-2xl transition-all flex items-center justify-between group
+                    className={`w-full text-left border rounded-[22px] p-[16px] cursor-pointer font-inherit transition-transform duration-150
                       ${isSelected 
-                        ? 'bg-black text-white shadow-lg shadow-black/20 translate-x-1' 
-                        : 'bg-white text-gray-900 hover:bg-gray-50 border border-transparent hover:border-gray-200'}`}
+                        ? 'border-[#111827] bg-[#111827] text-white shadow-[0_12px_24px_-12px_rgba(17,24,39,0.8)] translate-x-[4px]' 
+                        : 'border-transparent bg-transparent hover:border-[#E5E7EB] hover:bg-white text-[#111827]'}`}
                   >
-                    <div className="flex-1 min-w-0 pr-2">
-                      <h3 className="font-medium text-base truncate">{site.nome}</h3>
-                      <p className={`text-xs truncate mt-0.5 ${isSelected ? 'text-gray-400' : 'text-gray-500'}`}>{site.dominio}</p>
-                      
-                      {site.clientes && !isClientView && (
-                        <p className={`text-[10px] uppercase tracking-wider font-semibold truncate mt-1 ${isSelected ? 'text-white/60' : 'text-purple-600'}`}>
-                          {site.clientes.nome}
-                        </p>
-                      )}
-                      
-                      <div className="flex gap-2 mt-3 items-center">
-                        <span className={`w-2 h-2 rounded-full ${site.status === 'no_ar' ? 'bg-[#DFFF00]' : site.status === 'pausado' ? 'bg-red-500' : 'bg-gray-400'}`}></span>
-                        <div className="flex gap-1.5">
-                          {hasGsc && <Search className={`w-3.5 h-3.5 ${isSelected ? 'text-white/70' : 'text-blue-500'}`} />}
-                          {hasWp && <FileText className={`w-3.5 h-3.5 ${isSelected ? 'text-white/70' : 'text-purple-500'}`} />}
-                        </div>
-                      </div>
-                      
-                      {isSelected && (
-                        <div className="mt-4">
-                          <Link 
-                            href={isClientView ? `/dashboard/meus-sites/${site.id}` : `/dashboard/sites/${site.id}`}
-                            onClick={(e) => e.stopPropagation()}
-                            className="px-3 py-1.5 bg-white text-black text-xs font-medium rounded-lg inline-flex items-center gap-1 hover:bg-gray-200 transition-colors"
-                          >
-                            Gerenciar Site <ArrowUpRight className="w-3 h-3" />
-                          </Link>
-                        </div>
-                      )}
+                    <p className="m-0 text-[15px] font-medium tracking-[-0.01em] truncate">{site.nome}</p>
+                    <p className={`m-0 mt-[3px] text-[12px] truncate ${isSelected ? 'text-white/60' : 'text-[#6B7280]'}`}>{site.dominio}</p>
+                    
+                    {!isClientView && site.clientes && (
+                       <p className={`m-0 mt-[3px] text-[10px] uppercase font-bold truncate ${isSelected ? 'text-white/40' : 'text-[#6214d1]'}`}>
+                         {site.clientes.nome}
+                       </p>
+                    )}
+
+                    <div className="flex items-center gap-[9px] mt-[11px]">
+                      <span className={`w-[8px] h-[8px] rounded-full ${site.status === 'no_ar' ? 'bg-[#DFFF00]' : site.status === 'pausado' ? 'bg-red-500' : 'bg-gray-400'}`}></span>
+                      <span className={`text-[11px] font-semibold ${isSelected ? 'text-white/60' : 'text-[#6B7280]'}`}>
+                        {site.status === 'no_ar' ? 'Ativo' : site.status === 'pausado' ? 'Pausado' : 'Configurando'}
+                      </span>
                     </div>
-                    {!isClientView ? (
+
+                    {isSelected && (
                       <Link 
-                        href={`/dashboard/sites/${site.id}`}
+                        href={isClientView ? `/dashboard/meus-sites/${site.id}` : `/dashboard/sites/${site.id}`}
                         onClick={(e) => e.stopPropagation()}
-                        className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center transition-colors ${isSelected ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-gray-100 text-gray-400 hover:text-black hover:bg-gray-200'}`}
+                        className="inline-flex items-center gap-[5px] mt-[14px] px-[13px] py-[7px] rounded-[12px] bg-white text-[#111827] text-[12px] font-semibold"
                       >
-                        <ChevronRight className="w-4 h-4" />
-                      </Link>
-                    ) : (
-                      <Link 
-                        href={`/dashboard/meus-sites/${site.id}`}
-                        onClick={(e) => e.stopPropagation()}
-                        className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center transition-colors ${isSelected ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-gray-100 text-gray-400 hover:text-black hover:bg-gray-200'}`}
-                      >
-                        <ChevronRight className="w-4 h-4" />
+                        <span>Gerenciar site</span>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#111827" strokeWidth="2.6" strokeLinecap="round">
+                          <path d="M7 17L17 7M9 7h8v8"></path>
+                        </svg>
                       </Link>
                     )}
                   </button>
@@ -367,350 +377,335 @@ export function DashboardHomeClient({ sites, firstName, isClientView = false }: 
         </div>
 
         {/* Right Col: Details & Analytics */}
-        <div className="lg:col-span-8 bg-[#EAEAEA] rounded-3xl lg:rounded-[2.5rem] p-4 md:p-6 lg:p-8 shadow-sm border border-white/50 relative flex flex-col h-auto lg:h-[700px]">
+        <div className="lg:col-span-8 flex flex-col gap-[22px]">
           
           {!selectedSite ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-gray-400">
-              <Globe className="w-16 h-16 mb-4 opacity-20" />
-              <p className="font-medium">Nenhum site selecionado</p>
-              <p className="text-sm">Selecione um projeto na lista ao lado.</p>
+            <div className="bg-white border border-[#EFEFEF] rounded-[40px] p-[28px] flex flex-col items-center justify-center text-gray-400 min-h-[400px]">
+              <Globe className="w-12 h-12 mb-4 opacity-20" />
+              <p className="font-medium text-[15px]">Nenhum site selecionado</p>
+              <p className="text-[13px]">Selecione um projeto na lista.</p>
             </div>
           ) : (
-            <div className="flex-1 flex flex-col overflow-y-auto hide-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-              
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-                <div>
-                  <h2 className="text-2xl lg:text-3xl font-medium text-gray-900 tracking-tight">{selectedSite.nome}</h2>
-                  <a href={`https://${selectedSite.dominio}`} target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-black hover:underline mt-1 inline-flex items-center gap-1 text-sm">
-                    {selectedSite.dominio} <ArrowUpRight className="w-3 h-3" />
-                  </a>
-                </div>
-                <div className="flex flex-col items-end gap-3">
-                  <div className="bg-gray-200/60 p-1 rounded-full flex flex-wrap items-center gap-1">
-                    <button 
-                      onClick={() => setDateFilter('hoje')}
-                      className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all ${dateFilter === 'hoje' ? 'text-white bg-black shadow-md' : 'text-gray-500 hover:text-gray-900'}`}
-                    >
-                      Hoje
-                    </button>
-                    <button 
-                      onClick={() => setDateFilter('7_dias')}
-                      className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all ${dateFilter === '7_dias' ? 'text-white bg-black shadow-md' : 'text-gray-500 hover:text-gray-900'}`}
-                    >
-                      7 Dias
-                    </button>
-                    <button 
-                      onClick={() => setDateFilter('30_dias')}
-                      className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all ${dateFilter === '30_dias' ? 'text-white bg-black shadow-md' : 'text-gray-500 hover:text-gray-900'}`}
-                    >
-                      30 Dias
-                    </button>
-                    <button 
-                      onClick={() => setDateFilter('periodo')}
-                      className={`px-4 py-1.5 text-xs font-medium rounded-full transition-all ${dateFilter === 'periodo' ? 'text-white bg-black shadow-md' : 'text-gray-500 hover:text-gray-900'}`}
-                    >
-                      Período
-                    </button>
-                  </div>
-
-                  {dateFilter === 'periodo' && (
-                    <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-gray-200 shadow-sm animate-in fade-in zoom-in-95">
-                      <input 
-                        type="date" 
-                        value={customStartDate} 
-                        onChange={e => setCustomStartDate(e.target.value)}
-                        className="text-xs bg-transparent border-none outline-none text-gray-700 cursor-pointer"
-                      />
-                      <span className="text-gray-400 text-xs">até</span>
-                      <input 
-                        type="date" 
-                        value={customEndDate} 
-                        onChange={e => setCustomEndDate(e.target.value)}
-                        className="text-xs bg-transparent border-none outline-none text-gray-700 cursor-pointer"
-                      />
-                    </div>
-                  )}
-
-                  <Link href={isClientView ? `/dashboard/meus-sites/${selectedSite.id}` : `/dashboard/sites/${selectedSite.id}`} className="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-700 hover:text-black hover:bg-gray-50 shadow-sm transition-all flex items-center gap-2 mt-2">
-                    Gerenciar Site <ArrowUpRight className="w-4 h-4" />
-                  </Link>
-                </div>
-              </div>
-
+            <>
               {loadingAnalytics ? (
-                <div className="flex-1 flex flex-col items-center justify-center py-20 text-gray-400">
+                <div className="bg-white border border-[#EFEFEF] rounded-[40px] p-[28px] flex flex-col items-center justify-center text-gray-400 min-h-[400px]">
                   <Activity className="w-8 h-8 animate-spin mb-4" />
-                  <p>Sincronizando dados...</p>
+                  <p className="text-[13px]">Sincronizando dados...</p>
                 </div>
               ) : (
-                <div className="space-y-6 flex-1">
-                  
-                  {/* Google Search Console - Graphic Card */}
-                  <div className="bg-gradient-to-br from-white to-[#F6F6F6] rounded-[2rem] p-6 lg:p-8 border border-white/60 relative">
-                    <div className="absolute top-6 right-6 flex items-center gap-3">
-                      {!isClientView && (
-                        <Link href={`/dashboard/sites/${selectedSite.id}?tab=analytics`} className="text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1 bg-blue-50 px-3 py-1.5 rounded-full transition-colors">
-                          Ver relatório completo <ArrowUpRight className="w-3 h-3" />
-                        </Link>
-                      )}
-                      <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center shadow-sm">
-                        <Search className="w-5 h-5" />
+                <>
+                  {/* Google Search Console - 4 Metrics Grid (If Data Exists) */}
+                  {selectedSite.integracoes_google && selectedSite.integracoes_google.length > 0 && gscData.length > 0 ? (
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-[16px]">
+                      <div className="bg-[#EAEAEA] border border-white/60 rounded-[32px] p-[20px]">
+                        <div className="flex items-center justify-between mb-[20px]">
+                          <span className="text-[13px] font-medium text-[#6B7280]">Total Cliques</span>
+                          <span className="text-[10px] font-bold text-[#111827] bg-white px-[8px] py-[3px] rounded-full shadow-[0_1px_3px_rgba(0,0,0,0.08)]">GSC</span>
+                        </div>
+                        <p className="m-0 text-[28px] font-semibold tracking-[-0.035em]">{totalClicks.toLocaleString('pt-BR')}</p>
+                      </div>
+                      <div className="bg-[#EAEAEA] border border-white/60 rounded-[32px] p-[20px]">
+                        <div className="flex items-center justify-between mb-[20px]">
+                          <span className="text-[13px] font-medium text-[#6B7280]">Total Impr.</span>
+                          <span className="text-[10px] font-bold text-[#111827] bg-white px-[8px] py-[3px] rounded-full shadow-[0_1px_3px_rgba(0,0,0,0.08)]">GSC</span>
+                        </div>
+                        <p className="m-0 text-[28px] font-semibold tracking-[-0.035em]">{totalImpressions.toLocaleString('pt-BR')}</p>
+                      </div>
+                      <div className="bg-[#EAEAEA] border border-white/60 rounded-[32px] p-[20px]">
+                        <div className="flex items-center justify-between mb-[20px]">
+                          <span className="text-[13px] font-medium text-[#6B7280]">CTR Médio</span>
+                          <span className="text-[10px] font-bold text-[#111827] bg-white px-[8px] py-[3px] rounded-full shadow-[0_1px_3px_rgba(0,0,0,0.08)]">GSC</span>
+                        </div>
+                        <p className="m-0 text-[28px] font-semibold tracking-[-0.035em]">{avgCtr}%</p>
+                      </div>
+                      <div className="bg-[#EAEAEA] border border-white/60 rounded-[32px] p-[20px]">
+                        <div className="flex items-center justify-between mb-[20px]">
+                          <span className="text-[13px] font-medium text-[#6B7280]">Posição</span>
+                          <span className="text-[10px] font-bold text-[#111827] bg-white px-[8px] py-[3px] rounded-full shadow-[0_1px_3px_rgba(0,0,0,0.08)]">GSC</span>
+                        </div>
+                        <p className="m-0 text-[28px] font-semibold tracking-[-0.035em]">{avgPosition}</p>
                       </div>
                     </div>
+                  ) : null}
 
-                    <div className="flex flex-col gap-2 mb-8">
-                      {selectedPageUrl && (
-                        <div className="flex items-center gap-2 text-xs text-gray-500 mb-2">
-                          <button 
-                            onClick={() => setSelectedPageUrl(null)}
-                            className="hover:text-black hover:underline transition-all"
-                          >
-                            Visão Geral do Domínio
-                          </button>
-                          <ChevronRight className="w-3 h-3" />
-                          <span className="text-gray-900 font-medium truncate max-w-[200px]" title={selectedPageUrl}>
-                            {(selectedPageUrl.replace(`https://${selectedSite.dominio}`, '') === '' || selectedPageUrl.replace(`https://${selectedSite.dominio}`, '') === '/') ? 'Página Principal' : selectedPageUrl.replace(`https://${selectedSite.dominio}`, '')}
-                          </span>
+                  {/* Graphic Card */}
+                  <div className="bg-white border border-[#EFEFEF] rounded-[40px] p-[28px] lg:px-[30px]">
+                    <div className="flex flex-col lg:flex-row lg:items-start justify-between mb-[24px] gap-4">
+                      <div className="flex flex-col gap-[4px]">
+                        <div className="flex items-center gap-2">
+                          {selectedPageUrl && (
+                            <button 
+                              onClick={() => setSelectedPageUrl(null)}
+                              className="w-[26px] h-[26px] rounded-full flex items-center justify-center bg-gray-100 hover:bg-gray-200 transition-colors shrink-0"
+                              title="Limpar filtro de página"
+                            >
+                              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2.5" strokeLinecap="round">
+                                <path d="M15 18l-6-6 6-6"></path>
+                              </svg>
+                            </button>
+                          )}
+                          <p className="m-0 text-[19px] font-medium tracking-[-0.025em]">Tráfego Orgânico</p>
                         </div>
-                      )}
+                        <p className="m-0 text-[13.5px] text-[#9CA3AF] flex items-center gap-1.5 mt-1">
+                          <span>Search Console ·</span>
+                          {selectedPageUrl ? (
+                            <span className="font-medium text-[#111827]">{(selectedPageUrl.replace(`https://${selectedSite.dominio}`, '') === '' || selectedPageUrl.replace(`https://${selectedSite.dominio}`, '') === '/') ? 'Principal' : selectedPageUrl.replace(`https://${selectedSite.dominio}`, '')}</span>
+                          ) : (
+                            <span className="font-medium text-[#111827]">{selectedSite.dominio}</span>
+                          )}
+                        </p>
+                      </div>
                       
-                      <h3 className="text-base text-gray-600 font-medium">
-                        Google Search Console ({
-                          dateFilter === 'hoje' ? 'Hoje' :
-                          dateFilter === '7_dias' ? '7 Dias' :
-                          dateFilter === '30_dias' ? '30 Dias' : 'Personalizado'
-                        })
-                      </h3>
+                      <div className="flex flex-col gap-2">
+                        <div className="flex gap-2 self-start lg:self-end">
+                          <div className="bg-[#F3F4F6] rounded-full p-[4px] flex gap-[4px]">
+                            <button 
+                              onClick={() => setChartType('bar')}
+                              className={`h-[34px] px-[18px] border-0 rounded-full font-inherit text-[13px] font-semibold cursor-pointer transition-all ${chartType === 'bar' ? 'bg-white text-[#111827] shadow-[0_2px_8px_rgba(0,0,0,0.06)]' : 'bg-transparent text-[#6B7280]'}`}
+                            >Barras</button>
+                            <button 
+                              onClick={() => setChartType('line')}
+                              className={`h-[34px] px-[18px] border-0 rounded-full font-inherit text-[13px] font-semibold cursor-pointer transition-all ${chartType === 'line' ? 'bg-white text-[#111827] shadow-[0_2px_8px_rgba(0,0,0,0.06)]' : 'bg-transparent text-[#6B7280]'}`}
+                            >Linha</button>
+                          </div>
+                          <div className="bg-[#F3F4F6] rounded-full p-[4px] flex gap-[4px]">
+                            <button 
+                              onClick={() => setDateFilter('hoje')}
+                              className={`h-[34px] px-[18px] border-0 rounded-full font-inherit text-[13px] font-semibold cursor-pointer transition-all ${dateFilter === 'hoje' ? 'bg-white text-[#111827] shadow-[0_2px_8px_rgba(0,0,0,0.06)]' : 'bg-transparent text-[#6B7280]'}`}
+                            >Hoje</button>
+                            <button 
+                              onClick={() => setDateFilter('7_dias')}
+                              className={`h-[34px] px-[18px] border-0 rounded-full font-inherit text-[13px] font-semibold cursor-pointer transition-all ${dateFilter === '7_dias' ? 'bg-white text-[#111827] shadow-[0_2px_8px_rgba(0,0,0,0.06)]' : 'bg-transparent text-[#6B7280]'}`}
+                            >7D</button>
+                            <button 
+                              onClick={() => setDateFilter('30_dias')}
+                              className={`h-[34px] px-[18px] border-0 rounded-full font-inherit text-[13px] font-semibold cursor-pointer transition-all ${dateFilter === '30_dias' ? 'bg-white text-[#111827] shadow-[0_2px_8px_rgba(0,0,0,0.06)]' : 'bg-transparent text-[#6B7280]'}`}
+                            >30D</button>
+                            <button 
+                              onClick={() => setDateFilter('periodo')}
+                              className={`h-[34px] px-[18px] border-0 rounded-full font-inherit text-[13px] font-semibold cursor-pointer transition-all ${dateFilter === 'periodo' ? 'bg-white text-[#111827] shadow-[0_2px_8px_rgba(0,0,0,0.06)]' : 'bg-transparent text-[#6B7280]'}`}
+                            >Outro</button>
+                          </div>
+                        </div>
+                        {dateFilter === 'periodo' && (
+                          <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-gray-200 shadow-sm self-start lg:self-end">
+                            <input 
+                              type="date" 
+                              value={customStartDate} 
+                              onChange={e => setCustomStartDate(e.target.value)}
+                              className="text-xs bg-transparent border-none outline-none text-gray-700 cursor-pointer"
+                            />
+                            <span className="text-gray-400 text-xs">até</span>
+                            <input 
+                              type="date" 
+                              value={customEndDate} 
+                              onChange={e => setCustomEndDate(e.target.value)}
+                              className="text-xs bg-transparent border-none outline-none text-gray-700 cursor-pointer"
+                            />
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     {!(selectedSite.integracoes_google && selectedSite.integracoes_google.length > 0) ? (
-                      <div className="py-10 text-center">
-                        <p className="text-gray-500 text-sm">Google Search Console não vinculado a este site.</p>
+                      <div className="h-[220px] flex items-center justify-center text-[#9CA3AF] text-[13.5px]">
+                        Google Search Console não vinculado a este site.
                       </div>
                     ) : gscData.length === 0 ? (
-                      <div className="py-10 text-center">
-                        <p className="text-gray-500 text-sm">Nenhum dado encontrado para o período.</p>
+                      <div className="h-[220px] flex items-center justify-center text-[#9CA3AF] text-[13.5px]">
+                        Nenhum dado encontrado para o período.
                       </div>
-                    ) : (
-                      <>
-                        <div className="relative w-full h-48 mb-8">
-                          <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={gscData} margin={{ top: 5, right: 0, bottom: 0, left: -20 }}>
-                              <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#CBD5E1" />
-                              <XAxis dataKey="date" tick={{fontSize: 10, fill: '#9ca3af'}} tickLine={false} axisLine={false} dy={10} />
-                              <YAxis tick={{fontSize: 10, fill: '#9ca3af'}} tickLine={false} axisLine={false} />
-                              <Tooltip 
-                                contentStyle={{ borderRadius: '16px', border: 'none', backgroundColor: '#000', color: '#fff', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} 
-                                itemStyle={{ color: '#fff' }}
-                                cursor={{ fill: 'transparent' }}
+                    ) : (() => {
+                      const meses = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez']
+                      const mesesFull = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro']
+                      const diasSemana = ['dom','seg','ter','qua','qui','sex','sáb']
+                      
+                      const chartData = gscData.map((entry: any, idx: number) => {
+                        let label = `${idx + 1}`
+                        let fullDate = ''
+                        const dateStr = entry?.date || entry?.keys?.[0]
+                        if (dateStr && typeof dateStr === 'string' && dateStr.includes('-')) {
+                          const parts = dateStr.split('-')
+                          const y = parseInt(parts[0]), m = parseInt(parts[1]), day = parseInt(parts[2])
+                          label = `${day}`
+                          fullDate = `${String(day).padStart(2, '0')} de ${mesesFull[m - 1]} de ${y}`
+                        }
+                        return { label, fullDate, clicks: Number(entry?.clicks) || 0 }
+                      })
+
+                      const activeIdx = selectedBarIndex !== null ? selectedBarIndex : chartData.length - 1
+
+                      const CustomTooltipContent = ({ active, payload }: any) => {
+                        if (!active || !payload || !payload.length) return null
+                        const data = payload[0]?.payload
+                        return (
+                          <div style={{ background: '#111827', borderRadius: '16px', padding: '10px 16px', border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.25)' }}>
+                            <p style={{ color: '#DFFF00', fontSize: '11px', fontWeight: 'bold', margin: '0 0 4px 0' }}>{data?.fullDate || ''}</p>
+                            <p style={{ color: '#fff', fontSize: '13px', margin: 0 }}>{data?.clicks ?? 0} cliques</p>
+                          </div>
+                        )
+                      }
+
+                      return (
+                      <div className="h-[250px] w-full mt-4">
+                        <ResponsiveContainer width="100%" height="100%">
+                          {chartType === 'bar' ? (
+                            <BarChart data={chartData} margin={{ top: 40, right: 4, bottom: 0, left: 4 }} barGap={2}>
+                              <CartesianGrid stroke="none" />
+                              <XAxis 
+                                dataKey="label"
+                                axisLine={false} 
+                                tickLine={false} 
+                                tick={{ fill: '#9CA3AF', fontSize: 10 }}
+                                dy={8}
+                                interval={0}
                               />
-                              <Bar dataKey="clicks" name="Cliques" radius={[8, 8, 2, 2]} maxBarSize={32}>
-                                {gscData.map((entry: any, index: number) => (
-                                  <Cell key={`cell-${index}`} fill={index === gscData.length - 1 ? '#111827' : '#E3E4E6'} />
+                              <Tooltip content={<CustomTooltipContent />} cursor={{ fill: 'rgba(0,0,0,0.04)' }} />
+                              <Bar dataKey="clicks" name="Cliques" maxBarSize={36} shape={<CustomBar />}>
+                                {chartData.map((_: any, index: number) => (
+                                  <Cell key={`cell-${index}`} fill={index === activeIdx ? '#111827' : '#E5E7EB'} />
                                 ))}
                               </Bar>
                             </BarChart>
-                          </ResponsiveContainer>
-                        </div>
-
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-200">
-                          <div>
-                            <p className="text-sm text-gray-500 mb-1">Total Cliques</p>
-                            <h4 className="text-2xl font-semibold text-gray-900">{totalClicks.toLocaleString('pt-BR')}</h4>
-                          </div>
-                          <div>
-                            <p className="text-sm text-gray-500 mb-1">CTR Médio</p>
-                            <h4 className="text-2xl font-semibold text-gray-900">{avgCtr}%</h4>
-                          </div>
-                          <div>
-                            <p className="text-sm text-gray-500 mb-1">Posição Média</p>
-                            <h4 className="text-2xl font-semibold text-gray-900">{avgPosition}</h4>
-                          </div>
-                        </div>
-                      </>
-                    )}
+                          ) : (
+                            <LineChart data={chartData} margin={{ top: 10, right: 4, bottom: 0, left: 4 }}>
+                              <CartesianGrid stroke="none" />
+                              <XAxis 
+                                dataKey="label"
+                                axisLine={false} 
+                                tickLine={false} 
+                                tick={{ fill: '#9CA3AF', fontSize: 10 }}
+                                dy={8}
+                                interval={0}
+                              />
+                              <Tooltip content={<CustomTooltipContent />} />
+                              <Line type="monotone" dataKey="clicks" name="Cliques" stroke="#111827" strokeWidth={3} dot={{ fill: '#111827', strokeWidth: 2, r: 4 }} activeDot={{ r: 6, fill: '#DFFF00', stroke: '#111827', strokeWidth: 2 }} />
+                            </LineChart>
+                          )}
+                        </ResponsiveContainer>
+                      </div>
+                      )
+                    })()}
                   </div>
 
-
-                  {/* Páginas Indexadas (GSC) */}
-                  {selectedSite.integracoes_google && selectedSite.integracoes_google.length > 0 && !selectedPageUrl && (
-                    <div className="bg-gradient-to-br from-white to-[#F6F6F6] rounded-[2rem] p-6 lg:p-8 border border-white/60">
-                      <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center shadow-sm">
-                            <Search className="w-5 h-5" />
-                          </div>
-                          <div>
-                            <h3 className="text-base text-gray-600 font-medium">Páginas Indexadas (Google)</h3>
-                            <p className="text-xs text-gray-400">URLs que apareceram nos resultados de busca ({
-                              dateFilter === 'hoje' ? 'Hoje' :
-                              dateFilter === '7_dias' ? '7 Dias' :
-                              dateFilter === '30_dias' ? '30 Dias' : 'Personalizado'
-                            })</p>
-                          </div>
-                        </div>
-                        {!isClientView && (
-                          <Link href={`/dashboard/sites/${selectedSite.id}?tab=analytics`} className="text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1 bg-blue-50 px-3 py-1.5 rounded-full transition-colors">
-                            Ver todas <ArrowUpRight className="w-3 h-3" />
-                          </Link>
-                        )}
-                      </div>
-
-                      {indexedPages.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                          {indexedPages.map((page: any, idx: number) => {
-                            const rawUrl = page.keys[0]
-                            const formattedUrl = (rawUrl.replace(`https://${selectedSite.dominio}`, '') === '' || rawUrl.replace(`https://${selectedSite.dominio}`, '') === '/') 
-                              ? 'Página Principal' 
-                              : rawUrl.replace(`https://${selectedSite.dominio}`, '')
-                              
-                            return (
-                              <div key={idx} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow group">
-                                <div>
-                                  <div className="flex items-start justify-between mb-3 gap-2">
-                                    <h4 className="font-medium text-sm text-gray-900 break-all line-clamp-2" title={rawUrl}>
-                                      {formattedUrl}
-                                    </h4>
-                                    <a href={rawUrl} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-black flex-shrink-0">
-                                      <ArrowUpRight className="w-4 h-4" />
-                                    </a>
-                                  </div>
-                                  <div className="flex gap-4 mt-4">
-                                    <div>
-                                      <p className="text-xs text-gray-500 mb-0.5">Cliques</p>
-                                      <p className="font-semibold text-gray-900">{page.clicks.toLocaleString('pt-BR')}</p>
-                                    </div>
-                                    <div>
-                                      <p className="text-xs text-gray-500 mb-0.5">Impressões</p>
-                                      <p className="font-semibold text-gray-900">{page.impressions.toLocaleString('pt-BR')}</p>
-                                    </div>
-                                  </div>
-                                </div>
-                                <button 
-                                  onClick={() => setSelectedPageUrl(rawUrl)}
-                                  className="mt-6 w-full py-2 bg-gray-50 hover:bg-black text-gray-700 hover:text-white rounded-xl text-xs font-medium transition-colors border border-gray-100 group-hover:border-black"
-                                >
-                                  Gerenciar página
-                                </button>
-                              </div>
-                            )
-                          })}
-                        </div>
-                      ) : (
-                        <div className="text-center py-8 text-gray-500 text-sm">
-                          <p>Nenhuma página indexada encontrada neste período.</p>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* WordPress & Blog Widget */}
+                  {/* WordPress & Blog Overview */}
                   {selectedSite.integracoes_wordpress && selectedSite.integracoes_wordpress.length > 0 && !selectedPageUrl && (
-                    <div className="bg-gradient-to-br from-white to-[#F6F6F6] rounded-[2rem] p-6 lg:p-8 border border-white/60 relative mt-6">
-                      <div className="absolute top-6 right-6 flex items-center gap-3">
-                        {!isClientView && (
-                          <Link href={`/dashboard/sites/${selectedSite.id}?tab=blog`} className="text-xs font-medium text-purple-600 hover:text-purple-700 hover:underline flex items-center gap-1 bg-purple-50 px-3 py-1.5 rounded-full transition-colors">
-                            Gerenciar Blog <ArrowUpRight className="w-3 h-3" />
-                          </Link>
-                        )}
-                        <div className="w-10 h-10 bg-purple-50 text-purple-600 rounded-full flex items-center justify-center shadow-sm">
-                          <FileText className="w-5 h-5" />
-                        </div>
-                      </div>
-
-                      <div className="flex flex-col gap-2 mb-8">
-                        <h3 className="text-base text-gray-600 font-medium">
-                          Blog / WordPress
-                        </h3>
-                      </div>
-
-                      {loadingWp ? (
-                        <div className="py-10 text-center flex flex-col items-center text-gray-400">
-                           <Activity className="w-6 h-6 animate-spin mb-2" />
-                           <p className="text-sm">Carregando dados do WordPress...</p>
-                        </div>
-                      ) : (
-                        <div className="space-y-6">
-                           <div className="flex flex-wrap gap-4 items-center">
-                              <div className="bg-white px-4 py-3 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-3">
-                                <div className="text-gray-900 font-bold text-xl">{wpPosts.filter(p => p.status === 'publish').length}</div>
-                                <div>
-                                  <p className="text-xs text-gray-500">Posts Publicados</p>
-                                </div>
+                    <div className="bg-white border border-[#EFEFEF] rounded-[40px] p-[28px] lg:p-[34px]">
+                      <div className="flex flex-col lg:flex-row gap-[30px] lg:gap-[40px]">
+                        
+                        {/* Esquerda: Saúde WP */}
+                        <div className="flex-1 flex flex-col">
+                          <div className="flex items-center gap-[12px] mb-[24px]">
+                            <div className={`w-[48px] h-[48px] rounded-full flex items-center justify-center ${wpStatus ? 'bg-[#DCFCE7]' : 'bg-gray-100'}`}>
+                              {loadingWp ? (
+                                <Activity className="w-[22px] h-[22px] text-gray-400 animate-spin" />
+                              ) : wpStatus ? (
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#166534" strokeWidth="1.8" strokeLinecap="round">
+                                  <rect x="3" y="4" width="18" height="7" rx="2"></rect><rect x="3" y="13" width="18" height="7" rx="2"></rect><path d="M7 7.5h.01M7 16.5h.01"></path>
+                                </svg>
+                              ) : (
+                                <Unplug className="w-[22px] h-[22px] text-gray-400" />
+                              )}
+                            </div>
+                            <div>
+                              <p className="m-0 text-[17px] font-semibold tracking-[-0.01em]">{loadingWp ? 'Verificando...' : wpStatus ? 'Blog sincronizado' : 'Sem conexão com o blog'}</p>
+                              <p className="m-0 mt-[2px] text-[13.5px] text-[#9CA3AF]">Gestão de conteúdo</p>
+                            </div>
+                          </div>
+                          
+                          {!loadingWp && (
+                            <div className="flex flex-col flex-1 justify-center gap-2">
+                              <div className="flex items-center justify-between py-[14px] border-t border-[#F3F4F6]">
+                                <span className="text-[14px] text-[#6B7280]">Publicados</span>
+                                <span className="text-[14px] font-semibold">{wpPosts.filter(p => p.status === 'publish').length}</span>
                               </div>
-
-                              <div className="bg-white px-4 py-3 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-3">
-                                <div className="text-gray-900 font-bold text-xl">{wpPosts.filter(p => p.status === 'future').length}</div>
-                                <div>
-                                  <p className="text-xs text-gray-500">Posts Agendados</p>
-                                </div>
+                              <div className="flex items-center justify-between py-[14px] border-t border-[#F3F4F6]">
+                                <span className="text-[14px] text-[#6B7280]">Agendados</span>
+                                <span className="text-[14px] font-semibold">{wpPosts.filter(p => p.status === 'future').length}</span>
                               </div>
-                           </div>
-
-                           {wpPosts.length > 0 && (
-                             <div className="mt-6">
-                               <p className="text-sm font-medium text-gray-700 mb-4">Últimas Postagens</p>
-                               <div className="space-y-3">
-                                 {wpPosts.slice(0, 3).map((post: any) => {
-                                   let title = post.title?.raw || post.title?.rendered || 'Sem título'
-                                   title = title.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#8217;/g, "'").replace(/&#8220;/g, '"').replace(/&#8221;/g, '"')
-                                   
-                                   const featuredImg = post._embedded?.['wp:featuredmedia']?.[0]?.source_url || null
-                                   
-                                   let displayStatus = post.status
-                                   const gmtDateStr = post.date_gmt && !post.date_gmt.includes('0000-00-00') ? post.date_gmt + 'Z' : post.date + 'Z'
-                                   const postTime = new Date(gmtDateStr)
-                                   
-                                   if ((post.status === 'future' || post.status === 'publish') && postTime <= new Date()) {
-                                     displayStatus = 'publish'
-                                   } else if (post.status === 'publish' && postTime > new Date()) {
-                                     displayStatus = 'future'
-                                   }
-                                   
-                                   return (
-                                     <div key={post.id} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between group hover:border-purple-200 transition-colors">
-                                       <div className="flex items-center gap-4 flex-1 min-w-0 pr-4">
-                                          {featuredImg ? (
-                                            <div className="w-12 h-12 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
-                                              <img src={featuredImg} alt={title} className="w-full h-full object-cover" />
-                                            </div>
-                                          ) : (
-                                            <div className="w-12 h-12 rounded-lg bg-purple-50 text-purple-300 flex items-center justify-center flex-shrink-0">
-                                              <FileText className="w-5 h-5" />
-                                            </div>
-                                          )}
-                                          <div className="flex-1 min-w-0">
-                                            <h4 className="text-sm font-medium text-gray-900 truncate">{title}</h4>
-                                            <div className="flex gap-3 mt-1">
-                                              <span className="text-xs text-gray-500">{new Date(post.date).toLocaleDateString('pt-BR')}</span>
-                                              <span className={`text-xs px-2 py-0.5 rounded-full ${displayStatus === 'publish' ? 'bg-green-100 text-green-700' : displayStatus === 'future' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}`}>
-                                                {displayStatus === 'publish' ? 'Publicado' : displayStatus === 'future' ? 'Agendado' : 'Rascunho'}
-                                              </span>
-                                            </div>
-                                          </div>
-                                       </div>
-                                       {!isClientView && (
-                                         <Link href={`/dashboard/sites/${selectedSite.id}?tab=blog`} className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-purple-50 group-hover:text-purple-600 transition-colors">
-                                           <ChevronRight className="w-4 h-4" />
-                                         </Link>
-                                       )}
-                                     </div>
-                                   )
-                                 })}
-                               </div>
-                             </div>
-                           )}
+                            </div>
+                          )}
                         </div>
-                      )}
+
+                        {/* Divisor Desktop */}
+                        <div className="hidden lg:block w-[1px] bg-[#F1F1F1]"></div>
+
+                        {/* Direita: Últimos Posts */}
+                        <div className="flex-[1.8] flex flex-col">
+                          <div className="flex items-center justify-between mb-[20px]">
+                            <p className="m-0 text-[18px] font-medium tracking-[-0.02em]">Últimas publicações</p>
+                            {!isClientView && (
+                               <Link href={`/dashboard/sites/${selectedSite.id}?tab=blog`} className="h-[36px] px-[18px] border-0 rounded-full bg-[#111827] text-white font-inherit text-[13px] font-semibold cursor-pointer inline-flex items-center justify-center hover:bg-black transition-colors">
+                                 Abrir blog
+                               </Link>
+                            )}
+                          </div>
+                          
+                          {loadingWp ? (
+                             <div className="flex-1 flex items-center justify-center"><p className="text-[13.5px] text-[#9CA3AF]">Carregando...</p></div>
+                          ) : wpPosts.length === 0 ? (
+                             <div className="flex-1 flex items-center justify-center"><p className="text-[13.5px] text-[#9CA3AF]">Nenhuma publicação recente.</p></div>
+                          ) : (
+                            <div className="flex flex-col mt-auto">
+                              {wpPosts.slice(0, 3).map((post: any, idx: number) => {
+                                let title = post.title?.raw || post.title?.rendered || 'Sem título'
+                                title = title.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#8217;/g, "'").replace(/&#8220;/g, '"').replace(/&#8221;/g, '"')
+                                
+                                return (
+                                  <div key={post.id} className={`flex items-center gap-[14px] py-[12px] ${idx !== 0 ? 'border-t border-[#F3F4F6]' : ''}`}>
+                                    <div className="w-[42px] h-[42px] flex-none rounded-[12px] bg-[#F3F4F6] flex items-center justify-center">
+                                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="1.7" strokeLinecap="round">
+                                        <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5M9 13h6M9 17h4"></path>
+                                      </svg>
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <p className="m-0 text-[14px] font-medium leading-[1.35] truncate">{title}</p>
+                                      <p className="m-0 mt-[3px] text-[12px] text-[#9CA3AF]">{new Date(post.date).toLocaleDateString('pt-BR')}</p>
+                                    </div>
+                                  </div>
+                                )
+                              })}
+                            </div>
+                          )}
+                        </div>
+
+                      </div>
                     </div>
                   )}
 
-                </div>
+                  {/* Páginas Indexadas */}
+                  {selectedSite.integracoes_google && selectedSite.integracoes_google.length > 0 && !selectedPageUrl && indexedPages.length > 0 && (
+                    <div className="bg-white border border-[#EFEFEF] rounded-[40px] p-[28px] lg:px-[30px]">
+                      <p className="m-0 mb-[4px] text-[18px] font-medium tracking-[-0.02em]">Páginas indexadas</p>
+                      <p className="m-0 mb-[18px] text-[13px] text-[#9CA3AF]">{indexedPages.length} páginas no índice do Google</p>
+                      
+                      <div className="flex flex-col">
+                        {indexedPages.slice(0, 5).map((page: any, idx: number) => {
+                          const rawUrl = page.keys[0]
+                          const formattedUrl = (rawUrl.replace(`https://${selectedSite.dominio}`, '') === '' || rawUrl.replace(`https://${selectedSite.dominio}`, '') === '/') 
+                            ? 'Página Principal' 
+                            : rawUrl.replace(`https://${selectedSite.dominio}`, '')
+                          
+                          return (
+                            <div key={idx} className="flex items-center gap-[14px] py-[14px] border-t border-[#F3F4F6] cursor-pointer hover:bg-gray-50" onClick={() => setSelectedPageUrl(rawUrl)}>
+                              <div className="flex-1 min-w-0">
+                                <p className="m-0 text-[13.5px] font-medium whitespace-nowrap overflow-hidden text-ellipsis">{formattedUrl}</p>
+                                <p className="m-0 mt-[3px] text-[12px] text-[#9CA3AF]">{page.clicks.toLocaleString('pt-BR')} cliques</p>
+                              </div>
+                              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C4C4C4" strokeWidth="2" strokeLinecap="round"><path d="M9 5l7 7-7 7"></path></svg>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )}
+                  
+                </>
               )}
-            </div>
+            </>
           )}
-        </div>
 
+        </div>
       </div>
     </div>
   )

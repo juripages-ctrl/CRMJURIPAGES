@@ -45,33 +45,33 @@ export function PlanosClient({ planos }: { planos: any[] }) {
     <div className="w-full">
       <div className="mb-8 flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Planos e Pacotes</h1>
-          <p className="text-sm text-gray-500 mt-1">Gerencie os pacotes e acompanhe os clientes assinantes.</p>
+          <h1 className="text-[26px] font-semibold tracking-[-0.03em] text-[#111827]">Planos e Pacotes</h1>
+          <p className="text-[13.5px] text-[#9CA3AF] mt-1">Gerencie os pacotes e acompanhe os clientes assinantes.</p>
         </div>
         <Button onClick={handleNewPlano}>Novo Plano</Button>
       </div>
 
       <div className="flex flex-col gap-12">
         {planos.map((plano) => (
-          <div key={plano.id} className="bg-white rounded-[2rem] border border-gray-200 shadow-sm overflow-hidden">
+          <div key={plano.id} className="bg-white rounded-[24px] border border-[#EFEFEF] shadow-[0_2px_10px_-7px_rgba(17,24,39,0.14)] overflow-hidden">
             {/* Cabecalho do Plano */}
-            <div className={`p-6 border-b border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ${plano.valor === 350 ? 'bg-[#DFFF00]/10' : 'bg-gray-50'}`}>
+            <div className={`p-6 border-b border-[#EFEFEF] flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ${plano.valor === 350 ? 'bg-[#111827] text-white' : 'bg-[#F9FAFB]'}`}>
               <div>
                 <div className="flex items-center gap-3 mb-1">
-                  <h2 className="text-xl font-bold text-gray-900">{plano.nome}</h2>
+                  <h2 className={`text-xl font-bold ${plano.valor === 350 ? 'text-white' : 'text-[#111827]'}`}>{plano.nome}</h2>
                   {plano.valor === 350 && (
-                    <Badge className="bg-black text-[#DFFF00] border-0 px-2 py-0.5 flex items-center gap-1 text-xs">
-                      <Shield className="w-3 h-3" /> Elite
+                    <Badge className="bg-[#DFFF00] text-[#111827] border-0 px-2.5 py-0.5 flex items-center gap-1 text-[11px] font-bold">
+                      <Shield className="w-3.5 h-3.5" /> Elite
                     </Badge>
                   )}
                 </div>
-                <div className="text-sm text-gray-500 flex items-center gap-3">
-                  <span className="font-medium text-gray-900">R$ {plano.valor}/{plano.periodicidade === 'mensal' ? 'mês' : plano.periodicidade}</span>
+                <div className={`text-[13.5px] flex items-center gap-3 ${plano.valor === 350 ? 'text-gray-300' : 'text-gray-500'}`}>
+                  <span className={`font-semibold ${plano.valor === 350 ? 'text-white' : 'text-[#111827]'}`}>R$ {plano.valor}/{plano.periodicidade === 'mensal' ? 'mês' : plano.periodicidade}</span>
                   <span>•</span>
                   <span>Até {plano.limite_sites} site(s)</span>
                 </div>
               </div>
-              <Button variant="outline" size="sm" onClick={() => handleEditPlano(plano)} className="bg-white">
+              <Button variant="outline" size="sm" onClick={() => handleEditPlano(plano)} className={plano.valor === 350 ? 'bg-white/10 border-white/20 text-white hover:bg-white/20 hover:text-white' : 'bg-white'}>
                 <Settings2 className="w-4 h-4 mr-2" /> Editar Plano
               </Button>
             </div>
@@ -100,7 +100,7 @@ export function PlanosClient({ planos }: { planos: any[] }) {
               </h3>
 
               {(!plano.assinaturas || plano.assinaturas.length === 0) ? (
-                <div className="text-center py-8 text-gray-500 bg-gray-50/50 rounded-xl border border-dashed border-gray-200">
+                <div className="text-center py-8 text-gray-500 bg-[#F9FAFB] rounded-2xl border border-dashed border-gray-200">
                   Nenhum cliente assinando este plano no momento.
                 </div>
               ) : (

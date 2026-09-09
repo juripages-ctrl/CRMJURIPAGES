@@ -116,29 +116,37 @@ export function PerfilForm({ usuario }: { usuario: PerfilData }) {
       ]
 
   return (
-    <div className="w-full max-w-2xl mx-auto pb-10">
+    <div className="w-full pb-10">
       
-      {/* Header Profile */}
-      <div className="flex flex-col items-center mb-10 pt-4">
-        <div className="relative group mb-4">
-          <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-100 border-2 border-white shadow-md flex items-center justify-center relative">
-            {avatarUrl ? (
-              <Image src={avatarUrl} alt="Avatar" fill className="object-cover" />
-            ) : (
-              <span className="text-gray-400 font-bold text-3xl">{nome.charAt(0).toUpperCase()}</span>
-            )}
-            
-            {uploading && (
-              <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10">
-                <Loader2 className="w-6 h-6 text-white animate-spin" />
-              </div>
-            )}
-          </div>
+      <div className="mb-6 px-1">
+        <p className="text-[11px] font-bold tracking-widest text-[#9CA3AF] uppercase mb-1">
+          {isAdmin ? 'Agência' : 'Silva & Associados'}
+        </p>
+        <h1 className="text-[28px] font-semibold tracking-[-0.02em] text-[#111827]">Meu perfil</h1>
+      </div>
 
-          <button 
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={uploading}
+      <div className="flex flex-col md:flex-row gap-6 lg:gap-10 items-start">
+        {/* Left Column Profile Card */}
+        <div className="w-full md:w-[380px] shrink-0 bg-white border border-[#F1F1F1] rounded-[32px] p-8 flex flex-col items-center text-center shadow-[0_2px_12px_-8px_rgba(17,24,39,0.16)]">
+          <div className="relative group mb-4">
+            <div className="w-[90px] h-[90px] rounded-full overflow-hidden bg-[rgba(98,20,209,.12)] text-[#6214d1] flex items-center justify-center relative">
+              {avatarUrl ? (
+                <Image src={avatarUrl} alt="Avatar" fill className="object-cover" />
+              ) : (
+                <span className="font-bold text-[34px]">{nome.charAt(0).toUpperCase()}</span>
+              )}
+              
+              {uploading && (
+                <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10">
+                  <Loader2 className="w-6 h-6 text-white animate-spin" />
+                </div>
+              )}
+            </div>
+
+            <button 
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
             className="absolute bottom-0 right-0 p-2 bg-black text-white rounded-full shadow-lg hover:bg-gray-800 transition-colors z-20 disabled:opacity-50"
             title="Alterar Foto"
           >
@@ -155,67 +163,61 @@ export function PerfilForm({ usuario }: { usuario: PerfilData }) {
           />
         </div>
         
-        <h2 className="text-2xl font-bold text-gray-900">{nome}</h2>
-        <div className="flex items-center gap-1.5 mt-1 text-sm text-gray-500 bg-white px-3 py-1 rounded-full shadow-sm border border-gray-100">
-          <Shield className="w-3.5 h-3.5 text-[#DFFF00]" />
-          <span className="capitalize font-medium">{usuario.role}</span>
+          <h2 className="text-[20px] font-semibold tracking-[-0.02em] text-[#111827] leading-tight">{nome}</h2>
+          <p className="text-[13px] text-[#9CA3AF] mt-1 mb-8">{usuario.email}</p>
+          
+          <button onClick={() => setIsModalOpen(true)} className="w-full h-[46px] bg-[#111827] text-white font-semibold text-[14px] rounded-full hover:bg-gray-800 transition-colors">
+            Editar perfil
+          </button>
+          
+          <button onClick={handleLogout} className="w-full h-[46px] bg-white text-[#DC2626] border border-[#FEE2E2] font-semibold text-[14px] rounded-full hover:bg-red-50 transition-colors mt-3">
+            Sair da conta
+          </button>
         </div>
-      </div>
 
-      {/* Menu List */}
-      <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden mb-6">
-        <div className="flex flex-col divide-y divide-gray-50">
+        {/* Right Column Menu */}
+        <div className="flex-1 w-full bg-white rounded-[32px] shadow-[0_2px_12px_-8px_rgba(17,24,39,0.16)] border border-[#F1F1F1] px-[18px] py-2 flex flex-col">
           {menuItems.map((item, idx) => (
             <button
               key={idx}
               onClick={item.onClick}
-              className="w-full flex items-center justify-between p-5 hover:bg-gray-50 transition-colors active:bg-gray-100 text-left"
+              className="w-full flex items-center justify-between py-[18px] hover:bg-gray-50 transition-colors active:bg-gray-100 text-left border-b border-[#F6F6F6]"
             >
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500 border border-gray-100 shrink-0">
-                  <item.icon className="w-5 h-5" />
+              <div className="flex items-center gap-[14px]">
+                <div className="w-[38px] h-[38px] rounded-[12px] bg-[#F9FAFB] flex items-center justify-center text-[#6B7280] shrink-0 border border-[#F1F1F1]">
+                  <item.icon className="w-[18px] h-[18px]" />
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900 text-base">{item.label}</p>
-                  <p className="text-sm text-gray-400 mt-0.5">{item.sub}</p>
+                  <p className="font-medium text-[14px] text-[#111827] leading-tight">{item.label}</p>
+                  <p className="text-[12px] text-[#9CA3AF] mt-0.5">{item.sub}</p>
                 </div>
               </div>
-              <ChevronRight className="w-5 h-5 text-gray-300 shrink-0" />
+              <ChevronRight className="w-4 h-4 text-[#C4C4C4] shrink-0" />
             </button>
           ))}
+
+          {/* Toggle switch for Alerts */}
+          <div className="flex items-center justify-between py-[18px]">
+            <div className="flex items-center gap-[14px]">
+              <div className="w-[38px] h-[38px] rounded-[12px] bg-[#F9FAFB] flex items-center justify-center text-[#6B7280] shrink-0 border border-[#F1F1F1]">
+                <Bell className="w-[18px] h-[18px]" />
+              </div>
+              <div>
+                <p className="font-medium text-[14px] text-[#111827] leading-tight">Alertas por e-mail</p>
+                <p className="text-[12px] text-[#9CA3AF] mt-0.5">Relatórios mensais e quedas de tráfego</p>
+              </div>
+            </div>
+            
+            <button 
+              type="button" 
+              onClick={() => setAlertasEnabled(!alertasEnabled)}
+              className={`w-[52px] h-[30px] rounded-full p-1 transition-colors relative flex items-center ${alertasEnabled ? 'bg-[#111827]' : 'bg-[#E5E7EB]'}`}
+            >
+              <div className={`w-6 h-6 rounded-full bg-white shadow-sm transition-transform ${alertasEnabled ? 'translate-x-[22px]' : 'translate-x-0'}`} />
+            </button>
+          </div>
         </div>
       </div>
-
-      {/* Settings Toggles */}
-      <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden mb-6 p-5 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500 border border-gray-100 shrink-0">
-            <Bell className="w-5 h-5" />
-          </div>
-          <div>
-            <p className="font-semibold text-gray-900 text-base">Alertas por e-mail</p>
-            <p className="text-sm text-gray-400 mt-0.5">Receber notificações</p>
-          </div>
-        </div>
-        
-        {/* Toggle switch */}
-        <button 
-          type="button" 
-          onClick={() => setAlertasEnabled(!alertasEnabled)}
-          className={`w-12 h-7 rounded-full p-1 transition-colors relative ${alertasEnabled ? 'bg-[#111827]' : 'bg-gray-200'}`}
-        >
-          <div className={`w-5 h-5 rounded-full bg-white shadow-sm transition-transform ${alertasEnabled ? 'translate-x-5' : 'translate-x-0'}`} />
-        </button>
-      </div>
-
-      {/* Logout */}
-      <button 
-        onClick={handleLogout}
-        className="w-full bg-white rounded-[2rem] shadow-sm border border-gray-100 p-5 flex items-center justify-center gap-2 text-red-500 font-semibold hover:bg-red-50 transition-colors active:bg-red-100"
-      >
-        <LogOut className="w-5 h-5" />
-        Sair da conta
-      </button>
 
       {/* Modal de Edição */}
       {isModalOpen && (

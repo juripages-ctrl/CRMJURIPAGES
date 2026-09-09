@@ -483,8 +483,21 @@ export default function JuriPagesAppLanding() {
         </nav>
 
         {/* HERO SECTION */}
-        <section className="hero" style={{ backgroundImage: "url('/assets/imagem/backg01.webp')", paddingBottom: 0 }}>
-          <div className="max-w-[1200px] mx-auto px-4 relative z-10">
+        <section className="hero relative" style={{ paddingBottom: 0, minHeight: '100vh', background: 'transparent' }}>
+          {/* 3D Spline Background */}
+          <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+            <iframe 
+              src="https://my.spline.design/herolightcopy-HWuYMA6IdNGk0VGuyvrItNGB" 
+              frameBorder="0" 
+              width="100%" 
+              height="100%" 
+              id="aura-spline"
+              style={{ pointerEvents: 'none' }}
+            ></iframe>
+            {/* Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-white via-white/50 to-transparent"></div>
+          </div>
+          <div className="max-w-[1200px] mx-auto px-4 relative z-10 pt-10">
             <div className="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-10 mb-16">
               <div className="w-full lg:w-[45%] text-left">
                 <h1 className="relative z-10 m-0 lg:translate-y-3">

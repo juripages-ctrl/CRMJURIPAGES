@@ -35,8 +35,8 @@ export default async function SiteConfigPage({
 
   return (
     <div className="w-full">
-      <Link href="/dashboard/sites" className="inline-flex items-center text-sm text-gray-500 hover:text-black transition-colors mb-4">
-        <ArrowLeft className="w-4 h-4 mr-1" />
+      <Link href="/dashboard/sites" className="inline-flex items-center text-[13.5px] font-medium text-[#9CA3AF] hover:text-[#111827] transition-colors mb-4">
+        <ArrowLeft className="w-4 h-4 mr-1.5" />
         Voltar para Sites
       </Link>
       

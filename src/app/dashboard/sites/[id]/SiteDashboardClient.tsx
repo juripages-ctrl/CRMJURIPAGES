@@ -597,58 +597,52 @@ export function SiteDashboardClient({ site, gsc, wp: propsWp, hosting, provedore
 </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-2 md:gap-6 md:border-b md:border-gray-200 mb-6 md:mb-8 overflow-x-auto whitespace-nowrap hide-scrollbar pb-2 md:pb-0 px-1 md:px-0 -mx-1 md:mx-0 snap-x">
+      <div className="flex items-center gap-2 mb-6 md:mb-8 overflow-x-auto whitespace-nowrap hide-scrollbar pb-2 md:pb-0 px-1 md:px-0 -mx-1 md:mx-0 snap-x">
         <button 
-          className={`snap-start px-4 py-2 rounded-full md:rounded-none md:p-0 md:pb-4 text-sm font-medium transition-colors relative flex-shrink-0 ${activeTab === 'geral' ? 'bg-black text-white md:bg-transparent md:text-black' : 'bg-gray-100 text-gray-600 md:bg-transparent md:text-gray-500 hover:text-gray-900'}`}
+          className={`snap-start px-4 py-2 rounded-full text-[13.5px] font-semibold transition-colors flex-shrink-0 ${activeTab === 'geral' ? 'bg-[#111827] text-white' : 'bg-[#F3F4F6] text-[#9CA3AF] hover:text-[#111827]'}`}
           onClick={() => setActiveTab('geral')}
         >
           Visão Geral
-          {activeTab === 'geral' && <div className="hidden md:block absolute bottom-0 left-0 w-full h-0.5 bg-black" />}
         </button>
         <button 
-          className={`snap-start px-4 py-2 rounded-full md:rounded-none md:p-0 md:pb-4 text-sm font-medium transition-colors relative flex-shrink-0 ${activeTab === 'seo' ? 'bg-black text-white md:bg-transparent md:text-black' : 'bg-gray-100 text-gray-600 md:bg-transparent md:text-gray-500 hover:text-gray-900'}`}
+          className={`snap-start px-4 py-2 rounded-full text-[13.5px] font-semibold transition-colors flex-shrink-0 ${activeTab === 'seo' ? 'bg-[#111827] text-white' : 'bg-[#F3F4F6] text-[#9CA3AF] hover:text-[#111827]'}`}
           onClick={() => setActiveTab('seo')}
         >
           SEO (GSC)
-          {activeTab === 'seo' && <div className="hidden md:block absolute bottom-0 left-0 w-full h-0.5 bg-black" />}
         </button>
         <button 
-          className={`snap-start px-4 py-2 rounded-full md:rounded-none md:p-0 md:pb-4 text-sm font-medium transition-colors relative flex-shrink-0 ${activeTab === 'wp' ? 'bg-black text-white md:bg-transparent md:text-black' : 'bg-gray-100 text-gray-600 md:bg-transparent md:text-gray-500 hover:text-gray-900'}`}
+          className={`snap-start px-4 py-2 rounded-full text-[13.5px] font-semibold transition-colors flex-shrink-0 ${activeTab === 'wp' ? 'bg-[#111827] text-white' : 'bg-[#F3F4F6] text-[#9CA3AF] hover:text-[#111827]'}`}
           onClick={() => setActiveTab('wp')}
         >
           WordPress (Sistema & Segurança)
-          {activeTab === 'wp' && <div className="hidden md:block absolute bottom-0 left-0 w-full h-0.5 bg-black" />}
         </button>
         <button 
-          className={`snap-start px-4 py-2 rounded-full md:rounded-none md:p-0 md:pb-4 text-sm font-medium transition-colors relative flex-shrink-0 ${activeTab === 'blog' ? 'bg-black text-white md:bg-transparent md:text-black' : 'bg-gray-100 text-gray-600 md:bg-transparent md:text-gray-500 hover:text-gray-900'}`}
+          className={`snap-start px-4 py-2 rounded-full text-[13.5px] font-semibold transition-colors flex-shrink-0 ${activeTab === 'blog' ? 'bg-[#111827] text-white' : 'bg-[#F3F4F6] text-[#9CA3AF] hover:text-[#111827]'}`}
           onClick={() => setActiveTab('blog')}
         >
           Blog (Postagens)
-          {activeTab === 'blog' && <div className="hidden md:block absolute bottom-0 left-0 w-full h-0.5 bg-black" />}
         </button>
         <button 
-          className={`snap-start px-4 py-2 rounded-full md:rounded-none md:p-0 md:pb-4 text-sm font-medium transition-colors relative flex-shrink-0 ${activeTab === 'speed' as any ? 'bg-black text-white md:bg-transparent md:text-black' : 'bg-gray-100 text-gray-600 md:bg-transparent md:text-gray-500 hover:text-gray-900'}`}
+          className={`snap-start px-4 py-2 rounded-full text-[13.5px] font-semibold transition-colors flex-shrink-0 ${activeTab === 'speed' as any ? 'bg-[#111827] text-white' : 'bg-[#F3F4F6] text-[#9CA3AF] hover:text-[#111827]'}`}
           onClick={() => setActiveTab('speed' as any)}
         >
           Speed Insights
-          {activeTab === 'speed' as any && <div className="hidden md:block absolute bottom-0 left-0 w-full h-0.5 bg-black" />}
         </button>
         
         <button 
-          className={`snap-start px-4 py-2 rounded-full md:rounded-none md:p-0 md:pb-4 text-sm font-medium transition-colors relative flex-shrink-0 ${activeTab === 'integracoes' ? 'bg-black text-white md:bg-transparent md:text-black' : 'bg-gray-100 text-gray-600 md:bg-transparent md:text-gray-500 hover:text-gray-900'}`}
+          className={`snap-start px-4 py-2 rounded-full text-[13.5px] font-semibold transition-colors flex-shrink-0 ${activeTab === 'integracoes' ? 'bg-[#111827] text-white' : 'bg-[#F3F4F6] text-[#9CA3AF] hover:text-[#111827]'}`}
           onClick={() => setActiveTab('integracoes')}
         >
           Integrações Técnicas
-          {activeTab === 'integracoes' && <div className="hidden md:block absolute bottom-0 left-0 w-full h-0.5 bg-black" />}
         </button>
       </div>
 
       {/* Tab: Visão Geral */}
       {activeTab === 'geral' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-4">
+          <div className="bg-white border border-[#EFEFEF] rounded-[24px] p-6 shadow-[0_2px_10px_-7px_rgba(17,24,39,0.14)] space-y-4">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 bg-[#F3F4F6] text-[#111827] rounded-full flex items-center justify-center">
                 <Globe className="w-5 h-5" />
               </div>
               <h3 className="font-semibold text-gray-900">Dados do Projeto</h3>
@@ -694,9 +688,9 @@ export function SiteDashboardClient({ site, gsc, wp: propsWp, hosting, provedore
             </div>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-4">
+          <div className="bg-white border border-[#EFEFEF] rounded-[24px] p-6 shadow-[0_2px_10px_-7px_rgba(17,24,39,0.14)] space-y-4">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-green-50 text-green-600 rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 bg-[#F3F4F6] text-[#111827] rounded-full flex items-center justify-center">
                 <User className="w-5 h-5" />
               </div>
               <h3 className="font-semibold text-gray-900">Proprietário (Cliente)</h3>
@@ -740,10 +734,10 @@ export function SiteDashboardClient({ site, gsc, wp: propsWp, hosting, provedore
       {activeTab === 'integracoes' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Google Search Console Status Card */}
-          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+          <div className="bg-white border border-[#EFEFEF] rounded-[24px] p-6 shadow-[0_2px_10px_-7px_rgba(17,24,39,0.14)]">
             <div className="flex justify-between items-start mb-6">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center">
+                <div className="w-10 h-10 bg-[#F3F4F6] text-[#111827] rounded-full flex items-center justify-center">
                   <Search className="w-5 h-5" />
                 </div>
                 <div>
@@ -779,10 +773,10 @@ export function SiteDashboardClient({ site, gsc, wp: propsWp, hosting, provedore
           </div>
 
           {/* Hosting Integration Card */}
-          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm lg:col-span-2">
+          <div className="bg-white border border-[#EFEFEF] rounded-[24px] p-6 shadow-[0_2px_10px_-7px_rgba(17,24,39,0.14)] lg:col-span-2">
             <div className="flex justify-between items-start mb-6">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center">
+                <div className="w-10 h-10 bg-[#F3F4F6] text-[#111827] rounded-full flex items-center justify-center">
                   <Server className="w-5 h-5" />
                 </div>
                 <div>

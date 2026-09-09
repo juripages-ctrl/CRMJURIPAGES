@@ -5,6 +5,7 @@ import { Globe, ArrowRight } from 'lucide-react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/Table'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
+import { SiteAvatar } from '@/components/dashboard/SiteAvatar'
 
 export default async function MeusSitesPage() {
   const supabase = await createClient()
@@ -69,26 +70,26 @@ export default async function MeusSitesPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'no_ar':
-        return <Badge className="bg-green-100 text-green-700 border border-green-200">No Ar</Badge>
+        return <Badge className="text-[11px] font-semibold text-[#111827] bg-[#DFFF00] hover:bg-[#DFFF00]/90 px-3 py-1.5 rounded-full border-none shadow-none">No Ar</Badge>
       default:
-        return <Badge className="bg-red-100 text-red-700 border border-red-200">Fora do Ar</Badge>
+        return <Badge className="text-[11px] font-semibold text-gray-500 bg-gray-100 hover:bg-gray-100/90 px-3 py-1.5 rounded-full border-none shadow-none">Fora do Ar</Badge>
     }
   }
 
   return (
     <div className="w-full">
-      <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-gray-900">Meus Sites</h1>
-        <p className="text-sm text-gray-500 mt-1">Acompanhe o desempenho de todos os seus projetos.</p>
+      <div className="mb-[24px]">
+        <h1 className="m-0 text-[26px] font-semibold tracking-[-0.03em] text-[#111827]">Meus Sites</h1>
+        <p className="m-0 text-[13.5px] text-[#9CA3AF] mt-1">Acompanhe o desempenho de todos os seus projetos.</p>
       </div>
 
       {!sites || sites.length === 0 ? (
-        <div className="bg-white border border-gray-200 rounded-[2rem] p-12 text-center shadow-sm max-w-2xl mx-auto mt-12">
-          <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6 border border-gray-100">
-            <Globe className="w-10 h-10 text-gray-400" />
+        <div className="bg-white border border-dashed border-[#E5E7EB] rounded-[40px] py-20 px-6 text-center max-w-2xl mx-auto mt-12">
+          <div className="w-16 h-16 bg-[#F3F4F6] rounded-full flex items-center justify-center mx-auto mb-5">
+            <Globe className="w-7 h-7 text-[#9CA3AF]" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Nenhum site vinculado</h2>
-          <p className="text-gray-500 mb-8 max-w-md mx-auto">
+          <p className="m-0 mb-2 text-[18px] font-semibold text-gray-900">Nenhum site vinculado</p>
+          <p className="m-0 mx-auto max-w-[320px] text-[14px] leading-[1.55] text-[#6B7280]">
             A sua agência ainda não vinculou um projeto à sua conta. Assim que o administrador do sistema adicionar um site, ele aparecerá aqui com todos os relatórios disponíveis.
           </p>
         </div>
@@ -100,9 +101,7 @@ export default async function MeusSitesPage() {
             <Link key={site.id} href={`/dashboard/meus-sites/${site.id}`}
               className="flex items-center gap-3 bg-white border border-gray-100 rounded-[26px] p-3.5 shadow-[0_2px_10px_-7px_rgba(17,24,39,0.14)] active:scale-[0.98] transition-transform"
             >
-              <div className="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center text-[15px] font-bold text-gray-500 shrink-0">
-                {site.nome?.charAt(0)?.toUpperCase() || 'S'}
-              </div>
+              <SiteAvatar nome={site.nome} dominio={site.dominio} size={44} />
               <div className="flex-1 min-w-0">
                 <p className="text-[14.5px] font-semibold text-gray-900 truncate tracking-tight">{site.nome}</p>
                 <p className="text-[12.5px] text-gray-400 truncate mt-0.5">{site.dominio}</p>
@@ -123,36 +122,44 @@ export default async function MeusSitesPage() {
         </div>
 
         {/* ===== DESKTOP: Table ===== */}
-        <div className="hidden md:block bg-white border border-gray-200 rounded-[1.5rem] overflow-hidden shadow-sm">
-          <Table>
-            <TableHeader className="bg-gray-50/50">
-              <TableRow>
-                <TableHead>Projeto</TableHead>
-                <TableHead>Domínio</TableHead>
-                <TableHead>Plano</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
+        <div className="hidden md:block bg-white border border-[#EFEFEF] rounded-[40px] px-7 pt-2 pb-3.5">
+          <Table className="border-none">
+            <TableHeader className="border-none">
+              <TableRow className="border-b border-[#F1F1F1] hover:bg-transparent">
+                <TableHead className="text-[11.5px] font-semibold tracking-[0.07em] uppercase text-[#9CA3AF] h-auto py-4">Projeto</TableHead>
+                <TableHead className="text-[11.5px] font-semibold tracking-[0.07em] uppercase text-[#9CA3AF] h-auto py-4">Domínio</TableHead>
+                <TableHead className="text-[11.5px] font-semibold tracking-[0.07em] uppercase text-[#9CA3AF] h-auto py-4">Plano</TableHead>
+                <TableHead className="text-[11.5px] font-semibold tracking-[0.07em] uppercase text-[#9CA3AF] h-auto py-4">Status</TableHead>
+                <TableHead className="text-[11.5px] font-semibold tracking-[0.07em] uppercase text-[#9CA3AF] h-auto py-4 text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {sites.map((site: any) => (
-                <TableRow key={site.id} className="hover:bg-gray-50/50 transition-colors">
-                  <TableCell className="font-medium text-gray-900">{site.nome}</TableCell>
-                  <TableCell>
-                    <a href={`https://${site.dominio}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                <TableRow key={site.id} className="border-b border-[#F6F6F6] hover:bg-transparent">
+                  <TableCell className="py-4">
+                    <div className="flex items-center gap-3">
+                      <SiteAvatar nome={site.nome} dominio={site.dominio} size={44} />
+                      <div>
+                        <p className="m-0 text-[15px] font-semibold tracking-[-0.012em] text-gray-900 truncate">{site.nome}</p>
+                        <p className="m-0 mt-1 text-[12.5px] text-[#9CA3AF] truncate">{site.dominio}</p>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-4 text-[13.5px] text-[#6B7280]">
+                    <a href={`https://${site.dominio}`} target="_blank" rel="noopener noreferrer" className="hover:text-black transition-colors">
                       {site.dominio}
                     </a>
                   </TableCell>
-                  <TableCell className="text-gray-500">
+                  <TableCell className="py-4 text-[13.5px] font-semibold text-gray-900">
                     {site.plano || '-'}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="py-4">
                     {getStatusBadge(site.status)}
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="py-4 text-right">
                     <Link href={`/dashboard/meus-sites/${site.id}`}>
-                      <Button variant="ghost" size="sm" className="text-gray-900 hover:bg-[#DFFF00] hover:text-black transition-colors rounded-lg">
-                        Gerenciar meu site <ArrowRight className="w-4 h-4 ml-1" />
+                      <Button variant="ghost" size="sm" className="h-[36px] px-[15px] border border-[#EFEFEF] rounded-full bg-[#F9FAFB] text-[#111827] font-semibold hover:bg-gray-100 text-[12.5px] shadow-none">
+                        Abrir
                       </Button>
                     </Link>
                   </TableCell>
