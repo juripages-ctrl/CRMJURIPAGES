@@ -13,7 +13,7 @@ import {
   disconnectIntegration, fetchGscAnalytics, fetchGscIndexedPages,
   saveHostingIntegration, saveGoogleIntegration,
   checkHttpsStatus, runPageSpeedInsights, fetchGscAdvancedAnalytics, fetchGscTrendingQueries,
-  saveWordPressIntegration, fetchWpStatus, fetchWpPosts, createWpPost, fetchWpHistory, fetchWpWordfenceData, uploadWpMedia, updateWpPost, deleteWpPost
+  saveWordPressIntegration, fetchWpStatus, fetchWpPosts, createWpPost, fetchWpHistory, fetchWpWordfenceData, uploadWpMedia, updateWpPost, deleteWpPost, fetchWpCategories, fetchWpTags, createWpCategory, createWpTag
 } from '../integrations-actions'
 import { linkSiteToClient, checkDomainStatus } from '../actions'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -121,6 +121,13 @@ export function SiteDashboardClient({ site, gsc, wp: propsWp, hosting, provedore
   const [wpPosts, setWpPosts] = useState<any[]>([])
   const [wpWordfence, setWpWordfence] = useState<any>(null)
   const [loadingWp, setLoadingWp] = useState(false)
+  const [wpCategories, setWpCategories] = useState<any[]>([])
+  const [wpTags, setWpTags] = useState<any[]>([])
+  const [newCategoryName, setNewCategoryName] = useState('')
+  const [newTagName, setNewTagName] = useState('')
+  const [isCreatingCategory, setIsCreatingCategory] = useState(false)
+  const [isCreatingTag, setIsCreatingTag] = useState(false)
+  
 
   // --- Cache Timestamps ---
   const [wpPostsLastUpdated, setWpPostsLastUpdated] = useState<string | null>(null)
@@ -129,7 +136,7 @@ export function SiteDashboardClient({ site, gsc, wp: propsWp, hosting, provedore
   const [isRefreshingGsc, setIsRefreshingGsc] = useState(false)
 
   const [wpModalOpen, setWpModalOpen] = useState(false)
-  const [wpNewPost, setWpNewPost] = useState<{ title: string; content: string; status: string; scheduledDate: string; imageFile: File | null }>({ title: '', content: '', status: 'publish', scheduledDate: '', imageFile: null })
+  const [wpNewPost, setWpNewPost] = useState<{ title: string; content: string; status: string; scheduledDate: string; imageFile: File | null; categories: number[]; tags: number[] }>({ title: '', content: '', status: 'publish', scheduledDate: '', imageFile: null, categories: [], tags: [] })
   const [creatingWpPost, setCreatingWpPost] = useState(false)
   const [deletingPostId, setDeletingPostId] = useState<number | null>(null)
   const [selectedWpPosts, setSelectedWpPosts] = useState<number[]>([])
@@ -180,6 +187,12 @@ export function SiteDashboardClient({ site, gsc, wp: propsWp, hosting, provedore
     }
       
     setLoadingWp(false)
+    const catRes = await fetchWpCategories(site.id, wp.site_url, wp.username, wp.app_password, forceRefresh)
+    if (catRes.success) setWpCategories(catRes.data)
+
+    const tagRes = await fetchWpTags(site.id, wp.site_url, wp.username, wp.app_password, forceRefresh)
+    if (tagRes.success) setWpTags(tagRes.data)
+
   }
 
   // Auto check status on mount if tab is geral
@@ -237,7 +250,9 @@ export function SiteDashboardClient({ site, gsc, wp: propsWp, hosting, provedore
       content: contentStr,
       status: post.status,
       scheduledDate,
-      imageFile: null
+      imageFile: null,
+      categories: post.categories || [],
+      tags: post.tags || []
     })
     setWpModalOpen(true)
   }
@@ -348,23 +363,14 @@ export function SiteDashboardClient({ site, gsc, wp: propsWp, hosting, provedore
       finalStatus = 'draft'
     }
 
-    // Embed Featured Image into post content body so it displays on single post page in WP
-    let finalContent = wpNewPost.content || ''
-    if (uploadedMediaUrl) {
-      const trimmed = finalContent.trim().toLowerCase()
-      if (!trimmed.startsWith('<img') && !trimmed.startsWith('<figure')) {
-        const titleClean = (wpNewPost.title || '').replace(/"/g, '&quot;')
-        finalContent = `<figure class="wp-block-image size-large"><img src="${uploadedMediaUrl}" alt="${titleClean}" class="wp-post-featured-header-img" style="width:100%; max-height:480px; object-fit:cover; border-radius:16px; margin-bottom:24px;" /></figure>
-
-` + finalContent
-      }
-    }
-
-    const postPayload: any = {
+        const postPayload: any = {
       title: wpNewPost.title,
-      content: finalContent,
+      content: wpNewPost.content || '',
       status: finalStatus
     }
+
+    if (wpNewPost.categories.length > 0) postPayload.categories = wpNewPost.categories
+    if (wpNewPost.tags.length > 0) postPayload.tags = wpNewPost.tags
 
     if (action === 'schedule' && wpNewPost.scheduledDate) {
       const localDate = new Date(wpNewPost.scheduledDate)
@@ -389,7 +395,7 @@ export function SiteDashboardClient({ site, gsc, wp: propsWp, hosting, provedore
       await showAlert(msg, 'alert')
       setWpModalOpen(false)
       setEditingPostId(null); setCurrentCoverUrl(null); setImagePreviewUrl(null); setShowSchedulePicker(false)
-      setWpNewPost({ title: '', content: '', status: 'publish', scheduledDate: '', imageFile: null })
+      setWpNewPost({ title: '', content: '', status: 'publish', scheduledDate: '', imageFile: null, categories: [], tags: [] })
       loadWpData(true)
     } else {
       await showAlert('Erro ao salvar post: ' + res.error, 'error')
@@ -1539,6 +1545,109 @@ export function SiteDashboardClient({ site, gsc, wp: propsWp, hosting, provedore
                           }}
                           className="w-full text-xs text-gray-500 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-black file:text-white hover:file:bg-gray-800 cursor-pointer"
                         />
+                      </div>
+
+                      {/* Categorias e Tags */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 p-5 bg-white rounded-2xl border border-gray-200 shadow-sm">
+                        <div className="space-y-3">
+                          <label className="text-sm font-semibold text-gray-700">Categorias</label>
+                          <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto p-2 border rounded-lg bg-gray-50">
+                            {wpCategories.map(cat => (
+                              <button
+                                key={cat.id}
+                                type="button"
+                                onClick={() => {
+                                  const cats = wpNewPost.categories;
+                                  setWpNewPost({ ...wpNewPost, categories: cats.includes(cat.id) ? cats.filter(c => c !== cat.id) : [...cats, cat.id] });
+                                }}
+                                className={`px-3 py-1 text-xs font-medium rounded-full transition-colors ${wpNewPost.categories.includes(cat.id) ? 'bg-blue-600 text-white' : 'bg-white border text-gray-700 hover:bg-gray-100'}`}
+                              >
+                                {cat.name}
+                              </button>
+                            ))}
+                            {wpCategories.length === 0 && <span className="text-xs text-gray-400">Nenhuma categoria encontrada</span>}
+                          </div>
+                          <div className="flex gap-2">
+                            <Input 
+                              placeholder="Nova Categoria..." 
+                              value={newCategoryName} 
+                              onChange={e => setNewCategoryName(e.target.value)} 
+                              className="text-xs h-8"
+                            />
+                            <Button 
+                              type="button" 
+                              size="sm" 
+                              className="h-8 text-xs whitespace-nowrap"
+                              disabled={!newCategoryName || isCreatingCategory}
+                              onClick={async () => {
+                                const wpObj = wp || site?.integracoes_wordpress?.[0]
+                                if (!wpObj || !newCategoryName) return
+                                setIsCreatingCategory(true)
+                                const res = await createWpCategory(wpObj.site_url, wpObj.username, wpObj.app_password, newCategoryName)
+                                if (res.success) {
+                                  setWpCategories([...wpCategories, res.data])
+                                  setWpNewPost({ ...wpNewPost, categories: [...wpNewPost.categories, res.data.id] })
+                                  setNewCategoryName('')
+                                } else {
+                                  alert('Erro ao criar categoria: ' + res.error)
+                                }
+                                setIsCreatingCategory(false)
+                              }}
+                            >
+                              {isCreatingCategory ? '...' : 'Adicionar'}
+                            </Button>
+                          </div>
+                        </div>
+
+                        <div className="space-y-3">
+                          <label className="text-sm font-semibold text-gray-700">Tags</label>
+                          <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto p-2 border rounded-lg bg-gray-50">
+                            {wpTags.map(tag => (
+                              <button
+                                key={tag.id}
+                                type="button"
+                                onClick={() => {
+                                  const tags = wpNewPost.tags;
+                                  setWpNewPost({ ...wpNewPost, tags: tags.includes(tag.id) ? tags.filter(t => t !== tag.id) : [...tags, tag.id] });
+                                }}
+                                className={`px-3 py-1 text-xs font-medium rounded-full transition-colors ${wpNewPost.tags.includes(tag.id) ? 'bg-blue-600 text-white' : 'bg-white border text-gray-700 hover:bg-gray-100'}`}
+                              >
+                                {tag.name}
+                              </button>
+                            ))}
+                            {wpTags.length === 0 && <span className="text-xs text-gray-400">Nenhuma tag encontrada</span>}
+                          </div>
+                          <div className="flex gap-2">
+                            <Input 
+                              placeholder="Nova Tag..." 
+                              value={newTagName} 
+                              onChange={e => setNewTagName(e.target.value)} 
+                              className="text-xs h-8"
+                            />
+                            <Button 
+                              type="button" 
+                              size="sm" 
+                              className="h-8 text-xs whitespace-nowrap"
+                              disabled={!newTagName || isCreatingTag}
+                              onClick={async () => {
+                                const wpObj = wp || site?.integracoes_wordpress?.[0]
+                                if (!wpObj || !newTagName) return
+                                setIsCreatingTag(true)
+                                const res = await createWpTag(wpObj.site_url, wpObj.username, wpObj.app_password, newTagName)
+                                if (res.success) {
+                                  setWpTags([...wpTags, res.data])
+                                  setWpNewPost({ ...wpNewPost, tags: [...wpNewPost.tags, res.data.id] })
+                                  setNewTagName('')
+                                } else {
+                                  alert('Erro ao criar tag: ' + res.error)
+                                }
+                                setIsCreatingTag(false)
+                              }}
+                            >
+                              {isCreatingTag ? '...' : 'Adicionar'}
+                            </Button>
+                          </div>
+                        </div>
                       </div>
 
                       {/* Data e Hora de Agendamento (Condicional) */}

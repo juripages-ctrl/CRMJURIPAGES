@@ -808,3 +808,84 @@ export async function updateWpPost(siteUrl: string, username: string, appPasswor
   }
 }
 
+export async function fetchWpCategories(siteId: string, siteUrl: string, username: string, appPassword: string, forceRefresh: boolean = false) {
+  const cacheKey = `wp_categories`
+  return getWithCache(siteId, cacheKey, 60, forceRefresh, async () => {
+    const authHeader = 'Basic ' + Buffer.from(`${username}:${appPassword}`).toString('base64')
+    try {
+      const res = await fetch(`${siteUrl}/wp-json/wp/v2/categories?per_page=100`, {
+        headers: { 'Authorization': authHeader },
+        cache: 'no-store'
+      })
+      if (!res.ok) return { error: 'Falha ao buscar categorias', status: res.status }
+      const data = await res.json()
+      return { success: true, data }
+    } catch (error) {
+      return { error: 'Falha de rede ao buscar categorias' }
+    }
+  })
+}
+
+export async function createWpCategory(siteUrl: string, username: string, appPassword: string, name: string) {
+  const authHeader = 'Basic ' + Buffer.from(`${username}:${appPassword}`).toString('base64')
+  try {
+    const res = await fetch(`${siteUrl}/wp-json/wp/v2/categories`, {
+      method: 'POST',
+      headers: { 
+        'Authorization': authHeader,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ name })
+    })
+    
+    if (!res.ok) {
+      const err = await res.json()
+      return { error: err.message || 'Falha ao criar categoria' }
+    }
+    const data = await res.json()
+    return { success: true, data }
+  } catch (error) {
+    return { error: 'Falha de rede ao criar categoria' }
+  }
+}
+
+export async function fetchWpTags(siteId: string, siteUrl: string, username: string, appPassword: string, forceRefresh: boolean = false) {
+  const cacheKey = `wp_tags`
+  return getWithCache(siteId, cacheKey, 60, forceRefresh, async () => {
+    const authHeader = 'Basic ' + Buffer.from(`${username}:${appPassword}`).toString('base64')
+    try {
+      const res = await fetch(`${siteUrl}/wp-json/wp/v2/tags?per_page=100`, {
+        headers: { 'Authorization': authHeader },
+        cache: 'no-store'
+      })
+      if (!res.ok) return { error: 'Falha ao buscar tags', status: res.status }
+      const data = await res.json()
+      return { success: true, data }
+    } catch (error) {
+      return { error: 'Falha de rede ao buscar tags' }
+    }
+  })
+}
+
+export async function createWpTag(siteUrl: string, username: string, appPassword: string, name: string) {
+  const authHeader = 'Basic ' + Buffer.from(`${username}:${appPassword}`).toString('base64')
+  try {
+    const res = await fetch(`${siteUrl}/wp-json/wp/v2/tags`, {
+      method: 'POST',
+      headers: { 
+        'Authorization': authHeader,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ name })
+    })
+    
+    if (!res.ok) {
+      const err = await res.json()
+      return { error: err.message || 'Falha ao criar tag' }
+    }
+    const data = await res.json()
+    return { success: true, data }
+  } catch (error) {
+    return { error: 'Falha de rede ao criar tag' }
+  }
+}
