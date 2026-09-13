@@ -1,312 +1,193 @@
 import os
 import re
 
-filepath = r"c:\Espaço de Trabalho\JuriPages\Projetos\CRM - SITE\src\app\dashboard\sites\[id]\SiteDashboardClient.tsx"
+def update_file(filepath):
+    with open(filepath, 'r', encoding='utf-8') as f:
+        content = f.read()
 
-with open(filepath, "r", encoding="utf-8") as f:
-    content = f.read()
+    # 1. Adicionar estados para o Wizard e Popup de sucesso
+    if 'const [wpModalStep' not in content:
+        states = """
+  const [wpModalStep, setWpModalStep] = useState(1)
+  const [wpSuccessPopup, setWpSuccessPopup] = useState<{show: boolean, postId: number | null, postUrl: string | null, message: string}>({show: false, postId: null, postUrl: null, message: ''})
+"""
+        content = re.sub(
+            r'(const \[wpModalOpen, setWpModalOpen\] = useState\(false\))',
+            r'\1' + states,
+            content
+        )
 
-# 1. Update imports
-content = content.replace(
-    "fetchWpHistory, fetchWpWordfenceData",
-    "fetchWpHistory, fetchWpWordfenceData, uploadWpMedia"
-)
+    # 2. Resetar o step quando fechar
+    content = re.sub(
+        r'setWpModalOpen\(\!wpModalOpen\);',
+        r'setWpModalOpen(!wpModalOpen); setWpModalStep(1);',
+        content
+    )
+    content = re.sub(
+        r'setWpModalOpen\(false\);',
+        r'setWpModalOpen(false); setWpModalStep(1);',
+        content
+    )
+    content = re.sub(
+        r'setWpModalOpen\(true\)',
+        r'setWpModalOpen(true); setWpModalStep(1);',
+        content
+    )
 
-# 2. Update TabTypes definition
-content = content.replace(
-    "export type TabTypes = 'geral' | 'historico' | 'seo' | 'wp' | 'rede' | 'aquisicao' | 'ux' | 'rastreamento' | 'integracoes'",
-    "export type TabTypes = 'geral' | 'historico' | 'seo' | 'wp' | 'blog' | 'speed' | 'integracoes'"
-)
+    # 3. Alterar comportamento de salvar post para mostrar popup de sucesso
+    if 'setWpSuccessPopup' not in content[content.find('const handleCreateWpPostWithAction'):]:
+        # Substituir os alertas de sucesso por setWpSuccessPopup
+        content = re.sub(
+            r'await showAlert\(\'Postagem (salva|agendada|criada) com sucesso.*?\', \'success\'\).*?setWpModalOpen\(false\)',
+            r"setWpSuccessPopup({ show: true, postId: res.data.id, postUrl: res.data.link, message: 'Post atualizado com sucesso!' })\n        setWpModalOpen(false)\n        setWpModalStep(1)",
+            content,
+            flags=re.DOTALL
+        )
 
-# 3. Add Blog tab button in UI after WordPress button
-old_wp_button = """        <button 
-          className={`pb-2 px-1 text-sm font-medium border-b-2 transition-colors ${activeTab === 'wp' ? 'border-black text-black' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
-          onClick={() => setActiveTab('wp')}
-        >
-          WordPress
-        </button>"""
-
-new_wp_button = """        <button 
-          className={`pb-2 px-1 text-sm font-medium border-b-2 transition-colors ${activeTab === 'wp' ? 'border-black text-black' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
-          onClick={() => setActiveTab('wp')}
-        >
-          WordPress (Sistema & Segurança)
-        </button>
-        <button 
-          className={`pb-2 px-1 text-sm font-medium border-b-2 transition-colors ${activeTab === 'blog' ? 'border-black text-black' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
-          onClick={() => setActiveTab('blog')}
-        >
-          Blog (Postagens)
-        </button>"""
-
-content = content.replace(old_wp_button, new_wp_button)
-
-# 4. Update tab watcher in useEffect
-content = content.replace(
-    "if (activeTab === 'wp' && wp) {",
-    "if (['wp', 'blog'].includes(activeTab) && wp) {"
-)
-
-# 5. Update wpNewPost state
-old_state = "const [wpNewPost, setWpNewPost] = useState({ title: '', content: '', status: 'draft' })"
-new_state = "const [wpNewPost, setWpNewPost] = useState<{ title: string; content: string; status: string; scheduledDate: string; imageFile: File | null }>({ title: '', content: '', status: 'publish', scheduledDate: '', imageFile: null })"
-content = content.replace(old_state, new_state)
-
-# 6. Update handleCreateWpPost function
-old_create_fn = """  async function handleCreateWpPost(e: React.FormEvent) {
-    e.preventDefault()
-    if (!wp) return
-    setCreatingWpPost(true)
-    const res = await createWpPost(wp.site_url, wp.username, wp.app_password, wpNewPost)
-    if (res.success) {
-      alert('Post criado com sucesso!')
-      setWpModalOpen(false)
-      setWpNewPost({ title: '', content: '', status: 'draft' })
-      loadWpData() // reload posts
-    } else {
-      alert('Erro ao criar post: ' + res.error)
-    }
-    setCreatingWpPost(false)
-  }"""
-
-new_create_fn = """  async function handleCreateWpPost(e: React.FormEvent) {
-    e.preventDefault()
-    if (!wp) return
-    setCreatingWpPost(true)
-
-    let mediaId: number | undefined = undefined
-
-    if (wpNewPost.imageFile) {
-      const fd = new FormData()
-      fd.append('file', wpNewPost.imageFile)
-      const imgRes = await uploadWpMedia(wp.site_url, wp.username, wp.app_password, fd)
-      if (imgRes.error) {
-        alert('Erro ao enviar imagem de capa: ' + imgRes.error)
-        setCreatingWpPost(false)
-        return
-      }
-      mediaId = imgRes.mediaId
-    }
-
-    const postPayload: any = {
-      title: wpNewPost.title,
-      content: wpNewPost.content,
-      status: wpNewPost.scheduledDate ? 'future' : wpNewPost.status
-    }
-
-    if (wpNewPost.scheduledDate) {
-      const d = new Date(wpNewPost.scheduledDate)
-      postPayload.date = d.toISOString()
-    }
-
-    if (mediaId) {
-      postPayload.featured_media = mediaId
-    }
-
-    const res = await createWpPost(wp.site_url, wp.username, wp.app_password, postPayload)
-    if (res.success) {
-      alert(wpNewPost.scheduledDate ? 'Post agendado com sucesso!' : 'Post salvo com sucesso!')
-      setWpModalOpen(false)
-      setWpNewPost({ title: '', content: '', status: 'publish', scheduledDate: '', imageFile: null })
-      loadWpData()
-    } else {
-      alert('Erro ao criar post: ' + res.error)
-    }
-    setCreatingWpPost(false)
-  }"""
-
-content = content.replace(old_create_fn, new_create_fn)
-
-# 7. Remove Gestão de Blog from activeTab === 'wp' block and create activeTab === 'blog' block
-blog_section_pattern = r'\{\/\* Gestão de Blog \*\}[\s\S]*?(?=\s*<\/>\s*\}\s*<\/div>\s*\)\s*:\s*\()'
-
-# Let's locate where activeTab === 'wp' ends and construct the clean replacement
-new_blog_tab_content = """      {/* Tab: Blog */}
-      {activeTab === 'blog' && (
-        <div className="space-y-6">
-          {wp ? (
-            <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 pb-4 border-b border-gray-100">
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                    <Globe className="w-6 h-6 text-purple-600" /> Postagens do Blog WordPress
-                  </h3>
-                  <p className="text-sm text-gray-500 mt-1">Crie, agende publicações e envie imagens de capa diretamente para o site do cliente.</p>
-                </div>
-                <Button onClick={() => setWpModalOpen(!wpModalOpen)} className="bg-purple-600 hover:bg-purple-700 text-white">
-                  {wpModalOpen ? 'Cancelar' : '+ Nova Postagem'}
-                </Button>
-              </div>
-
-              {wpModalOpen && (
-                <div className="mb-8 p-6 bg-purple-50/50 border border-purple-100 rounded-2xl space-y-4">
-                  <h4 className="font-semibold text-gray-900 text-base">Criar ou Agendar Postagem</h4>
-                  <form onSubmit={handleCreateWpPost} className="space-y-4">
-                    <div>
-                      <label className="block text-xs font-semibold text-gray-700 mb-1 uppercase tracking-wider">Título da Postagem</label>
-                      <Input 
-                        required 
-                        value={wpNewPost.title}
-                        onChange={(e) => setWpNewPost({...wpNewPost, title: e.target.value})}
-                        placeholder="Ex: 5 dicas essenciais de direito imobiliário..." 
-                        className="bg-white"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-semibold text-gray-700 mb-1 uppercase tracking-wider">Conteúdo</label>
-                      <textarea 
-                        required
-                        value={wpNewPost.content}
-                        onChange={(e) => setWpNewPost({...wpNewPost, content: e.target.value})}
-                        className="w-full min-h-[180px] p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600 bg-white text-sm"
-                        placeholder="Escreva o artigo da postagem aqui..."
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div>
-                        <label className="block text-xs font-semibold text-gray-700 mb-1 uppercase tracking-wider">Status Inicial</label>
-                        <select 
-                          value={wpNewPost.status}
-                          onChange={(e) => setWpNewPost({...wpNewPost, status: e.target.value})}
-                          className="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 bg-white text-sm"
-                        >
-                          <option value="publish">Publicado Imediatamente</option>
-                          <option value="draft">Rascunho</option>
-                          <option value="future">Agendado</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-semibold text-gray-700 mb-1 uppercase tracking-wider">Programar Data/Hora (Opcional)</label>
-                        <input 
-                          type="datetime-local"
-                          value={wpNewPost.scheduledDate}
-                          onChange={(e) => setWpNewPost({
-                            ...wpNewPost, 
-                            scheduledDate: e.target.value,
-                            status: e.target.value ? 'future' : wpNewPost.status
-                          })}
-                          className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 bg-white text-sm"
-                        />
-                        <p className="text-[11px] text-gray-500 mt-1">Defina a data futura para agendar a publicação.</p>
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-semibold text-gray-700 mb-1 uppercase tracking-wider">Imagem de Capa (Destacada)</label>
-                        <input 
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => setWpNewPost({
-                            ...wpNewPost, 
-                            imageFile: e.target.files?.[0] || null 
-                          })}
-                          className="w-full text-xs text-gray-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-purple-100 file:text-purple-700 hover:file:bg-purple-200 cursor-pointer"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="flex justify-end pt-2">
-                      <Button type="submit" disabled={creatingWpPost} className="bg-purple-600 hover:bg-purple-700 text-white px-6">
-                        {creatingWpPost ? 'Publicando...' : wpNewPost.scheduledDate ? 'Agendar Postagem' : 'Publicar Postagem'}
-                      </Button>
-                    </div>
-                  </form>
-                </div>
-              )}
-
-              {loadingWp ? (
-                <div className="flex items-center justify-center py-12 text-gray-400">
-                  <Activity className="w-6 h-6 animate-spin mr-2" /> Carregando postagens...
-                </div>
-              ) : wpPosts && wpPosts.length > 0 ? (
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {wpPosts.map((post: any) => {
-                    const featuredImg = post._embedded?.['wp:featuredmedia']?.[0]?.source_url
-                    const isScheduled = post.status === 'future' || new Date(post.date) > new Date()
-                    
-                    return (
-                      <div key={post.id} className="border border-gray-200 rounded-2xl overflow-hidden hover:shadow-md transition-shadow bg-white flex flex-col">
-                        {featuredImg ? (
-                          <div className="h-44 w-full overflow-hidden bg-gray-100">
-                            <img src={featuredImg} alt={post.title.rendered} className="w-full h-full object-cover" />
+    # 4. Modificar o Modal Open e transformá-lo num Stepper + Modal Backdrop
+    # Procurar onde ele inicia: {wpModalOpen && ( ... )}
+    if 'fixed inset-0 z-[100]' not in content:
+        modal_regex = r'\{wpModalOpen && \(\s*<div className="bg-white border border-gray-200/90 rounded-\[2\.5rem\].*?>.*?<form onSubmit=\{handleCreateWpPost\} className="space-y-6">'
+        
+        stepper_header = """{wpModalOpen && (
+                  <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
+                    <div className="bg-white border border-gray-100 rounded-[2.5rem] p-8 md:p-10 shadow-2xl space-y-6 relative w-full max-w-4xl my-auto max-h-[95vh] overflow-y-auto animate-in zoom-in-95 duration-300">
+                      <button type="button" onClick={() => {setWpModalOpen(false); setWpModalStep(1);}} className="absolute top-6 right-6 w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors">
+                        <X className="w-5 h-5 text-gray-500" />
+                      </button>
+                      <div className="flex items-center justify-between pb-4 border-b border-gray-100">
+                        <div>
+                          <h4 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                            {editingPostId ? <Pencil className="w-6 h-6 text-gray-700" /> : <Sparkles className="w-6 h-6 text-black" />}
+                            {editingPostId ? 'Editar Postagem' : 'Nova Postagem'}
+                          </h4>
+                          <div className="flex items-center gap-2 mt-2">
+                             {[1,2,3,4,5].map(s => (
+                               <div key={s} className={`h-1.5 w-12 rounded-full ${s <= wpModalStep ? 'bg-black' : 'bg-gray-200'}`}></div>
+                             ))}
+                             <span className="text-xs text-gray-500 ml-2 font-medium">Passo {wpModalStep} de 5</span>
                           </div>
-                        ) : (
-                          <div className="h-28 w-full bg-gradient-to-br from-purple-50 to-indigo-50 flex items-center justify-center text-purple-300">
-                            <Globe className="w-8 h-8 opacity-40" />
-                          </div>
-                        )}
-                        <div className="p-5 flex-1 flex flex-col justify-between">
-                          <div>
-                            <div className="flex items-center justify-between gap-2 mb-3">
-                              <Badge 
-                                variant={post.status === 'publish' ? 'default' : isScheduled ? 'secondary' : 'outline'} 
-                                className={
-                                  post.status === 'publish' 
-                                    ? 'bg-green-100 text-green-700 hover:bg-green-100 border-none' 
-                                    : isScheduled
-                                    ? 'bg-blue-100 text-blue-700 hover:bg-blue-100 border-none'
-                                    : 'bg-gray-100 text-gray-700'
-                                }
-                              >
-                                {post.status === 'publish' ? 'Publicado' : isScheduled ? 'Agendado' : 'Rascunho'}
-                              </Badge>
-                              <span className="text-xs text-gray-400 font-medium">
-                                {new Date(post.date).toLocaleDateString('pt-BR')} às {new Date(post.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                              </span>
-                            </div>
-                            <h4 className="font-bold text-gray-900 text-base mb-2 line-clamp-2" dangerouslySetInnerHTML={{ __html: post.title.rendered || '(Sem título)' }} />
-                          </div>
-                          
-                          {post.link && (
-                            <a 
-                              href={post.link} 
-                              target="_blank" 
-                              rel="noopener noreferrer" 
-                              className="mt-4 text-xs font-semibold text-purple-600 hover:text-purple-800 flex items-center gap-1"
-                            >
-                              Ver post no site <ArrowUpRight className="w-3 h-3" />
-                            </a>
-                          )}
                         </div>
                       </div>
-                    )
-                  })}
+                      
+                      <form onSubmit={handleCreateWpPost} className="space-y-6">"""
+
+        content = re.sub(modal_regex, stepper_header, content, flags=re.DOTALL)
+
+        # Agora precisamos encapsular os campos em passos.
+        # Passo 1: Titulo e Conteudo
+        content = content.replace(
+            '{/* Campo Título */}',
+            '{wpModalStep === 1 && (\n                        <div className="space-y-6 animate-in fade-in duration-300">\n                      {/* Campo Título */}'
+        )
+        content = content.replace(
+            '{/* Imagem de Capa (Com Prévia Instantânea Completa) */}',
+            '</div>\n                      )}\n\n                      {wpModalStep === 2 && (\n                        <div className="space-y-6 animate-in fade-in duration-300">\n                      {/* Imagem de Capa (Com Prévia Instantânea Completa) */}'
+        )
+        content = content.replace(
+            '{/* Categorias e Tags */}',
+            '</div>\n                      )}\n\n                      {wpModalStep === 3 && (\n                        <div className="space-y-6 animate-in fade-in duration-300">\n                      {/* Categorias */}'
+        )
+        content = content.replace(
+            '<div className="space-y-3">\n                          <label className="text-sm font-semibold text-gray-700">Tags</label>',
+            '</div>\n                      )}\n\n                      {wpModalStep === 4 && (\n                        <div className="space-y-6 animate-in fade-in duration-300">\n                      <div className="space-y-3">\n                          <label className="text-sm font-semibold text-gray-700">Tags</label>'
+        )
+        
+        # Encontrar o fechamento da div grid do categorias e tags
+        content = content.replace(
+            '</div>\n\n                      {/* Data e Hora de Agendamento (Condicional) */}',
+            '</div>\n                      </div>\n                      )}\n\n                      {wpModalStep === 5 && (\n                        <div className="space-y-6 animate-in fade-in duration-300">\n                      {/* Data e Hora de Agendamento (Condicional) */}'
+        )
+
+        # Botões de Ação
+        # Remover os botões antigos e colocar os do stepper
+        botoes_regex = r'\{/\* Botões de Ação \*/\}.*?</form>'
+        
+        stepper_footer = """{/* Botões de Ação do Wizard */}
+                      <div className="flex justify-between items-center pt-6 border-t border-gray-100">
+                        {wpModalStep > 1 ? (
+                          <button type="button" onClick={() => setWpModalStep(wpModalStep - 1)} className="px-6 py-3 rounded-full text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors">
+                            Voltar
+                          </button>
+                        ) : (
+                          <button type="button" onClick={() => {setWpModalOpen(false); setWpModalStep(1);}} className="px-6 py-3 rounded-full text-sm font-semibold text-gray-500 hover:bg-gray-100 transition-colors">
+                            Cancelar
+                          </button>
+                        )}
+                        
+                        {wpModalStep < 5 ? (
+                          <button type="button" onClick={() => setWpModalStep(wpModalStep + 1)} className="px-8 py-3 rounded-full text-sm font-bold text-white bg-black hover:bg-gray-900 shadow-lg hover:scale-105 transition-all">
+                            Próximo Passo
+                          </button>
+                        ) : (
+                          <div className="flex flex-col sm:flex-row items-center gap-3">
+                            <button type="button" disabled={creatingWpPost} onClick={() => handleCreateWpPostWithAction('draft')} className="w-full sm:w-auto bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-6 py-3.5 rounded-full border border-gray-300/80 transition-all text-sm flex items-center justify-center gap-2">
+                              <FileText className="w-4 h-4 text-gray-600" /> Rascunho
+                            </button>
+                            <button type="button" disabled={creatingWpPost || isLimitReached} onClick={async () => { if (isLimitReached) return; if (!showSchedulePicker) { setShowSchedulePicker(true); } else { handleCreateWpPostWithAction('schedule'); } }} className={`w-full sm:w-auto font-bold px-6 py-3.5 rounded-full shadow-lg transition-all text-sm flex items-center justify-center gap-2 ${isLimitReached ? 'bg-gray-300 text-gray-500' : 'bg-purple-600 hover:bg-purple-700 text-white'}`}>
+                              <Clock className="w-4 h-4 text-white" /> {showSchedulePicker ? 'Confirmar' : 'Agendar'}
+                            </button>
+                            <button type="button" disabled={creatingWpPost} onClick={() => handleCreateWpPostWithAction('publish')} className="w-full sm:w-auto bg-[#DFFF00] hover:bg-[#cbf000] text-black font-bold px-7 py-3.5 rounded-full shadow-lg hover:scale-105 active:scale-95 transition-all text-sm flex items-center justify-center gap-2">
+                              <Sparkles className="w-4 h-4 text-black" /> {creatingWpPost ? 'Salvando...' : 'Publicar'}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {wpModalStep === 5 && (</div>)}
+                    </form>
+                  </div>
                 </div>
-              ) : (
-                <div className="text-center py-12 border border-dashed border-gray-200 rounded-2xl text-gray-500">
-                  Nenhum post encontrado no blog WordPress.
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="bg-gray-50 border border-gray-200 rounded-2xl p-8 max-w-2xl mx-auto text-center">
-              <Globe className="w-10 h-10 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-bold text-gray-900 mb-2">WordPress não conectado</h3>
-              <p className="text-sm text-gray-600 mb-6">Para criar e agendar postagens no blog do seu cliente, conecte a integração do WordPress nas configurações.</p>
-              <Button onClick={() => setActiveTab('integracoes')}>Ir para Integrações</Button>
-            </div>
-          )}
-        </div>
-      )}"""
+                )}"""
+        
+        content = re.sub(botoes_regex, stepper_footer, content, flags=re.DOTALL)
 
-# Replace Gestão de Blog block in activeTab === 'wp' with nothing
-gestao_blog_start = "                  {/* Gestão de Blog */}"
-gestao_blog_end = "                  </div>\n                </>\n              )}\n            </div>\n          ) :"
+    # 5. Adicionar o Popup de Sucesso após o modal
+    if 'wpSuccessPopup.show' not in content:
+        success_popup = """
+                {/* Popup de Sucesso Personalizado */}
+                {wpSuccessPopup.show && (
+                  <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+                    <div className="bg-white rounded-[2rem] p-10 w-full max-w-md flex flex-col items-center text-center shadow-2xl relative animate-in zoom-in-95 duration-300">
+                      <button onClick={() => setWpSuccessPopup({show: false, postId: null, postUrl: null, message: ''})} className="absolute top-5 right-5 text-gray-400 hover:text-gray-600">
+                        <X className="w-5 h-5" />
+                      </button>
+                      
+                      <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center mb-6">
+                        <div className="w-12 h-12 rounded-full border-[3px] border-blue-500 flex items-center justify-center">
+                          <span className="text-blue-500 font-bold text-2xl lowercase font-serif">i</span>
+                        </div>
+                      </div>
+                      
+                      <h3 className="text-gray-700 font-medium text-lg mb-8">{wpSuccessPopup.message}</h3>
+                      
+                      <div className="w-full space-y-3">
+                        {wpSuccessPopup.postUrl && (
+                          <a href={wpSuccessPopup.postUrl} target="_blank" rel="noopener noreferrer" className="w-full block bg-[#9b3bff] hover:bg-[#8b2bef] text-white font-bold py-4 rounded-xl shadow-lg shadow-purple-500/30 transition-all hover:scale-105 active:scale-95">
+                            Ver sua postagem
+                          </a>
+                        )}
+                        <button onClick={() => setWpSuccessPopup({show: false, postId: null, postUrl: null, message: ''})} className="w-full py-4 text-gray-500 font-bold hover:text-gray-700 transition-colors">
+                          Voltar para Blog
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+"""
+        # Inserir após o Modal Principal
+        content = re.sub(
+            r'(</form>\s*</div>\s*</div>\s*)\)}',
+            r'\1)}\n' + success_popup,
+            content
+        )
 
-if gestao_blog_start in content:
-    idx_start = content.find(gestao_blog_start)
-    idx_end = content.find(gestao_blog_end, idx_start)
-    if idx_start != -1 and idx_end != -1:
-        content = content[:idx_start] + content[idx_end:]
+    with open(filepath, 'w', encoding='utf-8') as f:
+        f.write(content)
 
-# Now insert activeTab === 'blog' block before SPEED INSIGHTS
-speed_tab_marker = "      {/* SPEED INSIGHTS */}"
-if speed_tab_marker in content:
-    content = content.replace(speed_tab_marker, new_blog_tab_content + "\n\n" + speed_tab_marker)
 
-with open(filepath, "w", encoding="utf-8") as f:
-    f.write(content)
+# Executar para ambos os arquivos
+update_file(r'C:\\Espaço de Trabalho\\JuriPages\\Projetos\\CRM - SITE\\src\\app\\dashboard\\sites\\[id]\\SiteDashboardClient.tsx')
+update_file(r'C:\\Espaço de Trabalho\\JuriPages\\Projetos\\CRM - SITE\\src\\app\\dashboard\\meus-sites\\[id]\\SiteReportTabs.tsx')
 
-print("Updated SiteDashboardClient.tsx with separate Blog tab, scheduling & cover image support!")
+print("Modificações aplicadas com sucesso.")
