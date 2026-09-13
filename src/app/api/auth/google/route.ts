@@ -1,8 +1,8 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, NextRequest } from 'next/server'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const clientId = process.env.GOOGLE_CLIENT_ID
-  const redirectUri = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/auth/google/callback`
+  const redirectUri = `${process.env.NEXT_PUBLIC_SITE_URL || request.nextUrl.origin}/api/auth/google/callback`
 
   if (!clientId) {
     return NextResponse.json({ error: 'GOOGLE_CLIENT_ID não configurado no servidor.' }, { status: 500 })

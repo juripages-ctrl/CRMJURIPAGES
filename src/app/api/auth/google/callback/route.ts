@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url)
+  const requestUrl = new URL(request.url)
+  const { searchParams } = requestUrl
   const code = searchParams.get('code')
   
   if (!code) {
@@ -11,7 +12,7 @@ export async function GET(request: Request) {
 
   const clientId = process.env.GOOGLE_CLIENT_ID
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET
-  const redirectUri = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/auth/google/callback`
+  const redirectUri = `${process.env.NEXT_PUBLIC_SITE_URL || requestUrl.origin}/api/auth/google/callback`
 
   if (!clientId || !clientSecret) {
     return NextResponse.redirect(new URL('/dashboard/configuracoes?error=MissingEnv', request.url))
