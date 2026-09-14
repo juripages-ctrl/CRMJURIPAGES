@@ -11,6 +11,7 @@ const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutGrid },
   { name: 'Clientes', href: '/dashboard/clientes', icon: Users },
   { name: 'Rede de Sites', href: '/dashboard/sites', icon: Globe },
+  { name: 'Juju IA (Blog)', href: '/dashboard/blog', icon: Sparkles },
   { name: 'Planos e Pacotes', href: '/dashboard/planos', icon: CreditCard },
   { name: 'Equipe e Acessos', href: '/dashboard/configuracoes/equipe', icon: Shield },
   { name: 'Master APIs', href: '/dashboard/configuracoes', icon: Settings },
@@ -40,6 +41,7 @@ export function Sidebar({ userInitial, avatarUrl }: { userInitial?: string, avat
   const sheetItems = [
     { name: 'Clientes', href: '/dashboard/clientes', icon: Users },
     { name: 'Rede de Sites', href: '/dashboard/sites', icon: Globe },
+    { name: 'Juju IA (Blog)', href: '/dashboard/blog', icon: Sparkles },
     { name: 'Planos e Pacotes', href: '/dashboard/planos', icon: CreditCard },
     { name: 'Equipe e Acessos', href: '/dashboard/configuracoes/equipe', icon: Shield },
     { name: 'Master APIs', href: '/dashboard/configuracoes', icon: Settings },

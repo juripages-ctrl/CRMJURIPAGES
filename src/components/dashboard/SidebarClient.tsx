@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { LayoutGrid, Globe, LogOut, CreditCard, MessageSquare, User, Bell, Menu } from 'lucide-react'
+import { LayoutGrid, Globe, LogOut, CreditCard, MessageSquare, User, Bell, Menu, Sparkles } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -18,6 +18,7 @@ export function SidebarClient({ userInitial, avatarUrl }: { userInitial?: string
   const navItems = [
     { name: 'Visão Geral', href: '/dashboard', icon: LayoutGrid },
     { name: 'Meus Sites', href: '/dashboard/meus-sites', icon: Globe },
+    { name: 'Juju IA (Blog)', href: '/dashboard/blog', icon: Sparkles },
     { name: 'Anotações do time', href: '/dashboard/anotacoes', icon: MessageSquare },
     { name: 'Financeiro', href: '/dashboard/financeiro', icon: CreditCard },
   ]
@@ -35,6 +36,7 @@ export function SidebarClient({ userInitial, avatarUrl }: { userInitial?: string
   // Sheet menu items (all sections)
   const sheetItems = [
     { name: 'Meus Sites', href: '/dashboard/meus-sites', icon: Globe },
+    { name: 'Juju IA (Blog)', href: '/dashboard/blog', icon: Sparkles },
     { name: 'Financeiro', href: '/dashboard/financeiro', icon: CreditCard },
     { name: 'Histórico do time', href: '/dashboard/anotacoes', icon: MessageSquare },
     { name: 'Notificações', href: '/dashboard/perfil', icon: Bell },

@@ -5,7 +5,8 @@ import { GlobalDialog } from '@/components/ui/GlobalDialog'
 import { Cloud, ShieldCheck, Search, Server, Clock, Calendar, Image as ImageIcon, CheckCircle2, FileText, Unplug, Globe, User, BarChart3, Activity, ArrowUpRight, Pencil, Zap, Sparkles, X, Trash2 } from 'lucide-react'
 import { CustomDateTimePicker } from '@/components/ui/CustomDateTimePicker'
 import { getBlogPlanPermissions } from '@/utils/plan-permissions'
-import { Lock, ShieldAlert, AlertTriangle } from 'lucide-react'
+import { Lock, ShieldAlert, AlertTriangle, Plus, Eye, ExternalLink, CalendarDays, Settings, Layout, Link2, Copy, CheckCircle, RefreshCw, Upload, MessageSquare, AlertCircle } from 'lucide-react'
+import RoteiroPreviewPanel from '@/components/blog/RoteiroPreviewPanel'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Badge } from '@/components/ui/Badge'
@@ -136,6 +137,7 @@ export function SiteDashboardClient({ site, gsc, wp: propsWp, hosting, provedore
   const [isRefreshingGsc, setIsRefreshingGsc] = useState(false)
 
   const [wpModalOpen, setWpModalOpen] = useState(false)
+  const [showModeSelector, setShowModeSelector] = useState(false)
   const [wpModalStep, setWpModalStep] = useState(1)
   const [wpSuccessPopup, setWpSuccessPopup] = useState<{show: boolean, postId: number | null, postUrl: string | null, message: string}>({show: false, postId: null, postUrl: null, message: ''})
   const [wpNewPost, setWpNewPost] = useState<{ title: string; content: string; status: string; scheduledDate: string; imageFile: File | null; categories: number[]; tags: number[] }>({ title: '', content: '', status: 'publish', scheduledDate: '', imageFile: null, categories: [], tags: [] })
@@ -256,7 +258,8 @@ export function SiteDashboardClient({ site, gsc, wp: propsWp, hosting, provedore
       categories: post.categories || [],
       tags: post.tags || []
     })
-    setWpModalOpen(true)
+    // NÃO abrir o modal padrão
+    // setWpModalOpen(true)
   }
 
   async function handleDeletePost(postId: number) {
@@ -300,13 +303,13 @@ export function SiteDashboardClient({ site, gsc, wp: propsWp, hosting, provedore
     loadWpData(true)
   }
 
-  async function handleCreateWpPostWithAction(targetAction?: 'publish' | 'schedule' | 'draft') {
+  async function handleCreateWpPostWithAction(targetAction?: 'publish' | 'schedule' | 'draft', overrideData?: any) {
     
     if (!wp) return
 
     let action = targetAction
     if (!action) {
-      if (wpNewPost.scheduledDate) {
+      if (wpNewPost.scheduledDate || overrideData?.scheduledDate) {
         action = 'schedule'
       } else {
         action = 'draft'
@@ -314,8 +317,8 @@ export function SiteDashboardClient({ site, gsc, wp: propsWp, hosting, provedore
     }
 
     if (action === 'schedule') {
-      if (!wpNewPost.scheduledDate) {
-        await showAlert('Por favor, selecione a data e hora no calendário para agendar a publicação.', 'alert')
+      if (!overrideData?.scheduledDate && !wpNewPost.scheduledDate) {
+        await showAlert('Por favor, defina uma data e horário para o agendamento.', 'alert')
         return
       }
 
@@ -365,17 +368,18 @@ export function SiteDashboardClient({ site, gsc, wp: propsWp, hosting, provedore
       finalStatus = 'draft'
     }
 
-        const postPayload: any = {
-      title: wpNewPost.title,
-      content: wpNewPost.content || '',
+    const postPayload: any = {
+      title: overrideData?.title || wpNewPost.title,
+      content: overrideData?.content || wpNewPost.content || '',
       status: finalStatus
     }
 
     if (wpNewPost.categories.length > 0) postPayload.categories = wpNewPost.categories
     if (wpNewPost.tags.length > 0) postPayload.tags = wpNewPost.tags
 
-    if (action === 'schedule' && wpNewPost.scheduledDate) {
-      const localDate = new Date(wpNewPost.scheduledDate)
+    const schedDate = overrideData?.scheduledDate || wpNewPost.scheduledDate
+    if (action === 'schedule' && schedDate) {
+      const localDate = new Date(schedDate)
       postPayload.status = 'future'
       postPayload.date_gmt = localDate.toISOString().split('.')[0]
       delete postPayload.date
@@ -1441,7 +1445,14 @@ export function SiteDashboardClient({ site, gsc, wp: propsWp, hosting, provedore
                     </div>
                     
                     <button 
-                      onClick={() => { if (wpModalOpen) setEditingPostId(null); setWpModalOpen(!wpModalOpen); }} 
+                      onClick={() => { 
+                        if (wpModalOpen) {
+                          setEditingPostId(null); 
+                          setWpModalOpen(false); 
+                        } else {
+                          setShowModeSelector(true);
+                        }
+                      }} 
                       className="bg-[#DFFF00] hover:bg-[#cbf000] text-black font-bold px-6 py-3.5 rounded-full shadow-lg shadow-[#DFFF00]/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 text-sm"
                     >
                       <Sparkles className="w-4 h-4" />
@@ -1449,6 +1460,80 @@ export function SiteDashboardClient({ site, gsc, wp: propsWp, hosting, provedore
                     </button>
                   </div>
                 </div>
+
+                {/* Modal de Escolha do Modo de Postagem */}
+                {showModeSelector && (
+                  <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                    <div className="bg-white border border-[#EFEFEF] rounded-[2rem] p-8 shadow-[0_8px_30px_rgba(0,0,0,0.12)] relative w-full max-w-md animate-in zoom-in-95 duration-300 text-center">
+                      <button type="button" onClick={() => setShowModeSelector(false)} className="absolute top-4 right-4 w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors">
+                        <X className="w-4 h-4 text-gray-500" />
+                      </button>
+                      <h3 className="text-xl font-bold mb-4">Nova Postagem</h3>
+                      <p className="text-sm text-gray-500 mb-6">Como deseja criar a nova postagem para o blog?</p>
+                      
+                      <div className="flex flex-col gap-3">
+                        <button 
+                          onClick={() => {
+                            setShowModeSelector(false);
+                            window.location.href = `/dashboard/blog/roteiros?siteId=${site.id}`;
+                          }}
+                          className="bg-[#111827] hover:bg-gray-800 text-white font-bold py-3.5 px-6 rounded-full w-full flex items-center justify-center gap-2 transition-all shadow-md"
+                        >
+                          <Sparkles className="w-5 h-5 text-[#DFFF00]" />
+                          Gerar com Juju (IA)
+                        </button>
+                        
+                        <button 
+                          onClick={() => {
+                            setShowModeSelector(false);
+                            setEditingPostId(null);
+                            setWpModalOpen(true);
+                          }}
+                          className="bg-[#F3F4F6] hover:bg-gray-200 text-gray-900 font-bold py-3.5 px-6 rounded-full w-full flex items-center justify-center transition-all"
+                        >
+                          Escrever Manualmente
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Painel lateral de edição de posts usando RoteiroPreviewPanel */}
+                <RoteiroPreviewPanel 
+                  isOpen={editingPostId !== null && !wpModalOpen}
+                  onClose={() => setEditingPostId(null)}
+                  roteiro={{
+                    titulo: wpNewPost.title,
+                    conteudo: wpNewPost.content,
+                    imagemUrl: currentCoverUrl || undefined
+                  }}
+                  wpStatus={wpNewPost.status}
+                  editMode={true}
+                  onPublish={async (dados) => {
+                    // Atualiza o estado
+                    setWpNewPost(prev => ({
+                       ...prev,
+                       title: dados.titulo,
+                       content: dados.conteudo,
+                       status: dados.status === 'future' ? 'future' : dados.status,
+                       scheduledDate: dados.status === 'future' && dados.date ? dados.date : prev.scheduledDate
+                    }))
+                    if (dados.imagemUrl && dados.imagemUrl !== currentCoverUrl) {
+                       setCurrentCoverUrl(dados.imagemUrl)
+                       // Idealmente o upload de URL no media library ou passar o ID aqui
+                    }
+                    
+                    // Chama a submissão passando overrides
+                    handleCreateWpPostWithAction(
+                      dados.status === 'future' ? 'schedule' : dados.status,
+                      {
+                        title: dados.titulo,
+                        content: dados.conteudo,
+                        scheduledDate: dados.status === 'future' && dados.date ? dados.date : wpNewPost.scheduledDate
+                      }
+                    )
+                  }}
+                />
 
                 {/* Modal e Wizard de Criacao de Post */}
                 {wpModalOpen && (
@@ -1799,9 +1884,9 @@ export function SiteDashboardClient({ site, gsc, wp: propsWp, hosting, provedore
                   <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
                     <div className="bg-white rounded-[2.5rem] p-10 w-full max-w-md flex flex-col items-center text-center shadow-2xl relative animate-in zoom-in-95 duration-300">
                       
-                      <div className="w-20 h-20 rounded-full bg-blue-50 flex items-center justify-center mb-6">
-                        <div className="w-14 h-14 rounded-full border-[4px] border-blue-500 flex items-center justify-center">
-                          <span className="text-blue-500 font-bold text-3xl lowercase font-serif italic">i</span>
+                      <div className="w-20 h-20 rounded-full bg-[#DFFF00]/20 flex items-center justify-center mb-6">
+                        <div className="w-14 h-14 rounded-full bg-[#DFFF00] flex items-center justify-center">
+                          <CheckCircle2 className="w-7 h-7 text-[#111827]" />
                         </div>
                       </div>
                       
@@ -1810,11 +1895,11 @@ export function SiteDashboardClient({ site, gsc, wp: propsWp, hosting, provedore
                       
                       <div className="w-full space-y-4">
                         {wpSuccessPopup.postUrl && (
-                          <a href={wpSuccessPopup.postUrl} target="_blank" rel="noopener noreferrer" className="w-full flex items-center justify-center gap-2 bg-[#9b3bff] hover:bg-[#8b2bef] text-white font-bold py-4 rounded-xl shadow-lg shadow-purple-500/30 transition-all hover:scale-105 active:scale-95">
+                          <a href={wpSuccessPopup.postUrl} target="_blank" rel="noopener noreferrer" className="w-full flex items-center justify-center gap-2 bg-[#111827] hover:bg-gray-800 text-white font-bold py-4 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95">
                             Ver sua postagem <Sparkles className="w-4 h-4" />
                           </a>
                         )}
-                        <button onClick={() => setWpSuccessPopup({show: false, postId: null, postUrl: null, message: ''})} className="w-full py-4 text-gray-500 font-bold hover:bg-gray-50 rounded-xl transition-colors">
+                        <button onClick={() => setWpSuccessPopup({show: false, postId: null, postUrl: null, message: ''})} className="w-full py-4 text-gray-500 font-bold hover:bg-[#F3F4F6] rounded-full transition-colors">
                           Voltar para Blog
                         </button>
                       </div>
